@@ -35,13 +35,20 @@ function createThreshold(origin: Point, threshold: number) {
 
 interface CreateSplineGraphProps {
   canvas: HTMLCanvasElement;
-  points: KeyPoint[];
+  userPoints: KeyPoint[];
   onChange?: (p: KeyPoint | null) => void;
   snapToGrid?: boolean;
 }
 
-function createSplineGraph({ canvas, points, onChange, snapToGrid = true }: CreateSplineGraphProps): SplineGraph {
-  points = points.slice(); // shallow copy
+function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: CreateSplineGraphProps): SplineGraph {
+  const ScaleX = 9;
+  const ScaleY = 2;
+
+  const OffsetX = 0;
+  const OffsetY = 400;
+
+  // points = points.slice(); // shallow copy
+  const points = userPoints.map((p) => asPhysKeypoint(p));
   const ctx = canvas.getContext("2d")!;
   // ctx.scale(2, 2);
 
@@ -53,7 +60,9 @@ function createSplineGraph({ canvas, points, onChange, snapToGrid = true }: Crea
   }
 
   function didChange() {
-    if (onChange) onChange(toUserKeypoint(cloneSelectedPoint()));
+    if (!onChange) return;
+    const clone = cloneSelectedPoint();
+    onChange(clone === null ? null : asUserKeypoint(clone));
   }
 
   function setSelectedIndex(index: number | null) {
@@ -128,8 +137,21 @@ function createSplineGraph({ canvas, points, onChange, snapToGrid = true }: Crea
     if (dragging) startDrag(x, y);
   }
 
-  function toUserKeypoint(real: KeyPoint | null): KeyPoint | null {
-    if (!real) return null;
+  function asPhysPoint(user: Point): Point {
+    return { x: user.x * ScaleX + OffsetX, y: user.y * ScaleY * -1 + OffsetY };
+  }
+
+  function asPhysKeypoint(user: KeyPoint): KeyPoint {
+    return {
+      type: user.type,
+      x: user.x * ScaleX + OffsetX,
+      y: user.y * ScaleY * -1 + OffsetY,
+      h1: asPhysPoint(user.h1),
+      h2: asPhysPoint(user.h2),
+    };
+  }
+
+  function asUserKeypoint(real: KeyPoint): KeyPoint {
     return { ...real, x: (real.x - OffsetX) / ScaleX, y: ((real.y - OffsetY) / ScaleY) * -1 };
   }
 
@@ -229,12 +251,6 @@ function createSplineGraph({ canvas, points, onChange, snapToGrid = true }: Crea
     canvas.removeEventListener("mouseup", onMouseUp);
     dragging = null;
   }
-
-  const ScaleX = 9;
-  const ScaleY = 2;
-
-  const OffsetX = 0;
-  const OffsetY = 400;
 
   function drawGrid() {
     ctx.strokeStyle = LightGray;

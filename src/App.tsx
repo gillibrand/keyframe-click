@@ -4,12 +4,12 @@ import { KeyPoint, Point, sharpPoint } from "./point";
 import { createSplineGraph, SplineGraph } from "./SplineGraph";
 import { throttle } from "./util";
 
-const points: KeyPoint[] = [
-  sharpPoint(50, 250),
-  { x: 150, y: 50, h1: { x: 50, y: 50 }, h2: { x: 250, y: 50 }, type: "round" },
-  sharpPoint(250, 200),
-  sharpPoint(350, 50),
-  sharpPoint(450, 250),
+const userPoints: KeyPoint[] = [
+  sharpPoint(0, 0),
+  { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round" },
+  sharpPoint(50, 200),
+  sharpPoint(75, 50),
+  sharpPoint(100, 0),
 ];
 
 function roundHundredths(p: Point): Point {
@@ -37,7 +37,7 @@ function App() {
         graphRef.current = undefined;
       }
 
-      graphRef.current = canvas ? createSplineGraph({ canvas, points, onChange: setSelectedPointSoon }) : undefined;
+      graphRef.current = canvas ? createSplineGraph({ canvas, userPoints, onChange: setSelectedPointSoon }) : undefined;
     },
     [setSelectedPointSoon]
   );
