@@ -1,0 +1,39 @@
+.Preview {
+  border: solid 1px gray;
+  aspect-ratio: 1;
+  width: 20rem;
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+
+  cursor: pointer;
+}
+
+.Preview__content {
+  aspect-ratio: 1;
+  width: 5rem;
+  position: relative;
+}
+
+.Preview__ball {
+  background-color: tomato;
+  border-radius: 999px;
+  aspect-ratio: 1;
+  width: 5rem;
+  border: solid 2px red;
+
+  &.is-animate {
+    animation: 1000ms linear preview-anim1;
+  }
+
+  &::after {
+    content: "";
+    aspect-ratio: 1;
+    width: 1rem;
+    background-color: rgba(255 255 255 / 0.8);
+    position: absolute;
+    border-radius: 999px;
+    top: 1rem;
+    left: 1rem;
+  }
+}

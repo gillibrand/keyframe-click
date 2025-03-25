@@ -20,3 +20,19 @@ export function throttle<T extends unknown[]>(fn: (...args: T) => void, delay: n
     }
   };
 }
+
+export function debounce<Args extends unknown[]>(fn: (...args: Args) => void, delayMs: number) {
+  let timeout = -1;
+
+  return (...args: Args): (() => void) => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(function callFromDebounce() {
+      fn(...args);
+    }, delayMs);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  };
+}

@@ -60,7 +60,7 @@ function cubicBezierDerivative(t: number, p0: number, p1: number, p2: number, p3
   return 3 * mt ** 2 * (p1 - p0) + 6 * mt * t * (p2 - p1) + 3 * t ** 2 * (p3 - p2);
 }
 
-export function findYForXSingle(
+export function findYForX(
   xTarget: number,
   x0: number,
   y0: number,
@@ -93,10 +93,11 @@ export function findYForXSingle(
     t = Math.max(0, Math.min(1, t)); // Clamp t to [0,1]
   }
 
-  throw new Error("Unable to find Y for given X within tolerance");
+  console.warn("Unable to find Y for given X within tolerance");
+  return null;
 }
 
-export function findYForX(x: number, curves: PhysDot[], tolerance = 1e-6, maxIterations = 100) {
+export function findYForXInCurve(x: number, curves: PhysDot[], tolerance = 1e-6, maxIterations = 100) {
   let i = 0;
   let j = 0;
   for (i = 1; i < curves.length; i++) {
@@ -109,7 +110,6 @@ export function findYForX(x: number, curves: PhysDot[], tolerance = 1e-6, maxIte
     const [x3, y3] = [p.x, p.y];
 
     if (x < x0 || x > x3) {
-      // console.info(">>> skip", x);
       continue; // Skip if not in this curve range
     }
 
@@ -117,10 +117,8 @@ export function findYForX(x: number, curves: PhysDot[], tolerance = 1e-6, maxIte
     let t = (x - x0) / (x3 - x0);
 
     for (j = 0; j < maxIterations; j++) {
-      // console.info(">>> t", t);
       const currentX = cubicBezier(t, x0, x1, x2, x3);
       const error = currentX - x;
-      // console.info(">>> error", error);
 
       if (Math.abs(error) < tolerance) {
         return cubicBezier(t, y0, y1, y2, y3); // Return the y value
@@ -128,20 +126,14 @@ export function findYForX(x: number, curves: PhysDot[], tolerance = 1e-6, maxIte
 
       const derivative = cubicBezierDerivative(t, x0, x1, x2, x3);
       if (Math.abs(derivative) < tolerance) {
-        console.info(">>> BREAK", derivative, tolerance);
         break; // Prevent division by zero
       }
 
-      // console.info(">>> derivative", derivative);
-      // console.info(">>> error / derivative", error / derivative, t);
-      // console.info(">>> newt", t);
       t -= error / derivative;
-      t = Math.max(0, Math.min(1, t)); // Keep t within bounds
+      t = Math.max(0, Math.min(1, t));
     }
-
-    console.info(">>> no");
   }
 
   console.error("x value out of bounds or no solution found: " + x + " i: " + i + " j: " + j);
-  // throw new Error("x value out of bounds or no solution found: " + x + " i: " + i + " j: " + j);
+  return null;
 }
