@@ -12,6 +12,15 @@ export function dot(p: Point, ctx: CanvasRenderingContext2D) {
   ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
   ctx.fill();
 }
+export function ex(p: Point, c: CanvasRenderingContext2D) {
+  c.beginPath();
+  const l = 7;
+  c.moveTo(p.x - l, p.y - l);
+  c.lineTo(p.x + l, p.y + l);
+  c.moveTo(p.x - l, p.y + l);
+  c.lineTo(p.x + l, p.y - l);
+  c.stroke();
+}
 export function circle(p: Point, ctx: CanvasRenderingContext2D) {
   ctx.beginPath();
   ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
@@ -28,7 +37,7 @@ export function bullsEye(p: Point, ctx: CanvasRenderingContext2D) {
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = Red;
+    ctx.fillStyle = Blue;
     ctx.beginPath();
     ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
     ctx.fill();

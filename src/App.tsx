@@ -1,15 +1,15 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import "./App.css";
-import { KeyPoint, Point, sharpPoint } from "./point";
-import { createSplineGraph, SplineGraph } from "./SplineGraph";
+import { BaseDot, UserDot, Point, createSharp, createRound } from "./point";
+import { createBezierTimeline, BezierTimeline } from "./BezierTimeline";
 import { throttle } from "./util";
 
-const userPoints: KeyPoint[] = [
-  sharpPoint(0, 0),
-  { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round" },
-  sharpPoint(50, 200),
-  sharpPoint(75, 50),
-  sharpPoint(100, 0),
+const userDots: UserDot[] = [
+  createSharp(0, 0),
+  { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
+  createRound(50, 10),
+  createSharp(75, 50),
+  createSharp(100, 0),
 ];
 
 function roundHundredths(p: Point): Point {
@@ -19,25 +19,28 @@ function roundHundredths(p: Point): Point {
   };
 }
 
-function clean(p: KeyPoint): Point {
+function clean(p: BaseDot): Point {
   return roundHundredths(p);
 }
 
 function App() {
-  const graphRef = useRef<SplineGraph>();
-  const [selectedPoint, setSelectedPoint] = useState<KeyPoint | null>(null);
+  const graphRef = useRef<BezierTimeline>();
+  const [selectedPoint, setSelectedPoint] = useState<BaseDot | null>(null);
   const [snapToGrid, setSnapToGridRaw] = useState(true);
 
   const setSelectedPointSoon = useMemo(() => throttle(setSelectedPoint, 100), []);
 
   const setCanvas = useCallback(
     (canvas: HTMLCanvasElement) => {
+      console.info(">>> setCanvas");
       if (graphRef.current) {
         graphRef.current.destroy();
         graphRef.current = undefined;
       }
 
-      graphRef.current = canvas ? createSplineGraph({ canvas, userPoints, onChange: setSelectedPointSoon }) : undefined;
+      graphRef.current = canvas
+        ? createBezierTimeline({ canvas, userDots, onChange: setSelectedPointSoon })
+        : undefined;
     },
     [setSelectedPointSoon]
   );
@@ -58,7 +61,7 @@ function App() {
           <input type="checkbox" checked={snapToGrid} onChange={(e) => setSnapToGrid(e.target.checked)} /> Snap to grid
         </label>
       </p>
-      <p>{selectedPoint && <div>{JSON.stringify(clean(selectedPoint))}</div>}</p>
+      <p>{selectedPoint && JSON.stringify(clean(selectedPoint))}</p>
     </>
   );
 }

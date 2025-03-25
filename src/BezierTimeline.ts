@@ -1,12 +1,5 @@
-import { Black, bullsEye, circle, diamond, Gray, LightGray, White, willDraw } from "./drawing";
-import { diffPt, KeyPoint, nearPt, Point, toggleType } from "./point";
-
-interface SplineGraph {
-  // render: () => void;
-  destroy: () => void;
-  canvas: HTMLCanvasElement;
-  setSnapToGrid: (snapToGrid: boolean) => void;
-}
+import { Black, Blue, bullsEye, circle, diamond, dot, ex, Gray, LightGray, Red, White, willDraw } from "./drawing";
+import { diffPt, BaseDot, UserDot, nearPt, Point, togglePt, PhysDot, findYForX } from "./point";
 
 type HandlePair = {
   handle: Point;
@@ -15,9 +8,9 @@ type HandlePair = {
 
 type Dragging =
   | {
-      point: KeyPoint;
+      point: BaseDot;
     }
-  | ({ point: KeyPoint } & HandlePair);
+  | ({ point: BaseDot } & HandlePair);
 
 function createThreshold(origin: Point, threshold: number) {
   let passed = false;
@@ -33,41 +26,47 @@ function createThreshold(origin: Point, threshold: number) {
   };
 }
 
-interface CreateSplineGraphProps {
+export interface BezierTimeline {
+  destroy: () => void;
+  setSnapToGrid: (snapToGrid: boolean) => void;
+  updateSelectedPoint: (p: UserDot) => void;
+}
+
+export interface BezierTimelineProps {
   canvas: HTMLCanvasElement;
-  userPoints: KeyPoint[];
-  onChange?: (p: KeyPoint | null) => void;
+  userDots: UserDot[];
+  onChange?: (p: UserDot | null) => void;
   snapToGrid?: boolean;
 }
 
-function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: CreateSplineGraphProps): SplineGraph {
+function createBezierTimeline({ canvas, userDots, onChange, snapToGrid = true }: BezierTimelineProps): BezierTimeline {
   const ScaleX = 9;
   const ScaleY = 2;
 
   const OffsetX = 0;
   const OffsetY = 400;
 
-  // points = points.slice(); // shallow copy
-  const points = userPoints.map((p) => asPhysKeypoint(p));
+  const physDots = userDots.map((p) => asPhysDot(p));
   const ctx = canvas.getContext("2d")!;
-  // ctx.scale(2, 2);
 
-  let selected: number | null = null;
+  let selectedIndex: number | null = null;
   let dragging: Dragging | null = null;
 
-  function cloneSelectedPoint(): KeyPoint | null {
-    return selected === null ? null : { ...points[selected] };
+  function cloneSelectedDot(): PhysDot | null {
+    // XXX: shallow clone. Good enough for React to notice
+    return selectedIndex === null ? null : { ...physDots[selectedIndex] };
   }
 
   function didChange() {
     if (!onChange) return;
-    const clone = cloneSelectedPoint();
-    onChange(clone === null ? null : asUserKeypoint(clone));
+    const clone = cloneSelectedDot();
+    onChange(clone === null ? null : asUserDot(clone));
   }
 
   function setSelectedIndex(index: number | null) {
-    if (index === selected) return;
-    selected = index;
+    if (index === selectedIndex) return;
+
+    selectedIndex = index;
     draw();
     didChange();
   }
@@ -76,10 +75,10 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
     const x = e.offsetX;
     const y = e.offsetY;
 
-    for (let i = 0; i < points.length; i++) {
-      const p = points[i];
+    for (let i = 0; i < physDots.length; i++) {
+      const p = physDots[i];
       if (nearPt(p, x, y)) {
-        toggleType(p);
+        togglePt(p);
         draw();
         didChange();
         return;
@@ -97,36 +96,34 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
 
     try {
       if (isConvertClick) {
-        for (let i = 0; i < points.length; i++) {
-          const p = points[i];
+        for (let i = 0; i < physDots.length; i++) {
+          const p = physDots[i];
 
           if (nearPt(p, x, y)) {
-            toggleType(p);
+            togglePt(p);
             newSelected = i;
+            // TODO: this can cause two draws. May need to buffer
             draw();
             return;
           }
         }
-
-        newSelected = null;
-        return;
-      }
-
-      for (let i = 0; i < points.length; i++) {
-        const p = points[i];
-        if (nearPt(p, x, y)) {
-          newSelected = i;
-          dragging = { point: p };
-          break;
-        }
-
-        if (p.type === "round") {
-          if (nearPt(p.h1, x, y)) {
+      } else {
+        for (let i = 0; i < physDots.length; i++) {
+          const p = physDots[i];
+          if (nearPt(p, x, y)) {
             newSelected = i;
-            dragging = { point: p, handle: p.h1, otherHandle: p.h2 };
-          } else if (nearPt(p.h2, x, y)) {
-            newSelected = i;
-            dragging = { point: p, handle: p.h2, otherHandle: p.h1 };
+            dragging = { point: p };
+            break;
+          }
+
+          if (p.type === "round") {
+            if (nearPt(p.h1, x, y)) {
+              newSelected = i;
+              dragging = { point: p, handle: p.h1, otherHandle: p.h2 };
+            } else if (nearPt(p.h2, x, y)) {
+              newSelected = i;
+              dragging = { point: p, handle: p.h2, otherHandle: p.h1 };
+            }
           }
         }
       }
@@ -141,8 +138,9 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
     return { x: user.x * ScaleX + OffsetX, y: user.y * ScaleY * -1 + OffsetY };
   }
 
-  function asPhysKeypoint(user: KeyPoint): KeyPoint {
+  function asPhysDot(user: UserDot): PhysDot {
     return {
+      space: "physical",
       type: user.type,
       x: user.x * ScaleX + OffsetX,
       y: user.y * ScaleY * -1 + OffsetY,
@@ -151,8 +149,8 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
     };
   }
 
-  function asUserKeypoint(real: KeyPoint): KeyPoint {
-    return { ...real, x: (real.x - OffsetX) / ScaleX, y: ((real.y - OffsetY) / ScaleY) * -1 };
+  function asUserDot(pd: PhysDot): UserDot {
+    return { ...pd, x: (pd.x - OffsetX) / ScaleX, y: ((pd.y - OffsetY) / ScaleY) * -1, space: "user" };
   }
 
   let isPastThreshold: (e: MouseEvent) => boolean = () => false;
@@ -204,7 +202,7 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
     return y * ScaleY * -1 + OffsetY;
   }
 
-  function moveKeyPoint(p: KeyPoint, toX: number, toY: number) {
+  function moveKeyPoint(p: BaseDot, toX: number, toY: number) {
     const origin = { ...p };
 
     if (snapToGrid) {
@@ -218,7 +216,6 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
       if (toUserX === fromUserX && toUserY === fromUserY) return;
       toX = asPhysX(toUserX);
       toY = asPhysY(toUserY);
-      // if (p.x === toX && p.y === toY) return;
     }
 
     // move key point
@@ -283,6 +280,50 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
     }
   }
 
+  function drawSamples() {
+    if (physDots.length < 2) return;
+
+    // const remainingDots = physDots.slice();
+
+    for (let x = 0; x < 100; x += 10) {
+      const px = asPhysX(x);
+      const py = findYForX(px, physDots);
+      if (py !== undefined) {
+        willDraw(ctx, () => {
+          ctx.strokeStyle = Red;
+          // ctx.fillStyle = "transparent";
+          ex({ x: px, y: py }, ctx);
+          ctx.setLineDash([5, 5]);
+          ctx.beginPath();
+          ctx.moveTo(px, OffsetY);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+        });
+      }
+      // console.info(">>> sample", x, asUserY(y));
+
+      // if (remainingDots.length < 2) return;
+
+      // const sampleX = asPhysX(x);
+      // // console.info(">>> sampleX", sampleX);
+
+      // function onNextSegment() {
+      //   const left = remainingDots[0];
+      //   const right = remainingDots[1];
+      //   // console.info(">>> left.x", left.x);
+      //   // console.info(">>> right.x", right.x);
+      //   return sampleX >= left.x && sampleX <= right.x;
+      // }
+
+      // while (!onNextSegment()) {
+      //   remainingDots.shift();
+      //   if (remainingDots.length < 2) return;
+      // }
+    }
+
+    // console.info(">>> got ALL");
+  }
+
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -290,13 +331,13 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
 
     // draw curve
     ctx.strokeStyle = Black;
-    const origin = points[0];
+    const origin = physDots[0];
     ctx.beginPath();
     ctx.moveTo(origin.x, origin.y);
 
-    for (let i = 1; i < points.length; i++) {
-      const pp = points[i - 1];
-      const p = points[i];
+    for (let i = 1; i < physDots.length; i++) {
+      const pp = physDots[i - 1];
+      const p = physDots[i];
 
       const cp1 = pp.type === "sharp" ? pp : pp.h2;
       const cp2 = p.type === "sharp" ? p : p.h1;
@@ -304,11 +345,13 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
     }
     ctx.stroke();
 
-    // draw the key points and their handles
-    for (let i = 0; i < points.length; i++) {
-      const p = points[i];
+    drawSamples();
 
-      if (p.type === "round") {
+    // draw the key points and their handles
+    for (let i = 0; i < physDots.length; i++) {
+      const p = physDots[i];
+
+      if (p.type === "round" && i === selectedIndex) {
         const h1 = p.h1;
         const h2 = p.h2;
 
@@ -322,66 +365,68 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
             ctx.lineTo(h.x, h.y);
             ctx.stroke();
           }
+
+          if (p.type === "round") {
+            ctx.fillStyle = Gray;
+            diamond(p.h1, ctx);
+            diamond(p.h2, ctx);
+          }
         });
       }
 
       ctx.fillStyle = White;
       ctx.strokeStyle = Black;
-      if (selected === i) {
+      if (selectedIndex === i) {
         bullsEye(p, ctx);
       } else {
         circle(p, ctx);
-      }
-
-      if (p.type === "round") {
-        ctx.fillStyle = Gray;
-        diamond(p.h1, ctx);
-        diamond(p.h2, ctx);
       }
     }
   }
 
   function onKeyDown(e: KeyboardEvent) {
-    console.info(">>> e.key", e.key);
     // if (selected === null) return;
 
     // const amount = e.shiftKey ? 10 : 1;
 
+    const p = selectedIndex === null ? null : physDots[selectedIndex];
+
     switch (e.key) {
       case "c": {
-        if (selected === null) return;
-        const p = points[selected];
-        toggleType(p);
+        if (selectedIndex === null) return;
+        const p = physDots[selectedIndex];
+        togglePt(p);
         break;
       }
 
       case ".":
-        if (selected === null) {
-          selected = 0;
-        } else if (selected < points.length - 1) {
-          selected++;
+        if (selectedIndex === null) {
+          selectedIndex = 0;
+        } else if (selectedIndex < physDots.length - 1) {
+          selectedIndex++;
         }
         break;
 
       case ",":
-        if (selected === null) {
-          selected = points.length - 1;
-        } else if (selected > 0) {
-          selected--;
+        if (selectedIndex === null) {
+          selectedIndex = physDots.length - 1;
+        } else if (selectedIndex > 0) {
+          selectedIndex--;
         }
         break;
-      // case "ArrowUp":
-      //   p.y -= amount;
-      //   break;
-      // case "ArrowDown":
-      //   p.y += amount;
-      //   break;
-      // case "ArrowLeft":
-      //   p.x -= amount;
-      //   break;
-      // case "ArrowRight":
-      //   p.x += amount;
-      //   break;
+      case "ArrowUp":
+        if (p) moveKeyPoint(p, p.x, p.y - ScaleY);
+
+        break;
+      case "ArrowDown":
+        if (p) moveKeyPoint(p, p.x, p.y + ScaleY);
+        break;
+      case "ArrowLeft":
+        if (p) moveKeyPoint(p, p.x - ScaleX, p.y);
+        break;
+      case "ArrowRight":
+        if (p) moveKeyPoint(p, p.x + ScaleX, p.y);
+        break;
       default:
         // bail without redrawing
         return;
@@ -403,9 +448,9 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
     canvas.removeEventListener("mousedown", onMouseDown);
   }
 
-  function updateSelected(p: KeyPoint) {
-    if (selected === null) return;
-    points[selected] = p;
+  function updateSelectedPoint(p: UserDot) {
+    if (selectedIndex === null) return;
+    physDots[selectedIndex] = asPhysDot(p);
     draw();
   }
 
@@ -419,11 +464,9 @@ function createSplineGraph({ canvas, userPoints, onChange, snapToGrid = true }: 
   return {
     // render,
     destroy,
-    updateSelected,
-    canvas,
+    updateSelectedPoint,
     setSnapToGrid,
-  } as SplineGraph;
+  } as BezierTimeline;
 }
 
-export { createSplineGraph };
-export type { SplineGraph };
+export { createBezierTimeline };

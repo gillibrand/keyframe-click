@@ -3,37 +3,52 @@ interface Point {
   y: number;
 }
 
-type KeyPointType = "sharp" | "round";
+type DotType = "sharp" | "round";
+type DotSpace = "physical" | "user";
 
-interface KeyPoint extends Point {
-  type: KeyPointType;
+interface BaseDot extends Point {
+  space: DotSpace;
+  type: DotType;
   h1: Point;
   h2: Point;
 }
 
-function sharpPoint(x: number, y: number): KeyPoint {
-  return { type: "sharp", x, y, h1: { x: x - 10, y }, h2: { x: x + 10, y } };
+export interface PhysDot extends BaseDot {
+  space: "physical";
 }
 
-function roundPoint(x: number, y: number): KeyPoint {
-  return { type: "round", x, y, h1: { x: x - 10, y }, h2: { x: x + 10, y } };
+export interface UserDot extends BaseDot {
+  space: "user";
 }
 
-function diffPt(p1: Point, p2: Point) {
+export function createSharp(x: number, y: number): UserDot {
+  return { type: "sharp", x, y, h1: { x: x - 10, y }, h2: { x: x + 10, y }, space: "user" };
+}
+
+export function createRound(x: number, y: number): UserDot {
+  return { type: "round", x, y, h1: { x: x - 10, y }, h2: { x: x + 10, y }, space: "user" };
+}
+
+export function diffPt(p1: Point, p2: Point) {
   return { x: p1.x - p2.x, y: p1.y - p2.y };
 }
-function nearPt(p: Point, x: number, y: number, minDistance: number = 8) {
+
+export function nearPt(p: Point, x: number, y: number, minDistance: number = 8) {
   const dx = x - p.x;
   const dy = y - p.y;
   return dx * dx + dy * dy < minDistance * minDistance;
 }
 
-function toggleType(p: KeyPoint) {
+export function roundPt(p: Point) {
+  p.x = Math.round(p.x);
+  p.y = Math.round(p.y);
+}
+
+export function togglePt(p: BaseDot) {
   p.type = p.type === "sharp" ? "round" : "sharp";
 }
 
-export type { Point, KeyPoint, KeyPointType };
-export { sharpPoint, roundPoint, diffPt, nearPt, toggleType };
+export type { Point, BaseDot, DotType };
 
 function cubicBezier(t: number, p0: number, p1: number, p2: number, p3: number) {
   const mt = 1 - t;
@@ -45,36 +60,88 @@ function cubicBezierDerivative(t: number, p0: number, p1: number, p2: number, p3
   return 3 * mt ** 2 * (p1 - p0) + 6 * mt * t * (p2 - p1) + 3 * t ** 2 * (p3 - p2);
 }
 
-export function findYForX(x: number, curves: KeyPoint[], tolerance = 1e-6, maxIterations = 100) {
-  for (let i = 1; i < curves.length - 1; i++) {
+export function findYForXSingle(
+  xTarget: number,
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  x3: number,
+  y3: number,
+  tolerance = 1e-6,
+  maxIterations = 100
+) {
+  // Initial guess using linear interpolation
+  let t = (xTarget - x0) / (x3 - x0);
+  t = Math.max(0, Math.min(1, t)); // Keep t between 0 and 1
+
+  for (let i = 0; i < maxIterations; i++) {
+    const x = cubicBezier(t, x0, x1, x2, x3);
+    const error = x - xTarget;
+
+    if (Math.abs(error) < tolerance) {
+      return cubicBezier(t, y0, y1, y2, y3);
+    }
+
+    const derivative = cubicBezierDerivative(t, x0, x1, x2, x3);
+    if (Math.abs(derivative) < tolerance) break; // Avoid dividing by zero
+
+    // Newton's method update
+    t -= error / derivative;
+    t = Math.max(0, Math.min(1, t)); // Clamp t to [0,1]
+  }
+
+  throw new Error("Unable to find Y for given X within tolerance");
+}
+
+export function findYForX(x: number, curves: PhysDot[], tolerance = 1e-6, maxIterations = 100) {
+  let i = 0;
+  let j = 0;
+  for (i = 1; i < curves.length; i++) {
     const pp = curves[i - 1];
     const p = curves[i];
 
     const [x0, y0] = [pp.x, pp.y];
-    const [x1, y1] = [p.h1.x, p.h1.y];
-    const [x2, y2] = [p.h2.x, p.h2.y];
+    const [x1, y1] = pp.type === "sharp" ? [pp.x, pp.y] : [pp.h2.x, pp.h2.y];
+    const [x2, y2] = p.type === "sharp" ? [p.x, p.y] : [p.h1.x, p.h1.y];
     const [x3, y3] = [p.x, p.y];
 
-    if (x < x0 || x > x3) continue; // Skip if not in this curve range
+    if (x < x0 || x > x3) {
+      // console.info(">>> skip", x);
+      continue; // Skip if not in this curve range
+    }
 
     // Initial guess using linear interpolation
     let t = (x - x0) / (x3 - x0);
 
-    for (let i = 0; i < maxIterations; i++) {
+    for (j = 0; j < maxIterations; j++) {
+      // console.info(">>> t", t);
       const currentX = cubicBezier(t, x0, x1, x2, x3);
       const error = currentX - x;
+      // console.info(">>> error", error);
 
       if (Math.abs(error) < tolerance) {
         return cubicBezier(t, y0, y1, y2, y3); // Return the y value
       }
 
       const derivative = cubicBezierDerivative(t, x0, x1, x2, x3);
-      if (Math.abs(derivative) < tolerance) break; // Prevent division by zero
+      if (Math.abs(derivative) < tolerance) {
+        console.info(">>> BREAK", derivative, tolerance);
+        break; // Prevent division by zero
+      }
 
+      // console.info(">>> derivative", derivative);
+      // console.info(">>> error / derivative", error / derivative, t);
+      // console.info(">>> newt", t);
       t -= error / derivative;
       t = Math.max(0, Math.min(1, t)); // Keep t within bounds
     }
+
+    console.info(">>> no");
   }
 
-  throw new Error("x value out of bounds or no solution found");
+  console.error("x value out of bounds or no solution found: " + x + " i: " + i + " j: " + j);
+  // throw new Error("x value out of bounds or no solution found: " + x + " i: " + i + " j: " + j);
 }
