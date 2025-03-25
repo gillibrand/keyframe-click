@@ -12,13 +12,22 @@ export function dot(p: Point, ctx: CanvasRenderingContext2D) {
   ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
   ctx.fill();
 }
+
 export function ex(p: Point, c: CanvasRenderingContext2D) {
   c.beginPath();
-  const l = 7;
+  const l = 4;
   c.moveTo(p.x - l, p.y - l);
   c.lineTo(p.x + l, p.y + l);
   c.moveTo(p.x - l, p.y + l);
   c.lineTo(p.x + l, p.y - l);
+  c.stroke();
+}
+
+export function dash(p: Point, c: CanvasRenderingContext2D) {
+  c.beginPath();
+  const l = 12;
+  c.moveTo(p.x - l, p.y);
+  c.lineTo(p.x + l, p.y);
   c.stroke();
 }
 export function circle(p: Point, ctx: CanvasRenderingContext2D) {

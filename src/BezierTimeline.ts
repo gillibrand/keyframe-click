@@ -1,5 +1,5 @@
-import { Black, Blue, bullsEye, circle, diamond, dot, ex, Gray, LightGray, Red, White, willDraw } from "./drawing";
-import { diffPt, BaseDot, UserDot, nearPt, Point, togglePt, PhysDot, findYForX } from "./point";
+import { Black, bullsEye, circle, dash, diamond, Gray, LightGray, Red, White, willDraw } from "./drawing";
+import { BaseDot, diffPt, findYForX, nearPt, PhysDot, Point, togglePt, UserDot } from "./point";
 
 type HandlePair = {
   handle: Point;
@@ -281,18 +281,22 @@ function createBezierTimeline({ canvas, userDots, onChange, snapToGrid = true }:
   }
 
   function drawSamples() {
+    console.info(">>> drawSamples");
     if (physDots.length < 2) return;
 
     // const remainingDots = physDots.slice();
 
-    for (let x = 0; x < 100; x += 10) {
+    const samples: Point[] = [];
+    for (let x = 0; x < 100; x += 5) {
       const px = asPhysX(x);
       const py = findYForX(px, physDots);
       if (py !== undefined) {
+        const sample = { x: px, y: py };
+        samples.push(sample);
         willDraw(ctx, () => {
           ctx.strokeStyle = Red;
           // ctx.fillStyle = "transparent";
-          ex({ x: px, y: py }, ctx);
+          dash(sample, ctx);
           ctx.setLineDash([5, 5]);
           ctx.beginPath();
           ctx.moveTo(px, OffsetY);
@@ -300,31 +304,46 @@ function createBezierTimeline({ canvas, userDots, onChange, snapToGrid = true }:
           ctx.stroke();
         });
       }
-      // console.info(">>> sample", x, asUserY(y));
-
-      // if (remainingDots.length < 2) return;
-
-      // const sampleX = asPhysX(x);
-      // // console.info(">>> sampleX", sampleX);
-
-      // function onNextSegment() {
-      //   const left = remainingDots[0];
-      //   const right = remainingDots[1];
-      //   // console.info(">>> left.x", left.x);
-      //   // console.info(">>> right.x", right.x);
-      //   return sampleX >= left.x && sampleX <= right.x;
-      // }
-
-      // while (!onNextSegment()) {
-      //   remainingDots.shift();
-      //   if (remainingDots.length < 2) return;
-      // }
     }
+
+    ctx.beginPath();
+    ctx.moveTo(0, OffsetY);
+    console.info(">>> samples", samples);
+    for (let i = 0; i < samples.length; i++) {
+      const s = samples[i];
+      ctx.lineTo(s.x, s.y);
+    }
+    ctx.lineTo(canvas.width, OffsetY);
+    ctx.lineTo(0, OffsetY);
+    ctx.fillStyle = "rgba(255 0 0 / .075)";
+
+    // ctx.closePath();
+    ctx.fill();
+    // console.info(">>> sample", x, asUserY(y));
+
+    // if (remainingDots.length < 2) return;
+
+    // const sampleX = asPhysX(x);
+    // // console.info(">>> sampleX", sampleX);
+
+    // function onNextSegment() {
+    //   const left = remainingDots[0];
+    //   const right = remainingDots[1];
+    //   // console.info(">>> left.x", left.x);
+    //   // console.info(">>> right.x", right.x);
+    //   return sampleX >= left.x && sampleX <= right.x;
+    // }
+
+    // while (!onNextSegment()) {
+    //   remainingDots.shift();
+    //   if (remainingDots.length < 2) return;
+    // }
 
     // console.info(">>> got ALL");
   }
 
   function draw() {
+    console.info(">>> draw");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawGrid();
