@@ -93,7 +93,7 @@ export function findYForX(
     t = Math.max(0, Math.min(1, t)); // Clamp t to [0,1]
   }
 
-  console.warn("Unable to find Y for given X within tolerance");
+  // This is normal if point don't fully 100% cover the width.
   return null;
 }
 
@@ -134,6 +134,6 @@ export function findYForXInCurve(x: number, curves: PhysDot[], tolerance = 1e-6,
     }
   }
 
-  console.error("x value out of bounds or no solution found: " + x + " i: " + i + " j: " + j);
+  // This is normal if point don't fully 100% cover the width.
   return null;
 }
