@@ -22,4 +22,8 @@
   &:has(:focus) {
     outline: solid 1px #1c7ef3;
   }
+
+  canvas {
+    background-color: white;
+  }
 }

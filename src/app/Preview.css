@@ -1,5 +1,6 @@
 .Preview {
   border: solid 1px gray;
+  background-color: white;
   aspect-ratio: 1;
   width: 20rem;
   display: inline-grid;

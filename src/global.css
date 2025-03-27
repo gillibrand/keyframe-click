@@ -13,6 +13,10 @@
   --font-size-small: 0.875rem; /* 14px */
 }
 
+body {
+  background-color: #f9f9f9;
+}
+
 body,
 input,
 textarea,
