@@ -3,14 +3,17 @@ import "./Inspector.css";
 
 import { memo, useId } from "react";
 import { round3dp } from "../util/index";
+import { OutputFunctions } from "./OutputFunctions";
 
 interface GlobalProps {
   snapToGrid: boolean;
   invertValues: boolean;
   sampleCount: number;
+  outProperty: string;
   onSnapToGrid: (value: boolean) => void;
   onInvertValues: (value: boolean) => void;
   onSampleCount: (count: number) => void;
+  onOutProperty: (property: string) => void;
 }
 
 interface Props extends GlobalProps {
@@ -22,25 +25,26 @@ const GlobalSettings = memo(function GlobalSettings({
   snapToGrid,
   invertValues,
   sampleCount,
+  outProperty,
   onInvertValues,
   onSnapToGrid,
   onSampleCount,
+  onOutProperty,
 }: GlobalProps) {
   return (
     <>
-      <h2>Timeline</h2>
+      <h2>Output</h2>
 
-      <div className="stack-small">
-        <label className="block-label">
-          <input type="checkbox" checked={snapToGrid} onChange={(e) => onSnapToGrid(e.target.checked)} />{" "}
-          <span>Snap to grid</span>
-        </label>
-
-        <label className="block-label">
-          <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
-          <span>Invert values</span>
-        </label>
-      </div>
+      <label className="stacked-label">
+        <span>Property</span>
+        <select value={outProperty} onChange={(e) => onOutProperty(e.target.value)}>
+          {Object.entries(OutputFunctions).map(([key, namedFn]) => (
+            <option key={key} value={key}>
+              {namedFn.label}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <label className="stacked-label">
         <span>Samples</span>
@@ -56,6 +60,18 @@ const GlobalSettings = memo(function GlobalSettings({
           <span>{sampleCount}</span>
         </div>
       </label>
+
+      <div className="stack-small">
+        <label className="block-label">
+          <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
+          <span>Invert values</span>
+        </label>
+
+        <label className="block-label">
+          <input type="checkbox" checked={snapToGrid} onChange={(e) => onSnapToGrid(e.target.checked)} />{" "}
+          <span>Snap to grid</span>
+        </label>
+      </div>
     </>
   );
 });
@@ -110,7 +126,7 @@ export const Inspector = memo(function Inspector({ selected, onChangeSelected, .
 
           <div className="col-2">
             <label className="stacked-label">
-              <span>X</span>
+              <span>Offset</span>
               <input
                 type="number"
                 id={xId}
@@ -120,7 +136,7 @@ export const Inspector = memo(function Inspector({ selected, onChangeSelected, .
             </label>
 
             <label className="stacked-label">
-              <span>Y</span>
+              <span>Value</span>
               <input
                 id={yId}
                 value={normalY(selected.y)}

@@ -5,6 +5,7 @@ import { debounce, round2dp, throttle } from "../util";
 import "./App.css";
 import { Inspector } from "./Inspector";
 import { Preview } from "./Preview";
+import { OutputFunctions } from "./OutputFunctions";
 
 const defaultDots: UserDot[] = [
   createSquare(0, 0),
@@ -14,29 +15,15 @@ const defaultDots: UserDot[] = [
   createSquare(100, 0),
 ];
 
-// function translateX(x: number) {
-//   return `translate: ${x}% 0;`;
-// }
-
-// function translateY(y: number) {
-//   return `translate: 0 ${y}%;`;
-// }
-
-// function scale(s: number) {
-//   return `scale: ${Math.round(s) / 100}`;
-// }
-
-function scaleY(s: number) {
-  return `scale: 1 ${Math.round(s) / 100}`;
-}
-
-function genCssKeyframes(samples: Point[], invertValues: boolean): string {
+function genCssKeyframes(samples: Point[], outProperty: string, invertValues: boolean): string {
   const frames = [];
+
+  const fn = OutputFunctions[outProperty].fn;
 
   for (const sample of samples) {
     const timePercent = round2dp(sample.x);
     const value = round2dp(sample.y);
-    frames.push(`${timePercent}% { ${scaleY(invertValues ? -value : value)} }`);
+    frames.push(`${timePercent}% { ${fn(invertValues ? -value : value)} }`);
   }
 
   return frames.join("\n");
@@ -62,6 +49,7 @@ function App() {
   const [isDirty, setIsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [sampleCount, setSampleCount] = useState(10);
+  const [outProperty, setOutProperty] = useState(Object.keys(OutputFunctions)[0]);
 
   /**
    * Update the app display to match the current timeline values.
@@ -71,8 +59,8 @@ function App() {
     if (!timeline) return;
 
     setSelectedPoint(timeline.getSelectedDot());
-    setOutput(genCssKeyframes(timeline.getSamples(), invertValues));
-  }, [invertValues]);
+    setOutput(genCssKeyframes(timeline.getSamples(), outProperty, invertValues));
+  }, [invertValues, outProperty]);
 
   // const syncWithTimelineThrottled = useMemo(() => , [syncWithTimeline]);
 
@@ -219,6 +207,8 @@ function App() {
           onChangeSelected={handleInspectorSelectedChange}
           onSampleCount={handleSampleCountChange}
           sampleCount={sampleCount}
+          outProperty={outProperty}
+          onOutProperty={setOutProperty}
         />
       </div>
       <div>
