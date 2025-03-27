@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline";
-import { BaseDot, Point, UserDot, createRound, createSquare } from "../timeline/point";
+import { Point, UserDot, createRound, createSquare } from "../timeline/point";
 import { debounce, round2dp, throttle } from "../util";
 import "./App.css";
-import { Preview } from "./Preview";
 import { Inspector } from "./Inspector";
+import { Preview } from "./Preview";
 
 const defaultDots: UserDot[] = [
   createSquare(0, 0),
@@ -13,10 +13,6 @@ const defaultDots: UserDot[] = [
   createSquare(75, 50),
   createSquare(100, 0),
 ];
-
-function clean(p: BaseDot): Point {
-  return round2dp(p);
-}
 
 // function translateX(x: number) {
 //   return `translate: ${x}% 0;`;
@@ -78,19 +74,12 @@ function App() {
     setOutput(genCssKeyframes(timeline.getSamples(), invertValues));
   }, [invertValues]);
 
-  useEffect(
-    function syncOnLoad() {
-      syncWithTimeline();
-    },
-    [syncWithTimeline]
-  );
-
-  const syncWithTimelineThrottled = useMemo(() => throttle(syncWithTimeline, 100), [syncWithTimeline]);
+  // const syncWithTimelineThrottled = useMemo(() => , [syncWithTimeline]);
 
   /**
    * Save dot data to localStorage.
    */
-  function saveDots() {
+  function saveUserDots() {
     setIsDirty(false);
     if (!timelineRef.current) return;
 
@@ -98,48 +87,36 @@ function App() {
     localStorage.setItem("dots", JSON.stringify(dots));
   }
 
-  const saveDotsDebounced = useMemo(() => debounce(saveDots, 2000), []);
-
   /**
    * Callback when canvas element is created. Wraps it with a timeline.
    */
-  const setCanvasRef = useCallback(
-    (canvas: HTMLCanvasElement) => {
-      if (timelineRef.current) {
-        timelineRef.current.destroy();
-        timelineRef.current = null;
-      }
+  const setCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
+    if (timelineRef.current) {
+      timelineRef.current.destroy();
+      timelineRef.current = null;
+    }
 
-      timelineRef.current = canvas ? createBezierTimeline({ canvas, userDots: loadSavedDots(), sampleCount }) : null;
-    },
-    [sampleCount]
-  );
-
-  /**
-   * Callback for when the timeline changes it isAdding state.
-   * @param adding True if adding. False if not.
-   */
-  const handleAdding = useCallback((adding: boolean) => {
-    setIsAdding(adding);
+    timelineRef.current = canvas ? createBezierTimeline({ canvas, savedUserDots: loadSavedDots() }) : null;
   }, []);
-
-  /**
-   * Callback when timeline is changed. Marks as dirty, schedules a save and sync.
-   * Fast to return.
-   */
-  const handleTimelineChange = useCallback(() => {
-    setIsDirty(true);
-    syncWithTimelineThrottled();
-    saveDotsDebounced();
-  }, [syncWithTimelineThrottled, saveDotsDebounced]);
 
   useEffect(
     function setCallbacksOnTimeline() {
       if (!timelineRef.current) return;
-      timelineRef.current.onChange = handleTimelineChange;
-      timelineRef.current.onAdding = handleAdding;
+
+      const saveUserDotsDebounced = debounce(saveUserDots, 2000);
+      const syncWithTimelineThrottled = throttle(syncWithTimeline, 100);
+
+      timelineRef.current.onDraw = () => {
+        setIsDirty(true);
+        syncWithTimelineThrottled();
+        saveUserDotsDebounced();
+      };
+
+      timelineRef.current.onAdding = (adding: boolean) => {
+        setIsAdding(adding);
+      };
     },
-    [handleTimelineChange, handleAdding]
+    [syncWithTimeline]
   );
 
   function setSnapToGrid(snapToGrid: boolean) {
@@ -158,9 +135,9 @@ function App() {
      */
     function addSaveBeforePageHide() {
       if (!isDirty) return;
-      window.addEventListener("pagehide", saveDots);
+      window.addEventListener("pagehide", saveUserDots);
       return () => {
-        window.removeEventListener("pagehide", saveDots);
+        window.removeEventListener("pagehide", saveUserDots);
       };
     },
     [isDirty]
@@ -202,16 +179,21 @@ function App() {
   function handleInspectorSelectedChange(dot: UserDot) {
     if (!timelineRef.current) return;
 
-    console.info(">>> dot.x", dot.x);
     timelineRef.current.updateSelectedDot(dot);
     syncWithTimeline();
-    // console.info(">>> dot", dot);
   }
 
   function handleSampleCountChange(count: number) {
     setSampleCount(count);
     if (timelineRef.current) timelineRef.current.setSampleCount(count);
   }
+
+  useEffect(
+    function syncOnLoad() {
+      syncWithTimeline();
+    },
+    [syncWithTimeline]
+  );
 
   return (
     <div className="stack">
@@ -252,10 +234,8 @@ function App() {
       <Preview keyframeText={output} />
 
       <div>
-        <textarea cols={80} rows={25} disabled value={output}></textarea>
+        <textarea cols={80} rows={10} disabled value={output}></textarea>
       </div>
-
-      <p>{selectedPoint && JSON.stringify(clean(selectedPoint))}</p>
     </div>
   );
 }

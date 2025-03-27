@@ -70,7 +70,7 @@ export function findYForX(
   y2: number,
   x3: number,
   y3: number,
-  tolerance = 1e-6,
+  tolerance = 1e-3,
   maxIterations = 100
 ) {
   // Initial guess using linear interpolation

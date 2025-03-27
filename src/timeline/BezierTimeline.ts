@@ -36,7 +36,7 @@ export interface BezierTimeline {
   getSamples(): Point[];
   setSampleCount(count: number): void;
 
-  set onChange(onChangeCallback: (() => void) | undefined);
+  set onDraw(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
 
   beginAddingDot(): void;
@@ -49,10 +49,7 @@ export interface BezierTimeline {
 
 export interface BezierTimelineProps {
   canvas: HTMLCanvasElement;
-  userDots: UserDot[];
-  onChange?: () => void;
-  snapToGrid?: boolean;
-  sampleCount: number;
+  savedUserDots: UserDot[];
 }
 
 type State = "adding" | "default";
@@ -61,36 +58,31 @@ type State = "adding" | "default";
  * Wraps an existing canvas element with logic to draw a timeline.
  * @returns Controller to interact with the graph.
  */
-export function createBezierTimeline({
-  canvas: _canvas,
-  userDots,
-  snapToGrid: _snapToGrid = true,
-  sampleCount: _sampleCount,
-}: BezierTimelineProps): BezierTimeline {
+export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierTimelineProps): BezierTimeline {
   const ScaleX = 9;
   const ScaleY = 2;
 
   const OffsetX = 0;
   const OffsetY = 400;
-
   const _cx = _canvas.getContext("2d")!;
 
-  const _pDots = userDots.map((p) => asPhysDot(p));
-  const _pSamples: Point[] = [];
+  const _dots = savedUserDots.map((p) => asPhysDot(p));
+  const _samples: Point[] = [];
 
+  let _snapToGrid = true;
+  let _sampleCount = 10;
   let _addingAtPoint: Point | null = null;
-
   let _selectedIndex: number | null = null;
   let _dragging: Dragging | null = null;
 
-  let _onChange: (() => void) | undefined;
+  let _onDidDraw: (() => void) | undefined;
   let _onIsAdding: ((adding: boolean) => void) | undefined;
 
   let _state: State = "default";
 
   function cloneSelectedDot(): PhysDot | null {
-    // XXX: shallow clone. Good enough for React to notice
-    return _selectedIndex === null ? null : { ..._pDots[_selectedIndex] };
+    // XXX: shallow clone. Good enough for React to notice a diff
+    return _selectedIndex === null ? null : { ..._dots[_selectedIndex] };
   }
 
   function getSelectedDot(): UserDot | null {
@@ -98,8 +90,8 @@ export function createBezierTimeline({
     return clone === null ? null : asUserDot(clone);
   }
 
-  function didChange() {
-    if (_onChange) _onChange();
+  function didDraw() {
+    if (_onDidDraw) _onDidDraw();
   }
 
   function setSelectedIndex(index: number | null) {
@@ -107,23 +99,7 @@ export function createBezierTimeline({
 
     _selectedIndex = index;
     draw();
-    didChange();
   }
-
-  // function onDblClick(e: MouseEvent) {
-  //   const x = e.offsetX;
-  //   const y = e.offsetY;
-
-  //   for (let i = 0; i < _pDots.length; i++) {
-  //     const p = _pDots[i];
-  //     if (nearPt(p, x, y)) {
-  //       togglePt(p);
-  //       draw();
-  //       didChange();
-  //       return;
-  //     }
-  //   }
-  // }
 
   function onMouseDown(e: MouseEvent) {
     if (_addingAtPoint !== null) return;
@@ -137,21 +113,21 @@ export function createBezierTimeline({
 
     try {
       if (isConvertClick) {
-        for (let i = 0; i < _pDots.length; i++) {
-          const p = _pDots[i];
+        for (let i = 0; i < _dots.length; i++) {
+          const p = _dots[i];
 
           if (nearPt(p, x, y)) {
             togglePt(p);
             newSelected = i;
             // TODO: this can cause two draws. May need to buffer
             draw();
-            didChange();
+
             return;
           }
         }
       } else {
-        for (let i = 0; i < _pDots.length; i++) {
-          const p = _pDots[i];
+        for (let i = 0; i < _dots.length; i++) {
+          const p = _dots[i];
           if (nearPt(p, x, y)) {
             newSelected = i;
             _dragging = { point: p };
@@ -234,7 +210,6 @@ export function createBezierTimeline({
     otherHandle.y = point.y - diff.y;
 
     draw();
-    didChange();
   }
 
   function asUserX(x: number): number {
@@ -281,7 +256,6 @@ export function createBezierTimeline({
     p.h2.y += diffPoint.y;
 
     draw();
-    didChange();
   }
 
   function onMouseUpDrag() {
@@ -332,13 +306,13 @@ export function createBezierTimeline({
   }
 
   function drawSamples() {
-    _pSamples.length = 0;
-    if (_pDots.length < 2) return;
+    _samples.length = 0;
+    if (_dots.length < 2) return;
 
     let dotIndex = 1;
 
-    let da = _pDots[dotIndex - 1];
-    let db = _pDots[dotIndex];
+    let da = _dots[dotIndex - 1];
+    let db = _dots[dotIndex];
 
     const inc = 100 / (_sampleCount - 1);
 
@@ -353,9 +327,9 @@ export function createBezierTimeline({
 
       while (px > db.x) {
         // Keep moving to next curve segment until contains the point
-        if (dotIndex++ >= _pDots.length - 1) break;
-        da = _pDots[dotIndex - 1];
-        db = _pDots[dotIndex];
+        if (dotIndex++ >= _dots.length - 1) break;
+        da = _dots[dotIndex - 1];
+        db = _dots[dotIndex];
       }
 
       const [x0, y0] = [da.x, da.y];
@@ -367,7 +341,7 @@ export function createBezierTimeline({
 
       if (py !== null) {
         const sample = { x: px, y: py };
-        _pSamples.push(sample);
+        _samples.push(sample);
 
         // draw the guide lines
         willDraw(_cx, () => {
@@ -385,8 +359,8 @@ export function createBezierTimeline({
     // Fill the sample area
     _cx.beginPath();
     _cx.moveTo(0, OffsetY);
-    for (let i = 0; i < _pSamples.length; i++) {
-      const s = _pSamples[i];
+    for (let i = 0; i < _samples.length; i++) {
+      const s = _samples[i];
       _cx.lineTo(s.x, s.y);
     }
     _cx.lineTo(_canvas.width, OffsetY);
@@ -400,7 +374,7 @@ export function createBezierTimeline({
 
     _cx.strokeStyle = Blue;
 
-    let y = findYForXInCurve(_addingAtPoint.x, _pDots);
+    let y = findYForXInCurve(_addingAtPoint.x, _dots);
     if (y === null) y = _addingAtPoint.y;
 
     _cx.beginPath();
@@ -411,21 +385,41 @@ export function createBezierTimeline({
     bullsEye({ x: _addingAtPoint.x, y }, _cx);
   }
 
+  let drawTimer: number | null = null;
+
+  /**
+   * Schedules the canvas to redraw completely on the next animation frames. Can be called multiple
+   * times and will only redraw once during the next frame.
+   * @returns Schedule
+   */
   function draw() {
+    if (drawTimer !== null) return;
+
+    drawTimer = requestAnimationFrame(() => {
+      drawTimer = null;
+      drawNow();
+    });
+  }
+
+  /**
+   * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next
+   * animation frame for better performance.
+   */
+  function drawNow() {
     _cx.clearRect(0, 0, _canvas.width, _canvas.height);
 
     drawGrid();
 
     // draw curve
-    if (_pDots.length > 0) {
+    if (_dots.length > 0) {
       _cx.strokeStyle = Black;
-      const origin = _pDots[0];
+      const origin = _dots[0];
       _cx.beginPath();
       _cx.moveTo(origin.x, origin.y);
 
-      for (let i = 1; i < _pDots.length; i++) {
-        const pp = _pDots[i - 1];
-        const p = _pDots[i];
+      for (let i = 1; i < _dots.length; i++) {
+        const pp = _dots[i - 1];
+        const p = _dots[i];
 
         const cp1 = pp.type === "square" ? pp : pp.h2;
         const cp2 = p.type === "square" ? p : p.h1;
@@ -436,8 +430,8 @@ export function createBezierTimeline({
       drawSamples();
 
       // draw the key points and their handles
-      for (let i = 0; i < _pDots.length; i++) {
-        const p = _pDots[i];
+      for (let i = 0; i < _dots.length; i++) {
+        const p = _dots[i];
 
         if (p.type === "round" && i === _selectedIndex) {
           const h1 = p.h1;
@@ -473,6 +467,7 @@ export function createBezierTimeline({
     }
 
     drawAddMarker();
+    didDraw();
   }
 
   function onKeyDown(e: KeyboardEvent) {
@@ -480,7 +475,7 @@ export function createBezierTimeline({
 
     // const amount = e.shiftKey ? 10 : 1;
 
-    const p = _selectedIndex === null ? null : _pDots[_selectedIndex];
+    const p = _selectedIndex === null ? null : _dots[_selectedIndex];
 
     switch (e.key) {
       case "Delete":
@@ -495,7 +490,7 @@ export function createBezierTimeline({
 
       case "c": {
         if (_selectedIndex === null) return;
-        const p = _pDots[_selectedIndex];
+        const p = _dots[_selectedIndex];
         togglePt(p);
         break;
       }
@@ -503,14 +498,14 @@ export function createBezierTimeline({
       case ".":
         if (_selectedIndex === null) {
           _selectedIndex = 0;
-        } else if (_selectedIndex < _pDots.length - 1) {
+        } else if (_selectedIndex < _dots.length - 1) {
           _selectedIndex++;
         }
         break;
 
       case ",":
         if (_selectedIndex === null) {
-          _selectedIndex = _pDots.length - 1;
+          _selectedIndex = _dots.length - 1;
         } else if (_selectedIndex > 0) {
           _selectedIndex--;
         }
@@ -539,7 +534,6 @@ export function createBezierTimeline({
     }
 
     draw();
-    didChange();
   }
 
   // Always listen for mouse down
@@ -562,21 +556,21 @@ export function createBezierTimeline({
 
   function updateSelectedDot(p: UserDot) {
     if (_selectedIndex === null) return;
-    _pDots[_selectedIndex] = asPhysDot(p);
+    _dots[_selectedIndex] = asPhysDot(p);
     draw();
   }
 
   function setSnapToGrid(snapToGrid: boolean) {
     _snapToGrid = snapToGrid;
-    didChange();
+    didDraw();
   }
 
   function getSamples() {
-    if (_pSamples.length === 0) {
-      draw();
+    if (_samples.length === 0) {
+      // draw();
     }
 
-    return _pSamples.map((s) => asUserPoint(s));
+    return _samples.map((s) => asUserPoint(s));
   }
 
   function endAddingDot() {
@@ -605,7 +599,7 @@ export function createBezierTimeline({
 
   function onClickAdding() {
     if (_addingAtPoint !== null) {
-      let y = findYForXInCurve(_addingAtPoint.x, _pDots);
+      let y = findYForXInCurve(_addingAtPoint.x, _dots);
       if (y === null) y = _addingAtPoint.y;
 
       const newDot: PhysDot = {
@@ -625,10 +619,10 @@ export function createBezierTimeline({
 
       // try to add before next highest x
       let didAdd = false;
-      for (let i = 0; i < _pDots.length; i++) {
-        if (_pDots[i].x >= newDot.x) {
+      for (let i = 0; i < _dots.length; i++) {
+        if (_dots[i].x >= newDot.x) {
           didAdd = true;
-          _pDots.splice(i, 0, newDot);
+          _dots.splice(i, 0, newDot);
           _selectedIndex = i;
           break;
         }
@@ -636,8 +630,7 @@ export function createBezierTimeline({
 
       if (!didAdd) {
         // add at end
-        _pDots.push(newDot);
-        didChange();
+        _dots.push(newDot);
       }
     }
 
@@ -672,16 +665,15 @@ export function createBezierTimeline({
   function deleteSelectedDot() {
     if (_selectedIndex === null) return;
 
-    _pDots.splice(_selectedIndex, 1);
+    _dots.splice(_selectedIndex, 1);
 
-    if (_pDots.length === 0) {
+    if (_dots.length === 0) {
       _selectedIndex = null;
     } else if (_selectedIndex !== 0) {
       _selectedIndex--;
     }
 
     draw();
-    didChange();
   }
 
   function cancel() {
@@ -703,14 +695,14 @@ export function createBezierTimeline({
     setSnapToGrid,
     getSamples,
     getSelectedDot,
-    set onChange(onChangeCallback: (() => void) | undefined) {
-      _onChange = onChangeCallback;
+    set onDraw(onDrawCallback: (() => void) | undefined) {
+      _onDidDraw = onDrawCallback;
     },
     set onAdding(onAddCallback: ((isAdding: boolean) => void) | undefined) {
       _onIsAdding = onAddCallback;
     },
     getUserDots: () => {
-      return _pDots.map((d) => asUserDot(d));
+      return _dots.map((d) => asUserDot(d));
     },
     beginAddingDot,
     deleteSelectedDot,

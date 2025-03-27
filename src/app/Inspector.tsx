@@ -50,6 +50,7 @@ const GlobalSettings = memo(function GlobalSettings({
             min={3}
             max={50}
             className="flex-auto"
+            value={sampleCount}
             onChange={(e) => onSampleCount(parseInt(e.target.value))}
           />
           <span>{sampleCount}</span>
