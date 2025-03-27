@@ -3,7 +3,7 @@ interface Point {
   y: number;
 }
 
-type DotType = "sharp" | "round";
+type DotType = "square" | "round";
 type DotSpace = "physical" | "user";
 
 interface BaseDot extends Point {
@@ -21,8 +21,8 @@ export interface UserDot extends BaseDot {
   space: "user";
 }
 
-export function createSharp(x: number, y: number): UserDot {
-  return { type: "sharp", x, y, h1: { x: x - 10, y }, h2: { x: x + 10, y }, space: "user" };
+export function createSquare(x: number, y: number): UserDot {
+  return { type: "square", x, y, h1: { x: x - 10, y }, h2: { x: x + 10, y }, space: "user" };
 }
 
 export function createRound(x: number, y: number): UserDot {
@@ -45,7 +45,7 @@ export function roundPt(p: Point) {
 }
 
 export function togglePt(p: BaseDot) {
-  p.type = p.type === "sharp" ? "round" : "sharp";
+  p.type = p.type === "square" ? "round" : "square";
 }
 
 export type { Point, BaseDot, DotType };
@@ -105,8 +105,8 @@ export function findYForXInCurve(x: number, curves: PhysDot[], tolerance = 1e-6,
     const p = curves[i];
 
     const [x0, y0] = [pp.x, pp.y];
-    const [x1, y1] = pp.type === "sharp" ? [pp.x, pp.y] : [pp.h2.x, pp.h2.y];
-    const [x2, y2] = p.type === "sharp" ? [p.x, p.y] : [p.h1.x, p.h1.y];
+    const [x1, y1] = pp.type === "square" ? [pp.x, pp.y] : [pp.h2.x, pp.h2.y];
+    const [x2, y2] = p.type === "square" ? [p.x, p.y] : [p.h1.x, p.h1.y];
     const [x3, y3] = [p.x, p.y];
 
     if (x < x0 || x > x3) {

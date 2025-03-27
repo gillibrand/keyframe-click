@@ -1,33 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline";
-import { BaseDot, Point, UserDot, createRound, createSharp } from "../timeline/point";
-import { debounce, throttle } from "../util";
+import { BaseDot, Point, UserDot, createRound, createSquare } from "../timeline/point";
+import { debounce, round2dp, throttle } from "../util";
 import "./App.css";
 import { Preview } from "./Preview";
+import { Inspector } from "./Inspector";
 
 const defaultDots: UserDot[] = [
-  createSharp(0, 0),
+  createSquare(0, 0),
   { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
   createRound(50, 10),
-  createSharp(75, 50),
-  createSharp(100, 0),
+  createSquare(75, 50),
+  createSquare(100, 0),
 ];
 
-function roundHundredths(n: number): number;
-function roundHundredths(p: Point): Point;
-function roundHundredths(p: Point | number): Point | number {
-  if (typeof p === "number") {
-    return Math.round(p * 100) / 100;
-  } else {
-    return {
-      x: Math.round(p.x * 100) / 100,
-      y: Math.round(p.y * 100) / 100,
-    };
-  }
-}
-
 function clean(p: BaseDot): Point {
-  return roundHundredths(p);
+  return round2dp(p);
 }
 
 // function translateX(x: number) {
@@ -50,8 +38,8 @@ function genCssKeyframes(samples: Point[], invertValues: boolean): string {
   const frames = [];
 
   for (const sample of samples) {
-    const timePercent = roundHundredths(sample.x);
-    const value = roundHundredths(sample.y);
+    const timePercent = round2dp(sample.x);
+    const value = round2dp(sample.y);
     frames.push(`${timePercent}% { ${scaleY(invertValues ? -value : value)} }`);
   }
 
@@ -71,17 +59,18 @@ function loadSavedDots(): UserDot[] {
 
 function App() {
   const timelineRef = useRef<BezierTimeline | null>(null);
-  const [selectedPoint, setSelectedPoint] = useState<BaseDot | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<UserDot | null>(null);
   const [snapToGrid, setSnapToGridRaw] = useState(true);
   const [invertValues, setInvertValues] = useState(false);
   const [output, setOutput] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [sampleCount, setSampleCount] = useState(10);
 
   /**
    * Update the app display to match the current timeline values.
    */
-  const syncToTimeline = useCallback(() => {
+  const syncWithTimeline = useCallback(() => {
     const timeline = timelineRef.current;
     if (!timeline) return;
 
@@ -91,12 +80,12 @@ function App() {
 
   useEffect(
     function syncOnLoad() {
-      syncToTimeline();
+      syncWithTimeline();
     },
-    [syncToTimeline]
+    [syncWithTimeline]
   );
 
-  const syncWithTimelineThrottled = useMemo(() => throttle(syncToTimeline, 100), [syncToTimeline]);
+  const syncWithTimelineThrottled = useMemo(() => throttle(syncWithTimeline, 100), [syncWithTimeline]);
 
   /**
    * Save dot data to localStorage.
@@ -114,14 +103,17 @@ function App() {
   /**
    * Callback when canvas element is created. Wraps it with a timeline.
    */
-  const setCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
-    if (timelineRef.current) {
-      timelineRef.current.destroy();
-      timelineRef.current = null;
-    }
+  const setCanvasRef = useCallback(
+    (canvas: HTMLCanvasElement) => {
+      if (timelineRef.current) {
+        timelineRef.current.destroy();
+        timelineRef.current = null;
+      }
 
-    timelineRef.current = canvas ? createBezierTimeline({ canvas, userDots: loadSavedDots() }) : null;
-  }, []);
+      timelineRef.current = canvas ? createBezierTimeline({ canvas, userDots: loadSavedDots(), sampleCount }) : null;
+    },
+    [sampleCount]
+  );
 
   /**
    * Callback for when the timeline changes it isAdding state.
@@ -190,8 +182,9 @@ function App() {
         }
       }
     }
+
     function handleKeyUp(e: KeyboardEvent) {
-      if (e.key !== "a") {
+      if (e.key === "Shift") {
         if (timelineRef.current) {
           timelineRef.current.cancel();
         }
@@ -206,18 +199,47 @@ function App() {
     };
   }, []);
 
+  function handleInspectorSelectedChange(dot: UserDot) {
+    if (!timelineRef.current) return;
+
+    console.info(">>> dot.x", dot.x);
+    timelineRef.current.updateSelectedDot(dot);
+    syncWithTimeline();
+    // console.info(">>> dot", dot);
+  }
+
+  function handleSampleCountChange(count: number) {
+    setSampleCount(count);
+    if (timelineRef.current) timelineRef.current.setSampleCount(count);
+  }
+
   return (
-    <>
+    <div className="stack">
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
-      <canvas
-        height={600}
-        width={900}
-        id="canvas"
-        ref={setCanvasRef}
-        tabIndex={0}
-        className={isAdding ? "is-adding" : ""}
-      />
-      <p>
+      <div className="timeline-row">
+        <div className="timeline-wrapper">
+          <canvas
+            height={600}
+            width={900}
+            id="canvas"
+            ref={setCanvasRef}
+            tabIndex={0}
+            className={"timeline " + (isAdding ? "is-adding" : "")}
+          />
+        </div>
+
+        <Inspector
+          snapToGrid={snapToGrid}
+          invertValues={invertValues}
+          onSnapToGrid={setSnapToGrid}
+          onInvertValues={setInvertValues}
+          selected={selectedPoint}
+          onChangeSelected={handleInspectorSelectedChange}
+          onSampleCount={handleSampleCountChange}
+          sampleCount={sampleCount}
+        />
+      </div>
+      <div>
         <button onClick={handleClickAdd} disabled={isAdding}>
           Add
         </button>
@@ -225,17 +247,7 @@ function App() {
         <button onClick={handleClickDelete} disabled={!selectedPoint}>
           Delete
         </button>
-      </p>
-      <p>
-        <label>
-          <input type="checkbox" checked={snapToGrid} onChange={(e) => setSnapToGrid(e.target.checked)} /> Snap to grid
-        </label>
-        <label>
-          <input type="checkbox" checked={invertValues} onChange={(e) => setInvertValues(e.target.checked)} /> Invert
-          values
-        </label>
-        {isDirty && <span>*</span>}
-      </p>
+      </div>
 
       <Preview keyframeText={output} />
 
@@ -244,7 +256,7 @@ function App() {
       </div>
 
       <p>{selectedPoint && JSON.stringify(clean(selectedPoint))}</p>
-    </>
+    </div>
   );
 }
 

@@ -2,16 +2,17 @@ import { stopEvent } from "../util";
 import { Black, Blue, bullsEye, circle, dash, diamond, Gray, LightGray, Red, White, willDraw } from "./drawing";
 import { BaseDot, diffPt, findYForX, findYForXInCurve, nearPt, PhysDot, Point, togglePt, UserDot } from "./point";
 
-type HandlePair = {
+type DraggingPoint = {
+  point: PhysDot;
+};
+
+type DraggingHandle = {
+  point: PhysDot;
   handle: Point;
   otherHandle: Point;
 };
 
-type Dragging =
-  | {
-      point: BaseDot;
-    }
-  | ({ point: BaseDot } & HandlePair);
+type Dragging = DraggingPoint | DraggingHandle;
 
 function createThreshold(origin: Point, threshold: number) {
   let passed = false;
@@ -33,6 +34,7 @@ export interface BezierTimeline {
   setSnapToGrid: (snapToGrid: boolean) => void;
   getUserDots(): UserDot[];
   getSamples(): Point[];
+  setSampleCount(count: number): void;
 
   set onChange(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
@@ -50,6 +52,7 @@ export interface BezierTimelineProps {
   userDots: UserDot[];
   onChange?: () => void;
   snapToGrid?: boolean;
+  sampleCount: number;
 }
 
 type State = "adding" | "default";
@@ -62,6 +65,7 @@ export function createBezierTimeline({
   canvas: _canvas,
   userDots,
   snapToGrid: _snapToGrid = true,
+  sampleCount: _sampleCount,
 }: BezierTimelineProps): BezierTimeline {
   const ScaleX = 9;
   const ScaleY = 2;
@@ -219,17 +223,15 @@ export function createBezierTimeline({
     }
   }
 
-  function moveHandle({ handle, otherHandle }: HandlePair, toX: number, toY: number) {
-    const origin = { ...handle };
-
+  function moveHandle({ point, handle, otherHandle }: DraggingHandle, toX: number, toY: number) {
     // move handle
     handle.x = toX;
     handle.y = toY;
 
-    // move other handle
-    const diffPoint = diffPt(handle, origin);
-    otherHandle.x -= diffPoint.x;
-    otherHandle.y -= diffPoint.y;
+    // move other handle to mirror position
+    const diff = diffPt(handle, point);
+    otherHandle.x = point.x - diff.x;
+    otherHandle.y = point.y - diff.y;
 
     draw();
     didChange();
@@ -338,7 +340,7 @@ export function createBezierTimeline({
     let da = _pDots[dotIndex - 1];
     let db = _pDots[dotIndex];
 
-    const inc = 100 / 30;
+    const inc = 100 / (_sampleCount - 1);
 
     for (let x = 0; x < 101; x += inc) {
       if (x > 100) x = 100;
@@ -357,8 +359,8 @@ export function createBezierTimeline({
       }
 
       const [x0, y0] = [da.x, da.y];
-      const [x1, y1] = da.type === "sharp" ? [da.x, da.y] : [da.h2.x, da.h2.y];
-      const [x2, y2] = db.type === "sharp" ? [db.x, db.y] : [db.h1.x, db.h1.y];
+      const [x1, y1] = da.type === "square" ? [da.x, da.y] : [da.h2.x, da.h2.y];
+      const [x2, y2] = db.type === "square" ? [db.x, db.y] : [db.h1.x, db.h1.y];
       const [x3, y3] = [db.x, db.y];
 
       const py = findYForX(px, x0, y0, x1, y1, x2, y2, x3, y3);
@@ -425,8 +427,8 @@ export function createBezierTimeline({
         const pp = _pDots[i - 1];
         const p = _pDots[i];
 
-        const cp1 = pp.type === "sharp" ? pp : pp.h2;
-        const cp2 = p.type === "sharp" ? p : p.h1;
+        const cp1 = pp.type === "square" ? pp : pp.h2;
+        const cp2 = p.type === "square" ? p : p.h1;
         _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
       }
       _cx.stroke();
@@ -442,7 +444,7 @@ export function createBezierTimeline({
           const h2 = p.h2;
 
           willDraw(_cx, () => {
-            _cx.strokeStyle = Gray;
+            _cx.strokeStyle = Blue;
             _cx.setLineDash([5, 2]);
 
             for (const h of [h1, h2]) {
@@ -453,7 +455,7 @@ export function createBezierTimeline({
             }
 
             if (p.type === "round") {
-              _cx.fillStyle = Gray;
+              _cx.fillStyle = Blue;
               diamond(p.h1, _cx);
               diamond(p.h2, _cx);
             }
@@ -566,6 +568,7 @@ export function createBezierTimeline({
 
   function setSnapToGrid(snapToGrid: boolean) {
     _snapToGrid = snapToGrid;
+    didChange();
   }
 
   function getSamples() {
@@ -606,7 +609,7 @@ export function createBezierTimeline({
       if (y === null) y = _addingAtPoint.y;
 
       const newDot: PhysDot = {
-        type: "sharp",
+        type: "square",
         space: "physical",
         x: _addingAtPoint.x,
         y: y,
@@ -620,6 +623,7 @@ export function createBezierTimeline({
         },
       };
 
+      // try to add before next highest x
       let didAdd = false;
       for (let i = 0; i < _pDots.length; i++) {
         if (_pDots[i].x >= newDot.x) {
@@ -631,6 +635,7 @@ export function createBezierTimeline({
       }
 
       if (!didAdd) {
+        // add at end
         _pDots.push(newDot);
         didChange();
       }
@@ -658,7 +663,7 @@ export function createBezierTimeline({
     _canvas.addEventListener("mouseleave", onMouseLeaveAdding);
     window.addEventListener("keydown", onKeyDownCancel);
 
-    _selectedIndex = null;
+    // _selectedIndex = null;
     draw();
 
     if (_onIsAdding) _onIsAdding(true);
@@ -683,6 +688,11 @@ export function createBezierTimeline({
     endAddingDot();
   }
 
+  function setSampleCount(count: number) {
+    _sampleCount = Math.min(50, Math.max(3, count));
+    draw();
+  }
+
   // initial render
   draw();
 
@@ -705,5 +715,6 @@ export function createBezierTimeline({
     beginAddingDot,
     deleteSelectedDot,
     cancel,
+    setSampleCount,
   };
 }

@@ -1,12 +1,25 @@
-canvas {
-  border: solid gray 1px;
+.timeline {
+  &:focus {
+    outline: none;
+  }
 
   &.is-adding {
     cursor: crosshair;
     cursor: copy;
   }
+}
 
-  &:focus {
+.timeline-row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: max-content 1fr;
+}
+
+.timeline-wrapper {
+  overflow: auto;
+  border: solid gray 1px;
+
+  &:has(:focus) {
     outline: solid 1px #1c7ef3;
   }
 }
