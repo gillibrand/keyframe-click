@@ -390,22 +390,29 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   /**
    * Schedules the canvas to redraw completely on the next animation frames. Can be called multiple
    * times and will only redraw once during the next frame.
-   * @returns Schedule
+   *
+   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to
+   * know data changed that caused the draw. But in some cases, like drawing where a point might be
+   * added, the drawing doesn't affect the data and we can skip the callback. Defaults to true.
    */
-  function draw() {
+  function draw(notify: boolean = true) {
     if (drawTimer !== null) return;
 
     drawTimer = requestAnimationFrame(() => {
       drawTimer = null;
-      drawNow();
+      drawNow(notify);
     });
   }
 
   /**
    * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next
    * animation frame for better performance.
+   *
+   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to
+   * know data changed that caused the draw. But in some cases, like drawing where a point might be
+   * added, the drawing doesn't affect the data and we can skip the callback. Defaults to true.
    */
-  function drawNow() {
+  function drawNow(notify: boolean) {
     _cx.clearRect(0, 0, _canvas.width, _canvas.height);
 
     drawGrid();
@@ -467,7 +474,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     }
 
     drawAddMarker();
-    didDraw();
+    if (notify) didDraw();
   }
 
   function onKeyDown(e: KeyboardEvent) {
@@ -583,13 +590,13 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   function onMouseMoveAdding(e: MouseEvent) {
     _addingAtPoint = { x: e.offsetX, y: e.offsetY };
-    draw();
+    draw(false);
   }
 
   function onMouseLeaveAdding() {
     // null out the line, but the event listeners are still active if it returns
     _addingAtPoint = null;
-    draw();
+    draw(false);
   }
 
   function onClickAdding() {
