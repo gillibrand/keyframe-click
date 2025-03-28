@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Inspector } from "../components/Inspector";
 import { Preview } from "../components/Preview";
 import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline";
 import { Point, UserDot, createRound, createSquare } from "../timeline/point";
 import { debounce, round2dp, throttle } from "../util";
 import "./App.css";
-import { OutProperty, OutFunctions } from "./OutFunctions";
+import { OutFunctions, OutProperty } from "./OutFunctions";
 import { useSetting } from "./useSettings";
 
 const defaultDots: UserDot[] = [
@@ -46,7 +46,6 @@ function loadSavedDots(): UserDot[] {
 function App() {
   const timelineRef = useRef<BezierTimeline | null>(null);
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
-  const [keyframeText, setKeyframeText] = useState("");
   const [isDataDirty, isDotsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -56,16 +55,11 @@ function App() {
   const [snapToGrid, setSnapToGrid] = useSetting("snapToGrid", true);
   const [invertValues, setInvertValues] = useSetting("invertValues", false);
 
-  /**
-   * Update the app display to match the current timeline values.
-   */
-  const pullDataFromTimeline = useCallback(() => {
-    const timeline = timelineRef.current;
-    if (!timeline) return;
-
-    setSelectedDot(timeline.getSelectedDot());
-    setKeyframeText(genCssKeyframeText(timeline.getSamples(), outProperty, invertValues));
-  }, [invertValues, outProperty]);
+  // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
+  // React, we instead listen to its callback and manually call this.
+  const [timelineDrawCount, incrementTimelineDrawCount] = useReducer((old: number) => {
+    return old + 1;
+  }, 0);
 
   /**
    * Save dot and settings data to localStorage.
@@ -94,35 +88,37 @@ function App() {
   }, []);
 
   useEffect(
-    /**
-     * Timeline is not reactive, so we need to manually update it with any changes to settings. Note
-     * that these are NOT set in the timeline factory function so that we only create it once. So
-     * this sets the initial settings, plus updates later.
-     */
-    function pushSettingsToTimeline() {
-      const timeline = timelineRef.current;
-      if (!timeline) return;
-
-      timeline.setSampleCount(sampleCount);
-      timeline.setSnapToGrid(snapToGrid);
+    function pushSampleCount() {
+      if (timelineRef.current) timelineRef.current.setSampleCount(sampleCount);
     },
-    [sampleCount, snapToGrid]
+    [sampleCount]
+  );
+
+  useEffect(
+    function pushSnapToGrid() {
+      if (timelineRef.current) timelineRef.current.setSnapToGrid(snapToGrid);
+    },
+    [snapToGrid]
   );
 
   useEffect(
     /**
-     * Adds callback to timeline for data changes. This only fires once.
+     * Adds callback to timeline for data changes.
      */
     function setCallbacksOnTimeline() {
       const timeline = timelineRef.current;
       if (!timeline) return;
 
       const saveDotsDebounced = debounce(saveDots, 2000);
-      const pullDataFromTimelineThrottled = throttle(pullDataFromTimeline, 100);
+
+      const didDrawThrottled = throttle(() => {
+        setSelectedDot(timeline.getSelectedDot());
+        incrementTimelineDrawCount();
+      }, 100);
 
       timeline.onDraw = () => {
         isDotsDirty(true);
-        pullDataFromTimelineThrottled();
+        didDrawThrottled();
         saveDotsDebounced();
       };
 
@@ -130,7 +126,7 @@ function App() {
         setIsAdding(adding);
       };
     },
-    [pullDataFromTimeline, saveDots]
+    [saveDots]
   );
 
   useEffect(
@@ -188,8 +184,18 @@ function App() {
     if (!timelineRef.current) return;
 
     timelineRef.current.updateSelectedDot(dot);
-    pullDataFromTimeline();
+
+    // Update the selected dot not so it is not throttled. While this will get pulled again in
+    // response to the timeline drawing, that is throttled and we don't want to wait.
+    setSelectedDot(dot);
   }
+
+  const keyframeText = useMemo(() => {
+    void timelineDrawCount;
+    if (!timelineRef.current) return "";
+
+    return genCssKeyframeText(timelineRef.current.getSamples(), outProperty, invertValues);
+  }, [outProperty, invertValues, timelineDrawCount]);
 
   return (
     <div className="stack">

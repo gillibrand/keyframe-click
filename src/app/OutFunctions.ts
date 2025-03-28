@@ -3,11 +3,9 @@ interface NamedFn {
   fn: (n: number) => string;
 }
 
-function create<K extends string>(object: Record<K, NamedFn>) {
-  return object;
-}
+const typedKeys = <K extends string>(object: Record<K, NamedFn>) => object;
 
-const OutFunctions = create({
+const OutFunctions = typedKeys({
   scale: {
     label: "Scale",
     fn: (s) => {

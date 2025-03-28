@@ -562,14 +562,9 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   function setSnapToGrid(snapToGrid: boolean) {
     _snapToGrid = snapToGrid;
-    didDraw();
   }
 
   function getSamples() {
-    if (_samples.length === 0) {
-      // draw();
-    }
-
     return _samples.map((s) => asUserPoint(s));
   }
 
