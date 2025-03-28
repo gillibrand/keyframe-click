@@ -16,7 +16,7 @@ const defaultDots: UserDot[] = [
   createSquare(100, 0),
 ];
 
-function genCssKeyframes(samples: Point[], outProperty: string, invertValues: boolean): string {
+function genCssKeyframeText(samples: Point[], outProperty: string, invertValues: boolean): string {
   const frames = [];
 
   const fn = OutputFunctions[outProperty].fn;
@@ -45,33 +45,33 @@ function loadSavedDots(): UserDot[] {
 
 function App() {
   const timelineRef = useRef<BezierTimeline | null>(null);
-  const [selectedPoint, setSelectedPoint] = useState<UserDot | null>(null);
-  const [output, setOutput] = useState("");
-  const [isDirty, setIsDirty] = useState(false);
+  const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
+  const [keyframeText, setKeyframeText] = useState("");
+  const [isDataDirty, isDotsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   // settings
   const [outProperty, setOutProperty] = useSetting("outProperty");
   const [sampleCount, setSampleCount] = useSetting("sampleCount");
-  const [snapToGrid, setSnapToGridRaw] = useSetting("snapToGrid");
+  const [snapToGrid, setSnapToGrid] = useSetting("snapToGrid");
   const [invertValues, setInvertValues] = useSetting("invertValues");
 
   /**
    * Update the app display to match the current timeline values.
    */
-  const syncWithTimeline = useCallback(() => {
+  const pullDataFromTimeline = useCallback(() => {
     const timeline = timelineRef.current;
     if (!timeline) return;
 
-    setSelectedPoint(timeline.getSelectedDot());
-    setOutput(genCssKeyframes(timeline.getSamples(), outProperty, invertValues));
+    setSelectedDot(timeline.getSelectedDot());
+    setKeyframeText(genCssKeyframeText(timeline.getSamples(), outProperty, invertValues));
   }, [invertValues, outProperty]);
 
   /**
    * Save dot and settings data to localStorage.
    */
   const saveDots = useCallback(() => {
-    setIsDirty(false);
+    isDotsDirty(false);
     if (!timelineRef.current) return;
 
     const dots = timelineRef.current.getUserDots();
@@ -87,35 +87,51 @@ function App() {
       timelineRef.current = null;
     }
 
-    timelineRef.current = canvas ? createBezierTimeline({ canvas, savedUserDots: loadSavedDots() }) : null;
+    if (!canvas) return;
+
+    const timeline = createBezierTimeline({ canvas, savedUserDots: loadSavedDots() });
+    timelineRef.current = timeline;
   }, []);
 
   useEffect(
+    /**
+     * Timeline is not reactive, so we need to manually update it with any changes to settings. Note
+     * that these are NOT set in the timeline factory function so that we only create it once. So
+     * this sets the initial settings, plus updates later.
+     */
+    function pushSettingsToTimeline() {
+      const timeline = timelineRef.current;
+      if (!timeline) return;
+
+      timeline.setSampleCount(sampleCount);
+      timeline.setSnapToGrid(snapToGrid);
+    },
+    [sampleCount, snapToGrid]
+  );
+
+  useEffect(
+    /**
+     * Adds callback to timeline for data changes. This only fires once.
+     */
     function setCallbacksOnTimeline() {
-      if (!timelineRef.current) return;
+      const timeline = timelineRef.current;
+      if (!timeline) return;
 
       const saveDotsDebounced = debounce(saveDots, 2000);
-      const syncWithTimelineThrottled = throttle(syncWithTimeline, 100);
+      const pullDataFromTimelineThrottled = throttle(pullDataFromTimeline, 100);
 
-      timelineRef.current.onDraw = () => {
-        setIsDirty(true);
-        syncWithTimelineThrottled();
+      timeline.onDraw = () => {
+        isDotsDirty(true);
+        pullDataFromTimelineThrottled();
         saveDotsDebounced();
       };
 
-      timelineRef.current.onAdding = (adding: boolean) => {
+      timeline.onAdding = (adding: boolean) => {
         setIsAdding(adding);
       };
     },
-    [syncWithTimeline, saveDots]
+    [pullDataFromTimeline, saveDots]
   );
-
-  function setSnapToGrid(snapToGrid: boolean) {
-    setSnapToGridRaw(snapToGrid);
-    if (timelineRef.current) {
-      timelineRef.current.setSnapToGrid(snapToGrid);
-    }
-  }
 
   useEffect(
     /**
@@ -125,14 +141,14 @@ function App() {
      * with bfcaches.
      */
     function addSaveBeforePageHide() {
-      if (!isDirty) return;
+      if (!isDataDirty) return;
 
       window.addEventListener("pagehide", saveDots);
       return () => {
         window.removeEventListener("pagehide", saveDots);
       };
     },
-    [isDirty, saveDots]
+    [isDataDirty, saveDots]
   );
 
   function handleClickAdd() {
@@ -143,7 +159,7 @@ function App() {
     timelineRef.current!.deleteSelectedDot();
   }
 
-  useEffect(() => {
+  useEffect(function addEventListenersOnMount() {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "a" || e.key === "Shift") {
         if (timelineRef.current) {
@@ -172,20 +188,8 @@ function App() {
     if (!timelineRef.current) return;
 
     timelineRef.current.updateSelectedDot(dot);
-    syncWithTimeline();
+    pullDataFromTimeline();
   }
-
-  function handleSampleCountChange(count: number) {
-    setSampleCount(count);
-    if (timelineRef.current) timelineRef.current.setSampleCount(count);
-  }
-
-  useEffect(
-    function syncOnLoad() {
-      syncWithTimeline();
-    },
-    [syncWithTimeline]
-  );
 
   return (
     <div className="stack">
@@ -208,10 +212,10 @@ function App() {
           invertValues={invertValues}
           snapToGrid={snapToGrid}
           onOutProperty={setOutProperty}
-          onSampleCount={handleSampleCountChange}
+          onSampleCount={setSampleCount}
           onInvertValues={setInvertValues}
           onSnapToGrid={setSnapToGrid}
-          selected={selectedPoint}
+          selected={selectedDot}
           onChangeSelected={handleInspectorSelectedChange}
         />
       </div>
@@ -220,15 +224,15 @@ function App() {
           Add
         </button>
 
-        <button onClick={handleClickDelete} disabled={!selectedPoint}>
+        <button onClick={handleClickDelete} disabled={!selectedDot}>
           Delete
         </button>
       </div>
 
-      <Preview keyframeText={output} />
+      <Preview keyframeText={keyframeText} />
 
       <div>
-        <textarea cols={80} rows={10} disabled value={output}></textarea>
+        <textarea cols={80} rows={10} disabled value={keyframeText}></textarea>
       </div>
     </div>
   );
