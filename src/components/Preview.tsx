@@ -1,6 +1,7 @@
-import { memo, useEffect, useMemo, useRef, useState } from "react";
-import "./Preview.css";
+import { memo, useEffect, useMemo, useRef } from "react";
+import { useSetting } from "../app/useSettings";
 import { debounce } from "../util";
+import "./Preview.css";
 
 function createNamedKeyframes(animName: string, keyframeText: string) {
   const styleSheet = document.createElement("style");
@@ -15,7 +16,7 @@ function createNamedKeyframes(animName: string, keyframeText: string) {
 export const Preview = memo(function Preview({ keyframeText }: { keyframeText: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
-  const [infinite, setInfinite] = useState(false);
+  const [repeat, setRepeat] = useSetting("repeatPreview", false);
 
   function runAnimation(keyframeText: string) {
     if (!ballRef.current || !ref.current) return;
@@ -41,14 +42,14 @@ export const Preview = memo(function Preview({ keyframeText }: { keyframeText: s
     return cleanup;
   }, [keyframeText, runAnimationSoon]);
 
-  const style = !infinite
+  const style = !repeat
     ? undefined
     : ({
         "--repeat": "infinite",
       } as React.CSSProperties);
 
   function handleClick() {
-    if (!infinite) {
+    if (!repeat) {
       runAnimation(keyframeText);
     }
   }
@@ -61,7 +62,7 @@ export const Preview = memo(function Preview({ keyframeText }: { keyframeText: s
         </div>
       </div>
       <label className="block-label">
-        <input type="checkbox" checked={infinite} onChange={(e) => setInfinite(e.target.checked)} />
+        <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} />
         <span>Repeat</span>
       </label>
     </div>

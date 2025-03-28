@@ -5,7 +5,7 @@ import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline
 import { Point, UserDot, createRound, createSquare } from "../timeline/point";
 import { debounce, round2dp, throttle } from "../util";
 import "./App.css";
-import { OutputFunctions } from "./OutputFunctions";
+import { OutProperty, OutFunctions } from "./OutFunctions";
 import { useSetting } from "./useSettings";
 
 const defaultDots: UserDot[] = [
@@ -16,10 +16,10 @@ const defaultDots: UserDot[] = [
   createSquare(100, 0),
 ];
 
-function genCssKeyframeText(samples: Point[], outProperty: string, invertValues: boolean): string {
+function genCssKeyframeText(samples: Point[], outProperty: OutProperty, invertValues: boolean): string {
   const frames = [];
 
-  const fn = OutputFunctions[outProperty].fn;
+  const fn = OutFunctions[outProperty].fn;
 
   for (const sample of samples) {
     const timePercent = round2dp(sample.x);
@@ -51,10 +51,10 @@ function App() {
   const [isAdding, setIsAdding] = useState(false);
 
   // settings
-  const [outProperty, setOutProperty] = useSetting("outProperty");
-  const [sampleCount, setSampleCount] = useSetting("sampleCount");
-  const [snapToGrid, setSnapToGrid] = useSetting("snapToGrid");
-  const [invertValues, setInvertValues] = useSetting("invertValues");
+  const [outProperty, setOutProperty] = useSetting("outProperty", "translateX");
+  const [sampleCount, setSampleCount] = useSetting("sampleCount", 10);
+  const [snapToGrid, setSnapToGrid] = useSetting("snapToGrid", true);
+  const [invertValues, setInvertValues] = useSetting("invertValues", false);
 
   /**
    * Update the app display to match the current timeline values.

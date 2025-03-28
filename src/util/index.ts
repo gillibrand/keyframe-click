@@ -60,3 +60,7 @@ export function round2dp(p: Point | number): Point | number {
 export function round3dp(n: number): number {
   return Math.round(n * 1000) / 1000;
 }
+
+export function unreachable(value: never) {
+  return new Error("unreachable value: " + value);
+}

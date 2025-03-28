@@ -3,7 +3,11 @@ interface NamedFn {
   fn: (n: number) => string;
 }
 
-export const OutputFunctions: Record<string, NamedFn> = {
+function create<K extends string>(object: Record<K, NamedFn>) {
+  return object;
+}
+
+const OutFunctions = create({
   scale: {
     label: "Scale",
     fn: (s) => {
@@ -52,4 +56,7 @@ export const OutputFunctions: Record<string, NamedFn> = {
       return `rotate: ${n / 100}turn;`;
     },
   },
-};
+} as const);
+
+export type OutProperty = keyof typeof OutFunctions;
+export { OutFunctions };

@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { OutputFunctions } from "./OutputFunctions";
+import { unreachable } from "../util";
+import { OutFunctions } from "./OutFunctions";
 
 /**
  * Types of all global settings.
  */
 interface Settings {
-  outProperty: string;
+  outProperty: keyof typeof OutFunctions;
   sampleCount: number;
   invertValues: boolean;
   snapToGrid: boolean;
+  repeatPreview: boolean;
 }
 
 /**
@@ -26,11 +28,16 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
 
     case "invertValues":
     case "snapToGrid":
+    case "repeatPreview":
       return typeof value === "boolean";
 
     case "outProperty":
       // maybe check actual output functions?
       return typeof value === "string";
+
+    default: {
+      throw unreachable(name);
+    }
   }
 }
 
@@ -50,16 +57,17 @@ function storageKey(name: string) {
  * @param name Setting name.
  * @returns Default value for that setting.
  */
-function getDefault<K extends keyof Settings>(name: K) {
-  const defaults: Settings = {
-    outProperty: Object.keys(OutputFunctions)[0],
-    sampleCount: 10,
-    invertValues: false,
-    snapToGrid: true,
-  };
+// function getDefault<K extends keyof Settings>(name: K) {
+//   const defaults: Settings = {
+//     outProperty: Object.keys(OutputFunctions)[0],
+//     sampleCount: 10,
+//     invertValues: false,
+//     snapToGrid: true,
+//     repeatPreview: false,
+//   };
 
-  return defaults[name];
-}
+//   return defaults[name];
+// }
 
 /**
  * Reads a saved setting from local storage. Done on first render. After, we read from the in-memory
@@ -68,15 +76,15 @@ function getDefault<K extends keyof Settings>(name: K) {
  * @param name Base name of the setting.
  * @returns Stored setting value. Default value if missing in storage.
  */
-function readSetting<K extends keyof Settings>(name: K): Settings[K] {
+function readSetting<K extends keyof Settings>(name: K, defaultValue: Settings[K]): Settings[K] {
   const jsonValue = localStorage.getItem(storageKey(name));
 
-  if (!jsonValue) return getDefault(name);
+  if (!jsonValue) return defaultValue;
 
   const savedValue = JSON.parse(jsonValue);
   if (validate(name, savedValue)) return savedValue;
 
-  return getDefault(name);
+  return defaultValue;
 }
 
 /**
@@ -98,8 +106,8 @@ function writeSetting<K extends keyof Settings>(name: K, value: Settings[K]) {
  * @param name Setting name.
  * @returns Save as `useState`, but the setting persists values to local storage.
  */
-function useSetting<K extends keyof Settings>(name: K) {
-  const [value, setValue] = useState<Settings[K]>(readSetting(name));
+function useSetting<K extends keyof Settings>(name: K, defaultValue: Settings[K]) {
+  const [value, setValue] = useState<Settings[K]>(readSetting(name, defaultValue));
 
   function setValueAndSetting(value: Settings[K]) {
     writeSetting(name, value);

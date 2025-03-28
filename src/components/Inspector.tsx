@@ -3,7 +3,7 @@ import "./Inspector.css";
 
 import { memo, useId } from "react";
 import { round3dp } from "../util/index";
-import { OutputFunctions } from "../app/OutputFunctions";
+import { OutProperty, OutFunctions } from "../app/OutFunctions";
 
 interface GlobalProps {
   snapToGrid: boolean;
@@ -13,7 +13,7 @@ interface GlobalProps {
   onSnapToGrid: (value: boolean) => void;
   onInvertValues: (value: boolean) => void;
   onSampleCount: (count: number) => void;
-  onOutProperty: (property: string) => void;
+  onOutProperty: (property: OutProperty) => void;
 }
 
 interface Props extends GlobalProps {
@@ -37,8 +37,8 @@ const GlobalSettings = memo(function GlobalSettings({
 
       <label className="stacked-label">
         <span>Property</span>
-        <select value={outProperty} onChange={(e) => onOutProperty(e.target.value)}>
-          {Object.entries(OutputFunctions).map(([key, namedFn]) => (
+        <select value={outProperty} onChange={(e) => onOutProperty(e.target.value as OutProperty)}>
+          {Object.entries(OutFunctions).map(([key, namedFn]) => (
             <option key={key} value={key}>
               {namedFn.label}
             </option>
