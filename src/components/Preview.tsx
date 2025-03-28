@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
 import { debounce } from "../util";
 
@@ -12,9 +12,10 @@ function createNamedKeyframes(animName: string, keyframeText: string) {
   return styleSheet;
 }
 
-export function Preview({ keyframeText }: { keyframeText: string }) {
+export const Preview = memo(function Preview({ keyframeText }: { keyframeText: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
+  const [infinite, setInfinite] = useState(false);
 
   function runAnimation(keyframeText: string) {
     if (!ballRef.current || !ref.current) return;
@@ -40,11 +41,29 @@ export function Preview({ keyframeText }: { keyframeText: string }) {
     return cleanup;
   }, [keyframeText, runAnimationSoon]);
 
+  const style = !infinite
+    ? undefined
+    : ({
+        "--repeat": "infinite",
+      } as React.CSSProperties);
+
+  function handleClick() {
+    if (!infinite) {
+      runAnimation(keyframeText);
+    }
+  }
+
   return (
-    <div className="Preview" ref={ref} onClick={() => runAnimation(keyframeText)}>
-      <div className="Preview__content">
-        <div className="Preview__ball" ref={ballRef}></div>
+    <div>
+      <div className="Preview" ref={ref} onClick={handleClick} style={style}>
+        <div className="Preview__content">
+          <div className="Preview__ball" ref={ballRef}></div>
+        </div>
       </div>
+      <label className="block-label">
+        <input type="checkbox" checked={infinite} onChange={(e) => setInfinite(e.target.checked)} />
+        <span>Repeat</span>
+      </label>
     </div>
   );
-}
+});

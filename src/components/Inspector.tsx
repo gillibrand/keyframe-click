@@ -3,7 +3,7 @@ import "./Inspector.css";
 
 import { memo, useId } from "react";
 import { round3dp } from "../util/index";
-import { OutputFunctions } from "./OutputFunctions";
+import { OutputFunctions } from "../app/OutputFunctions";
 
 interface GlobalProps {
   snapToGrid: boolean;

@@ -25,7 +25,7 @@
   border: solid 2px red;
 
   &.is-animate {
-    animation: 1000ms linear preview-anim1 forwards;
+    animation: var(--duration, 1000ms) linear preview-anim1 forwards var(--repeat, 1);
   }
 
   &::after {

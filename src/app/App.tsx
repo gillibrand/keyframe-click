@@ -3,8 +3,8 @@ import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline
 import { Point, UserDot, createRound, createSquare } from "../timeline/point";
 import { debounce, round2dp, throttle } from "../util";
 import "./App.css";
-import { Inspector } from "./Inspector";
-import { Preview } from "./Preview";
+import { Inspector } from "../components/Inspector";
+import { Preview } from "../components/Preview";
 import { OutputFunctions } from "./OutputFunctions";
 
 const defaultDots: UserDot[] = [
@@ -61,8 +61,6 @@ function App() {
     setSelectedPoint(timeline.getSelectedDot());
     setOutput(genCssKeyframes(timeline.getSamples(), outProperty, invertValues));
   }, [invertValues, outProperty]);
-
-  // const syncWithTimelineThrottled = useMemo(() => , [syncWithTimeline]);
 
   /**
    * Save dot data to localStorage.
