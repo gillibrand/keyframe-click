@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Inspector } from "../components/Inspector";
+import { Preview } from "../components/Preview";
 import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline";
 import { Point, UserDot, createRound, createSquare } from "../timeline/point";
 import { debounce, round2dp, throttle } from "../util";
 import "./App.css";
-import { Inspector } from "../components/Inspector";
-import { Preview } from "../components/Preview";
 import { OutputFunctions } from "./OutputFunctions";
+import { useSetting } from "./useSettings";
 
 const defaultDots: UserDot[] = [
   createSquare(0, 0),
@@ -29,8 +30,10 @@ function genCssKeyframes(samples: Point[], outProperty: string, invertValues: bo
   return frames.join("\n");
 }
 
+const StorageDots = "kc.dots";
+
 function loadSavedDots(): UserDot[] {
-  const json = localStorage.getItem("dots");
+  const json = localStorage.getItem(StorageDots);
   if (!json) return defaultDots;
 
   try {
@@ -43,13 +46,15 @@ function loadSavedDots(): UserDot[] {
 function App() {
   const timelineRef = useRef<BezierTimeline | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<UserDot | null>(null);
-  const [snapToGrid, setSnapToGridRaw] = useState(true);
-  const [invertValues, setInvertValues] = useState(false);
   const [output, setOutput] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [sampleCount, setSampleCount] = useState(10);
-  const [outProperty, setOutProperty] = useState(Object.keys(OutputFunctions)[0]);
+
+  // settings
+  const [outProperty, setOutProperty] = useSetting("outProperty");
+  const [sampleCount, setSampleCount] = useSetting("sampleCount");
+  const [snapToGrid, setSnapToGridRaw] = useSetting("snapToGrid");
+  const [invertValues, setInvertValues] = useSetting("invertValues");
 
   /**
    * Update the app display to match the current timeline values.
@@ -63,15 +68,15 @@ function App() {
   }, [invertValues, outProperty]);
 
   /**
-   * Save dot data to localStorage.
+   * Save dot and settings data to localStorage.
    */
-  function saveUserDots() {
+  const saveDots = useCallback(() => {
     setIsDirty(false);
     if (!timelineRef.current) return;
 
     const dots = timelineRef.current.getUserDots();
-    localStorage.setItem("dots", JSON.stringify(dots));
-  }
+    localStorage.setItem(StorageDots, JSON.stringify(dots));
+  }, []);
 
   /**
    * Callback when canvas element is created. Wraps it with a timeline.
@@ -89,20 +94,20 @@ function App() {
     function setCallbacksOnTimeline() {
       if (!timelineRef.current) return;
 
-      const saveUserDotsDebounced = debounce(saveUserDots, 2000);
+      const saveDotsDebounced = debounce(saveDots, 2000);
       const syncWithTimelineThrottled = throttle(syncWithTimeline, 100);
 
       timelineRef.current.onDraw = () => {
         setIsDirty(true);
         syncWithTimelineThrottled();
-        saveUserDotsDebounced();
+        saveDotsDebounced();
       };
 
       timelineRef.current.onAdding = (adding: boolean) => {
         setIsAdding(adding);
       };
     },
-    [syncWithTimeline]
+    [syncWithTimeline, saveDots]
   );
 
   function setSnapToGrid(snapToGrid: boolean) {
@@ -121,12 +126,13 @@ function App() {
      */
     function addSaveBeforePageHide() {
       if (!isDirty) return;
-      window.addEventListener("pagehide", saveUserDots);
+
+      window.addEventListener("pagehide", saveDots);
       return () => {
-        window.removeEventListener("pagehide", saveUserDots);
+        window.removeEventListener("pagehide", saveDots);
       };
     },
-    [isDirty]
+    [isDirty, saveDots]
   );
 
   function handleClickAdd() {
@@ -197,16 +203,16 @@ function App() {
         </div>
 
         <Inspector
-          snapToGrid={snapToGrid}
+          outProperty={outProperty}
+          sampleCount={sampleCount}
           invertValues={invertValues}
-          onSnapToGrid={setSnapToGrid}
+          snapToGrid={snapToGrid}
+          onOutProperty={setOutProperty}
+          onSampleCount={handleSampleCountChange}
           onInvertValues={setInvertValues}
+          onSnapToGrid={setSnapToGrid}
           selected={selectedPoint}
           onChangeSelected={handleInspectorSelectedChange}
-          onSampleCount={handleSampleCountChange}
-          sampleCount={sampleCount}
-          outProperty={outProperty}
-          onOutProperty={setOutProperty}
         />
       </div>
       <div>
