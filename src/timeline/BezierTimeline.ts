@@ -302,14 +302,15 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       _cx.stroke();
     }
 
-    for (let y = Inset; y <= 300; y += 10) {
+    for (let y = -100; y <= 200; y += 10) {
       _cx.beginPath();
-      _cx.moveTo(Inset, y * ScaleY);
+      const py = asPhysY(y);
+      _cx.moveTo(Inset, py);
 
       if (y === 100) {
         _cx.strokeStyle = Gray;
         _cx.setLineDash([5, 2]);
-      } else if (y === 200) {
+      } else if (y === 0) {
         _cx.strokeStyle = Gray;
         _cx.setLineDash([]);
       } else {
@@ -317,7 +318,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
         _cx.setLineDash([]);
       }
 
-      _cx.lineTo(_canvas.width - Inset, y * ScaleY);
+      _cx.lineTo(Width - Inset, py);
       _cx.stroke();
     }
   }
