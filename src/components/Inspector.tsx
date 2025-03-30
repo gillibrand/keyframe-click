@@ -2,8 +2,8 @@ import { DotType, UserDot } from "../timeline/point";
 import "./Inspector.css";
 
 import { memo, useId } from "react";
+import { OutFunctions, OutProperty } from "../app/OutFunctions";
 import { round3dp } from "../util/index";
-import { OutProperty, OutFunctions } from "../app/OutFunctions";
 
 interface GlobalProps {
   snapToGrid: boolean;
@@ -33,6 +33,33 @@ const GlobalSettings = memo(function GlobalSettings({
 }: GlobalProps) {
   return (
     <>
+      <h2>Timeline</h2>
+
+      {/* <div className="col-2">
+        <label className="stacked-label">
+          <span>Max height</span>
+          <Segmented name="max-range">
+            <SegmentedButton value={"ok"}>200</SegmentedButton>
+            <SegmentedButton value={"ok"}>150</SegmentedButton>
+            <SegmentedButton value={"ok"}>100</SegmentedButton>
+          </Segmented>
+        </label>
+
+        <label className="stacked-label">
+          <span>Min height</span>
+          <Segmented name="min-range">
+            <SegmentedButton value={"ok"}>100</SegmentedButton>
+            <SegmentedButton value={"ok"}>150</SegmentedButton>
+            <SegmentedButton value={"ok"}>200</SegmentedButton>
+          </Segmented>
+        </label>
+      </div> */}
+
+      <label className="block-label">
+        <input type="checkbox" checked={snapToGrid} onChange={(e) => onSnapToGrid(e.target.checked)} />{" "}
+        <span>Snap to grid</span>
+      </label>
+
       <h2>Output</h2>
 
       <label className="stacked-label">
@@ -61,17 +88,10 @@ const GlobalSettings = memo(function GlobalSettings({
         </div>
       </label>
 
-      <div className="stack-small">
-        <label className="block-label">
-          <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
-          <span>Invert values</span>
-        </label>
-
-        <label className="block-label">
-          <input type="checkbox" checked={snapToGrid} onChange={(e) => onSnapToGrid(e.target.checked)} />{" "}
-          <span>Snap to grid</span>
-        </label>
-      </div>
+      <label className="block-label">
+        <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
+        <span>Invert values</span>
+      </label>
     </>
   );
 });

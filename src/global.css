@@ -43,7 +43,7 @@ body {
 }
 
 .stack > * + * {
-  margin-block-start: 1rem;
+  margin-block-start: 1.125rem;
 }
 
 .stack-small > * + * {

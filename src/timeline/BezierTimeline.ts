@@ -62,8 +62,14 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   const ScaleX = 9;
   const ScaleY = 2;
 
-  const OffsetX = 0;
-  const OffsetY = 400;
+  const Inset = 20;
+  const Height = _canvas.height;
+  const Width = _canvas.width;
+
+  // logical: 100 x 300
+
+  const OffsetX = 0 + Inset;
+  const OffsetY = 400 + Inset;
   const _cx = _canvas.getContext("2d")!;
 
   const _dots = savedUserDots.map((p) => asPhysDot(p));
@@ -184,6 +190,11 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   let isPastThreshold: (e: MouseEvent) => boolean = () => false;
 
+  /**
+   * Drag handle when dragging dots and handles
+   * @param e
+   * @returns
+   */
   function onMouseMoveDrag(e: MouseEvent) {
     if (!isPastThreshold(e)) return;
 
@@ -192,10 +203,15 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       return;
     }
 
+    const rect = _canvas.getBoundingClientRect();
+
+    const x = Math.max(Inset, Math.min(e.pageX - rect.x, Width - Inset));
+    const y = Math.max(Inset, Math.min(e.pageY - rect.y, Height - Inset));
+
     if ("handle" in _dragging) {
-      moveHandle(_dragging, e.offsetX, e.offsetY);
+      moveHandle(_dragging, x, y);
     } else {
-      moveKeyPoint(_dragging.point, e.offsetX, e.offsetY);
+      moveDot(_dragging.point, x, y);
     }
   }
 
@@ -228,7 +244,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     return y * ScaleY * -1 + OffsetY;
   }
 
-  function moveKeyPoint(p: BaseDot, toX: number, toY: number) {
+  function moveDot(p: BaseDot, toX: number, toY: number) {
     const origin = { ...p };
 
     if (_snapToGrid) {
@@ -244,7 +260,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       toY = asPhysY(toUserY);
     }
 
-    // move key point
+    // move point
     p.x = toX;
     p.y = toY;
 
@@ -264,13 +280,13 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   function startDrag(x: number, y: number) {
     isPastThreshold = createThreshold({ x, y }, 2);
-    _canvas.addEventListener("mousemove", onMouseMoveDrag);
-    _canvas.addEventListener("mouseup", onMouseUpDrag);
+    document.addEventListener("mousemove", onMouseMoveDrag);
+    document.addEventListener("mouseup", onMouseUpDrag);
   }
 
   function endDrag() {
-    _canvas.removeEventListener("mousemove", onMouseMoveDrag);
-    _canvas.removeEventListener("mouseup", onMouseUpDrag);
+    document.removeEventListener("mousemove", onMouseMoveDrag);
+    document.removeEventListener("mouseup", onMouseUpDrag);
     _dragging = null;
   }
 
@@ -278,16 +294,17 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _cx.strokeStyle = LightGray;
     _cx.lineWidth = 1;
 
-    for (let x = 0; x < 100 * ScaleX; x += 10 * ScaleX) {
+    for (let x = 0; x <= 100; x += 10) {
+      const px = asPhysX(x);
       _cx.beginPath();
-      _cx.moveTo(x, 0);
-      _cx.lineTo(x, _canvas.height);
+      _cx.moveTo(px, Inset);
+      _cx.lineTo(px, Height - Inset);
       _cx.stroke();
     }
 
-    for (let y = 0; y < 300; y += 10) {
+    for (let y = Inset; y <= 300; y += 10) {
       _cx.beginPath();
-      _cx.moveTo(0, y * ScaleY);
+      _cx.moveTo(Inset, y * ScaleY);
 
       if (y === 100) {
         _cx.strokeStyle = Gray;
@@ -300,7 +317,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
         _cx.setLineDash([]);
       }
 
-      _cx.lineTo(_canvas.width, y * ScaleY);
+      _cx.lineTo(_canvas.width - Inset, y * ScaleY);
       _cx.stroke();
     }
   }
@@ -519,19 +536,19 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
         break;
 
       case "ArrowUp":
-        if (p) moveKeyPoint(p, p.x, p.y - ScaleY);
+        if (p) moveDot(p, p.x, p.y - ScaleY);
         e.preventDefault();
         break;
       case "ArrowDown":
-        if (p) moveKeyPoint(p, p.x, p.y + ScaleY);
+        if (p) moveDot(p, p.x, p.y + ScaleY);
         e.preventDefault();
         break;
       case "ArrowLeft":
-        if (p) moveKeyPoint(p, p.x - ScaleX, p.y);
+        if (p) moveDot(p, p.x - ScaleX, p.y);
         e.preventDefault();
         break;
       case "ArrowRight":
-        if (p) moveKeyPoint(p, p.x + ScaleX, p.y);
+        if (p) moveDot(p, p.x + ScaleX, p.y);
         e.preventDefault();
         break;
 
