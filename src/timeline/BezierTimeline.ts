@@ -20,6 +20,8 @@ import { BaseDot, diffPt, findYForX, findYForXInCurve, nearPt, PhysDot, Point, t
 
 type DraggingPoint = {
   point: PhysDot;
+  minX: number;
+  maxX: number;
 };
 
 type DraggingHandle = {
@@ -153,7 +155,9 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
           const p = _dots[i];
           if (nearPt(p, x, y)) {
             newSelected = i;
-            _dragging = { point: p };
+            const maxX = _dots[i + 1] ? _dots[i + 1].x - ScaleX : Width;
+            const minX = i > 0 ? _dots[i - 1].x + ScaleX : 0;
+            _dragging = { point: p, maxX, minX };
             break;
           }
 
@@ -222,12 +226,13 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     const rect = _canvas.getBoundingClientRect();
 
-    const x = Math.max(InsetX, Math.min(e.pageX - rect.x, Width - InsetX));
+    let x = Math.max(InsetX, Math.min(e.pageX - rect.x, Width - InsetX));
     const y = Math.max(InsetY, Math.min(e.pageY - rect.y, Height - InsetY));
 
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
     } else {
+      x = Math.max(_dragging.minX, Math.min(x, _dragging.maxX));
       moveDot(_dragging.point, x, y);
     }
   }

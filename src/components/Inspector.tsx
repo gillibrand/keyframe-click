@@ -90,7 +90,7 @@ const GlobalSettings = memo(function GlobalSettings({
 
       <label className="block-label">
         <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
-        <span>Invert values</span>
+        <span>Flip values</span>
       </label>
     </>
   );
