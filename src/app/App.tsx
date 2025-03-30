@@ -203,8 +203,8 @@ function App() {
       <div className="timeline-row">
         <div className="timeline-wrapper">
           <canvas
-            width={940}
-            height={640}
+            width={920}
+            height={620}
             id="canvas"
             ref={setCanvasRef}
             tabIndex={0}

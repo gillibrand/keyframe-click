@@ -1,5 +1,21 @@
 import { stopEvent } from "../util";
-import { Black, Blue, bullsEye, circle, dash, diamond, Gray, LightGray, Red, White, willDraw } from "./drawing";
+import {
+  Black,
+  Blue,
+  bullsEye,
+  circle,
+  dash,
+  diamond,
+  Gray200,
+  Gray300,
+  Gray50,
+  Gray500,
+  Gray900,
+  LightGray,
+  Red,
+  White,
+  willDraw,
+} from "./drawing";
 import { BaseDot, diffPt, findYForX, findYForXInCurve, nearPt, PhysDot, Point, togglePt, UserDot } from "./point";
 
 type DraggingPoint = {
@@ -62,14 +78,15 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   const ScaleX = 9;
   const ScaleY = 2;
 
-  const Inset = 20;
+  const InsetX = 10;
+  const InsetY = 10;
   const Height = _canvas.height;
   const Width = _canvas.width;
 
   // logical: 100 x 300
 
-  const OffsetX = 0 + Inset;
-  const OffsetY = 400 + Inset;
+  const OffsetX = 0 + InsetX;
+  const OffsetY = 400 + InsetY;
   const _cx = _canvas.getContext("2d")!;
 
   const _dots = savedUserDots.map((p) => asPhysDot(p));
@@ -205,8 +222,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     const rect = _canvas.getBoundingClientRect();
 
-    const x = Math.max(Inset, Math.min(e.pageX - rect.x, Width - Inset));
-    const y = Math.max(Inset, Math.min(e.pageY - rect.y, Height - Inset));
+    const x = Math.max(InsetX, Math.min(e.pageX - rect.x, Width - InsetX));
+    const y = Math.max(InsetY, Math.min(e.pageY - rect.y, Height - InsetY));
 
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
@@ -294,31 +311,43 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _cx.strokeStyle = LightGray;
     _cx.lineWidth = 1;
 
+    // above 100% gray
+    _cx.fillStyle = Gray50;
+    const py0 = asPhysY(0);
+    const ph100 = py0 - asPhysY(100);
+    _cx.fillRect(InsetX, InsetY, Width - 2 * InsetX, ph100);
+
+    // below 100% gray
+    _cx.fillRect(InsetX, py0, Width - 2 * InsetX, ph100);
+
+    // vertical lines
     for (let x = 0; x <= 100; x += 10) {
       const px = asPhysX(x);
       _cx.beginPath();
-      _cx.moveTo(px, Inset);
-      _cx.lineTo(px, Height - Inset);
+      _cx.moveTo(px, InsetY);
+      _cx.lineTo(px, Height - InsetY);
       _cx.stroke();
     }
 
+    // horizontal lines
     for (let y = -100; y <= 200; y += 10) {
       _cx.beginPath();
       const py = asPhysY(y);
-      _cx.moveTo(Inset, py);
+      _cx.moveTo(InsetX, py);
 
-      if (y === 100) {
-        _cx.strokeStyle = Gray;
-        _cx.setLineDash([5, 2]);
-      } else if (y === 0) {
-        _cx.strokeStyle = Gray;
+      if (y === 0) {
+        // zero baseline
+        _cx.strokeStyle = Gray500;
         _cx.setLineDash([]);
+      } else if (y % 100 === 0) {
+        _cx.strokeStyle = Gray300;
+        // _cx.setLineDash([10, 1]);
       } else {
-        _cx.strokeStyle = LightGray;
+        _cx.strokeStyle = Gray200;
         _cx.setLineDash([]);
       }
 
-      _cx.lineTo(Width - Inset, py);
+      _cx.lineTo(Width - InsetX, py);
       _cx.stroke();
     }
   }
@@ -333,6 +362,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     let db = _dots[dotIndex];
 
     const inc = 100 / (_sampleCount - 1);
+
+    _cx.setLineDash([]);
 
     for (let x = 0; x < 101; x += inc) {
       if (x > 100) x = 100;
@@ -376,13 +407,13 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     // Fill the sample area
     _cx.beginPath();
-    _cx.moveTo(0, OffsetY);
+    _cx.moveTo(OffsetX, OffsetY);
     for (let i = 0; i < _samples.length; i++) {
       const s = _samples[i];
       _cx.lineTo(s.x, s.y);
     }
-    _cx.lineTo(_canvas.width, OffsetY);
-    _cx.lineTo(0, OffsetY);
+    _cx.lineTo(Width - OffsetX, OffsetY);
+    _cx.lineTo(OffsetX, OffsetY);
     _cx.fillStyle = "rgba(255 0 0 / .075)";
     _cx.fill();
   }
@@ -437,7 +468,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     // draw curve
     if (_dots.length > 0) {
-      _cx.strokeStyle = Black;
+      _cx.strokeStyle = Gray900;
       const origin = _dots[0];
       _cx.beginPath();
       _cx.moveTo(origin.x, origin.y);
@@ -450,7 +481,11 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
         const cp2 = p.type === "square" ? p : p.h1;
         _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
       }
+      _cx.setLineDash([]);
+      _cx.lineWidth = 3;
       _cx.stroke();
+
+      _cx.lineWidth = 1;
 
       drawSamples();
 

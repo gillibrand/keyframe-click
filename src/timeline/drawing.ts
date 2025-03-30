@@ -2,7 +2,14 @@ import { Point } from "./point";
 
 export const Black = "black";
 export const Red = "red";
-export const Gray = "gray";
+export const Gray900 = "oklch(0.21 0.034 264.665)";
+export const Gray600 = "oklch(0.446 0.03 256.802)";
+export const Gray500 = "oklch(0.551 0.027 264.364)";
+export const Gray400 = "oklch(0.704 0.04 256.788)";
+export const Gray300 = "oklch(0.872 0.01 258.338)";
+export const Gray200 = "oklch(0.928 0.006 264.531)";
+export const Gray100 = "oklch(0.967 0.003 264.542)";
+export const Gray50 = "oklch(0.985 0.002 247.839)";
 export const LightGray = "#eee";
 export const White = "white";
 export const Blue = "#1c7ef3";
