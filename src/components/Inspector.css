@@ -6,7 +6,7 @@
 
   h2 {
     color: gray;
-    font-size: var(--font-size-base);
+    font-size: var(--sz-base);
 
     &:not(:first-child) {
       border-block-start: solid 1px #ddd;
@@ -16,7 +16,7 @@
   }
 
   h3 {
-    font-size: var(--font-size-small);
+    font-size: var(--sz-small);
   }
 
   input[type="number"] {

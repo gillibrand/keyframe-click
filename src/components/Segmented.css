@@ -1,7 +1,7 @@
 .Segmented {
   border: solid 1px gray;
   display: inline-flex;
-  font-size: var(--font-size-small);
+  font-size: var(--sz-small);
   border-radius: 0.5rem;
   background-color: white;
   overflow: hidden;

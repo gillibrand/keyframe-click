@@ -5,36 +5,36 @@
 }
 
 :root {
-  --font-size-base: 1rem; /* 16px */
-  --font-size-h1: 2rem; /* 32px */
-  --font-size-h2: 1.75rem; /* 28px */
-  --font-size-h3: 1.5rem; /* 24px */
-  --font-size-body: 1rem; /* 16px */
-  --font-size-small: 0.875rem; /* 14px */
+  --sz-base: 1rem; /* 16px */
+  --sz-h1: 2rem; /* 32px */
+  --sz-h2: 1.75rem; /* 28px */
+  --sz-h3: 1.5rem; /* 24px */
+  --sz-body: 1rem; /* 16px */
+  --sz-small: 0.875rem; /* 14px */
 
-  --color-gray-50: oklch(0.985 0.002 247.839);
-  --color-gray-100: oklch(0.967 0.003 264.542);
-  --color-gray-200: oklch(0.928 0.006 264.531);
-  --color-gray-300: oklch(0.872 0.01 258.338);
-  --color-gray-400: oklch(0.707 0.022 261.325);
-  --color-gray-500: oklch(0.551 0.027 264.364);
-  --color-gray-600: oklch(0.446 0.03 256.802);
-  --color-gray-700: oklch(0.373 0.034 259.733);
-  --color-gray-800: oklch(0.278 0.033 256.848);
-  --color-gray-900: oklch(0.21 0.034 264.665);
-  --color-gray-950: oklch(0.13 0.028 261.692);
+  --c-gray-50: oklch(0.985 0.002 247.839);
+  --c-gray-100: oklch(0.967 0.003 264.542);
+  --c-gray-200: oklch(0.928 0.006 264.531);
+  --c-gray-300: oklch(0.872 0.01 258.338);
+  --c-gray-400: oklch(0.707 0.022 261.325);
+  --c-gray-500: oklch(0.551 0.027 264.364);
+  --c-gray-600: oklch(0.446 0.03 256.802);
+  --c-gray-700: oklch(0.373 0.034 259.733);
+  --c-gray-800: oklch(0.278 0.033 256.848);
+  --c-gray-900: oklch(0.21 0.034 264.665);
+  --c-gray-950: oklch(0.13 0.028 261.692);
 
-  --color-blue: #1c7ef3;
+  --c-blue: #1c7ef3;
 
-  --color-sky-50: oklch(0.977 0.013 236.62);
-  --color-sky-100: oklch(0.951 0.026 236.824);
-  --color-sky-200: oklch(0.901 0.058 230.902);
-  --color-sky-800: oklch(0.443 0.11 240.79);
+  --c-sky-50: oklch(0.977 0.013 236.62);
+  --c-sky-100: oklch(0.951 0.026 236.824);
+  --c-sky-200: oklch(0.901 0.058 230.902);
+  --c-sky-800: oklch(0.443 0.11 240.79);
 
-  --color-emerald-50: oklch(0.979 0.021 166.113);
-  --color-emerald-100: oklch(0.95 0.052 163.051);
-  --color-emerald-500: oklch(0.696 0.17 162.48);
-  --color-emerald-800: oklch(0.432 0.095 166.913);
+  --c-emerald-50: oklch(0.979 0.021 166.113);
+  --c-emerald-100: oklch(0.95 0.052 163.051);
+  --c-emerald-500: oklch(0.696 0.17 162.48);
+  --c-emerald-800: oklch(0.432 0.095 166.913);
 }
 
 body {
@@ -45,7 +45,7 @@ body,
 input,
 textarea,
 select {
-  font-size: var(--font-size-base);
+  font-size: var(--sz-base);
 }
 
 h1,
@@ -55,7 +55,7 @@ h3 {
 }
 
 h2 {
-  font-size: var(--font-size-h2);
+  font-size: var(--sz-h2);
 }
 
 body {
@@ -90,7 +90,7 @@ input[type="checkbox"] {
 
   & > span {
     color: rgb(90, 90, 90);
-    font-size: var(--font-size-small);
+    font-size: var(--sz-small);
   }
 }
 
@@ -101,7 +101,7 @@ input[type="checkbox"] {
 
   & > span {
     color: rgb(90, 90, 90);
-    font-size: var(--font-size-small);
+    font-size: var(--sz-small);
   }
 }
 

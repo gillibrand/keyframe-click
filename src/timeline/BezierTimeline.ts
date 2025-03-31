@@ -10,7 +10,6 @@ import {
   Gray50,
   Gray500,
   Gray900,
-  LightGray,
   Red,
   White,
   willDraw,
@@ -65,30 +64,60 @@ export interface BezierTimeline {
 }
 
 export interface BezierTimelineProps {
-  canvas: HTMLCanvasElement;
+  canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean };
   savedUserDots: UserDot[];
 }
 
 type State = "adding" | "default";
 
 /**
+ * Applies scaling to match the retina screen resolution. This will increase the actual canvas
+ * element size, but scale it down again with CSS. The result is a crisp hi-res canvas at the same
+ * size.
+ *
+ * @param canvas To scale. It supports an extra property to know if this was already done or not.
+ * That's needed during dev since React will pass the same element it init each time and if we scale
+ * it based on the current size it will get bigger each time.
+ */
+function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean }) {
+  const isScaled = canvas.isScaledForScreenDpi || false;
+  if (isScaled) return;
+
+  const scale = window.devicePixelRatio || 1;
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
+
+  canvas.width = canvasWidth * scale;
+  canvas.height = canvasHeight * scale;
+  canvas.style.width = canvasWidth + "px";
+  canvas.style.height = canvasHeight + "px";
+
+  // Scale the drawing context
+  const cx = canvas.getContext("2d")!;
+  cx.scale(scale, scale);
+  canvas.isScaledForScreenDpi = true;
+}
+
+/**
  * Wraps an existing canvas element with logic to draw a timeline.
  * @returns Controller to interact with the graph.
  */
 export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierTimelineProps): BezierTimeline {
+  enableRetina(_canvas);
+
   const ScaleX = 9;
   const ScaleY = 2;
 
   const InsetX = 10;
   const InsetY = 10;
-  const Height = _canvas.height;
-  const Width = _canvas.width;
+  const Height = _canvas.clientHeight;
+  const Width = _canvas.clientWidth;
+  console.info(">>> Width", Width);
 
-  // logical: 100 x 300
+  const _cx = _canvas.getContext("2d")!;
 
   const OffsetX = 0 + InsetX;
   const OffsetY = 400 + InsetY;
-  const _cx = _canvas.getContext("2d")!;
 
   const _dots = savedUserDots.map((p) => asPhysDot(p));
   const _samples: Point[] = [];
@@ -312,7 +341,6 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   }
 
   function drawGrid() {
-    _cx.strokeStyle = LightGray;
     _cx.lineWidth = 1;
 
     // above 100% gray
@@ -326,6 +354,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     // vertical lines
     for (let x = 0; x <= 100; x += 10) {
+      _cx.strokeStyle = x % 50 === 0 ? Gray300 : Gray200;
+
       const px = asPhysX(x);
       _cx.beginPath();
       _cx.moveTo(px, InsetY);
@@ -342,13 +372,10 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       if (y === 0) {
         // zero baseline
         _cx.strokeStyle = Gray500;
-        _cx.setLineDash([]);
       } else if (y % 100 === 0) {
         _cx.strokeStyle = Gray300;
-        // _cx.setLineDash([10, 1]);
       } else {
         _cx.strokeStyle = Gray200;
-        _cx.setLineDash([]);
       }
 
       _cx.lineTo(Width - InsetX, py);
@@ -416,6 +443,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       const s = _samples[i];
       _cx.lineTo(s.x, s.y);
     }
+    console.info(">>> Width - OffsetX", Width - OffsetX);
     _cx.lineTo(Width - OffsetX, OffsetY);
     _cx.lineTo(OffsetX, OffsetY);
     _cx.fillStyle = "rgba(255 0 0 / .075)";
@@ -468,7 +496,10 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   function drawNow(notify: boolean) {
     _cx.clearRect(0, 0, _canvas.width, _canvas.height);
 
-    drawGrid();
+    willDraw(_cx, () => {
+      _cx.translate(0.5, 0.5);
+      drawGrid();
+    });
 
     // draw curve
     if (_dots.length > 0) {
