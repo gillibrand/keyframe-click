@@ -63,7 +63,7 @@ export const Preview = memo(function Preview({ keyframeText }: { keyframeText: s
       </div>
       <label className="block-label">
         <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} />
-        <span>Repeat</span>
+        <span>Loop</span>
       </label>
     </div>
   );

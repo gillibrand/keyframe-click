@@ -45,9 +45,11 @@ function loadSavedDots(): UserDot[] {
 
 function App() {
   const timelineRef = useRef<BezierTimeline | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
   const [isDataDirty, isDotsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
 
   // settings
   const [outProperty, setOutProperty] = useSetting("outProperty", "translateX");
@@ -75,12 +77,13 @@ function App() {
   /**
    * Callback when canvas element is created. Wraps it with a timeline.
    */
-  const setCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
+  useEffect(function createTimeline() {
     if (timelineRef.current) {
       timelineRef.current.destroy();
       timelineRef.current = null;
     }
 
+    const canvas = canvasRef.current;
     if (!canvas) return;
 
     const timeline = createBezierTimeline({ canvas, savedUserDots: loadSavedDots() });
@@ -123,6 +126,7 @@ function App() {
       };
 
       timeline.onAdding = (adding: boolean) => {
+        if (!adding) setShowMessage(false);
         setIsAdding(adding);
       };
     },
@@ -148,6 +152,9 @@ function App() {
   );
 
   function handleClickAdd() {
+    if (!canvasRef.current) return;
+
+    setShowMessage(true);
     timelineRef.current!.beginAddingDot();
   }
 
@@ -155,11 +162,26 @@ function App() {
     timelineRef.current!.deleteSelectedDot();
   }
 
+  const lastMouseRef = useRef<Point>({ x: -1, y: -1 });
+
+  function handleMouseMove(e: MouseEvent) {
+    lastMouseRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+  }
+
   useEffect(function addEventListenersOnMount() {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "a" || e.key === "Shift") {
-        if (timelineRef.current) {
-          timelineRef.current.beginAddingDot();
+      if (e.key === "Shift") {
+        if (timelineRef.current && canvasRef.current) {
+          const rect = canvasRef.current.getBoundingClientRect();
+          const at = {
+            x: lastMouseRef.current.x - rect.x,
+            y: lastMouseRef.current.y - rect.y,
+          };
+
+          timelineRef.current.beginAddingDot(at);
         }
       }
     }
@@ -172,11 +194,13 @@ function App() {
       }
     }
 
+    window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
     return () => {
       window.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("keydown", handleKeyDown);
+      window.addEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
@@ -197,16 +221,21 @@ function App() {
     return genCssKeyframeText(timelineRef.current.getSamples(), outProperty, invertValues);
   }, [outProperty, invertValues, timelineDrawCount]);
 
+  function handleMessageMouseOver() {
+    console.info(">>> over");
+  }
+
   return (
     <div className="stack">
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
-      <div className="timeline-row">
+      <div className="timeline-row" onMouseEnter={showMessage ? handleMessageMouseOver : undefined}>
         <div className="timeline-wrapper">
+          {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
           <canvas
             width={920}
             height={620}
             id="canvas"
-            ref={setCanvasRef}
+            ref={canvasRef}
             tabIndex={0}
             className={"timeline " + (isAdding ? "is-adding" : "")}
           />

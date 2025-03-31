@@ -1,4 +1,5 @@
 .timeline {
+  display: block;
   &:focus {
     outline: none;
   }
@@ -19,6 +20,7 @@
 .timeline-wrapper {
   overflow: auto;
   border: solid gray 1px;
+  position: relative;
 
   &:has(:focus) {
     outline: solid 1px #1c7ef3;
@@ -26,5 +28,30 @@
 
   canvas {
     background-color: white;
+  }
+}
+
+.timeline-message {
+  position: absolute;
+  translate: -50% 0;
+  inset-inline-start: 50%;
+  top: 1rem;
+
+  margin: 0 auto;
+  padding: 0.25rem 0.5rem;
+
+  border: solid 1px var(--color-sky-800);
+  border-radius: 0.25rem;
+  box-shadow: 1px 1px 10px rgba(0 0 0 /0.1);
+  color: var(--color-sky-800);
+  background-color: var(--color-sky-50);
+  font-size: var(--font-size-small);
+
+  pointer-events: none;
+  transition: all 500ms 200ms;
+
+  .timeline-wrapper:hover & {
+    opacity: 0;
+    translate: -50% -100%;
   }
 }

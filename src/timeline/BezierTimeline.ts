@@ -1,4 +1,3 @@
-import { stopEvent } from "../util";
 import {
   Black,
   Blue,
@@ -57,7 +56,7 @@ export interface BezierTimeline {
   set onDraw(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
 
-  beginAddingDot(): void;
+  beginAddingDot(at?: Point): void;
 
   getSelectedDot(): UserDot | null;
   updateSelectedDot: (p: UserDot) => void;
@@ -523,7 +522,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
         _cx.fillStyle = White;
         _cx.strokeStyle = Black;
-        if (_selectedIndex === i) {
+        if (_selectedIndex === i && _addingAtPoint === null) {
           bullsEye(p, _cx);
         } else {
           circle(p, _cx);
@@ -546,11 +545,6 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       case "Delete":
       case "Backspace":
         deleteSelectedDot();
-        break;
-
-      case "a":
-        stopEvent(e);
-        beginAddingDot();
         break;
 
       case "c": {
@@ -634,6 +628,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   }
 
   function endAddingDot() {
+    const oldState = _state;
     _addingAtPoint = null;
     _state = "default";
 
@@ -643,7 +638,9 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _canvas.removeEventListener("mousemove", onMouseMoveAdding);
 
     draw();
-    if (_onIsAdding) _onIsAdding(false);
+
+    // Only notify if really changed. We remove all listeners anyways just in case there's a mismatch
+    if (_onIsAdding && oldState === "adding") _onIsAdding(false);
   }
 
   function onMouseMoveAdding(e: MouseEvent) {
@@ -652,9 +649,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   }
 
   function onMouseLeaveAdding() {
-    // null out the line, but the event listeners are still active if it returns
-    _addingAtPoint = null;
-    draw(false);
+    endAddingDot();
   }
 
   function onClickAdding() {
@@ -704,19 +699,20 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     }
   }
 
-  function beginAddingDot() {
+  function beginAddingDot(at?: Point) {
     if (_state === "adding") return;
 
     // cleanup
     endAddingDot();
     _state = "adding";
 
+    _addingAtPoint = at ?? null;
+
     _canvas.addEventListener("mousemove", onMouseMoveAdding);
     _canvas.addEventListener("click", onClickAdding);
     _canvas.addEventListener("mouseleave", onMouseLeaveAdding);
     window.addEventListener("keydown", onKeyDownCancel);
 
-    // _selectedIndex = null;
     draw();
 
     if (_onIsAdding) _onIsAdding(true);
