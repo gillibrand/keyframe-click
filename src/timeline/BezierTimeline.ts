@@ -7,6 +7,7 @@ import {
   diamond,
   Gray200,
   Gray300,
+  Gray400,
   Gray50,
   Gray500,
   Gray900,
@@ -48,6 +49,7 @@ export interface BezierTimeline {
   destroy: () => void;
 
   setSnapToGrid: (snapToGrid: boolean) => void;
+  setLabelYAxis: (setLabelYAxis: boolean) => void;
   getUserDots(): UserDot[];
   getSamples(): Point[];
   setSampleCount(count: number): void;
@@ -123,6 +125,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   const _samples: Point[] = [];
 
   let _snapToGrid = true;
+  let _labelYAxis = true;
   let _sampleCount = 10;
   let _addingAtPoint: Point | null = null;
   let _selectedIndex: number | null = null;
@@ -380,6 +383,29 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
       _cx.lineTo(Width - InsetX, py);
       _cx.stroke();
+    }
+
+    drawAxisText();
+  }
+
+  function drawAxisText() {
+    if (!_labelYAxis) return;
+
+    _cx.textRendering = "optimizeSpeed";
+    _cx.textBaseline = "middle";
+    _cx.font = "14px sans-serif ";
+    _cx.fillStyle = Gray500;
+
+    for (let y = -100; y <= 200; y += 100) {
+      const tp = asPhysPoint({ x: 1, y });
+      const text = y === 0 ? "0" : `${y}%`;
+      const r = _cx.measureText(text);
+
+      _cx.fillStyle = White;
+      _cx.fillRect(tp.x - 1, tp.y - 5, r.width + 2, 10);
+
+      _cx.fillStyle = Gray400;
+      _cx.fillText(text, tp.x, tp.y);
     }
   }
 
@@ -654,6 +680,11 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _snapToGrid = snapToGrid;
   }
 
+  function setLabelYAxis(labelYAxis: boolean) {
+    _labelYAxis = labelYAxis;
+    draw();
+  }
+
   function getSamples() {
     return _samples.map((s) => asUserPoint(s));
   }
@@ -795,5 +826,6 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     deleteSelectedDot,
     cancel,
     setSampleCount,
+    setLabelYAxis,
   };
 }

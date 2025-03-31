@@ -10,7 +10,9 @@ interface GlobalProps {
   invertValues: boolean;
   sampleCount: number;
   outProperty: string;
+  labelYAxis: boolean;
   onSnapToGrid: (value: boolean) => void;
+  onLabelYAxis: (value: boolean) => void;
   onInvertValues: (value: boolean) => void;
   onSampleCount: (count: number) => void;
   onOutProperty: (property: OutProperty) => void;
@@ -30,35 +32,24 @@ const GlobalSettings = memo(function GlobalSettings({
   onSnapToGrid,
   onSampleCount,
   onOutProperty,
+  labelYAxis,
+  onLabelYAxis,
 }: GlobalProps) {
   return (
     <>
       <h2>Timeline</h2>
 
-      {/* <div className="col-2">
-        <label className="stacked-label">
-          <span>Max height</span>
-          <Segmented name="max-range">
-            <SegmentedButton value={"ok"}>200</SegmentedButton>
-            <SegmentedButton value={"ok"}>150</SegmentedButton>
-            <SegmentedButton value={"ok"}>100</SegmentedButton>
-          </Segmented>
+      <div className="stack-small">
+        <label className="block-label">
+          <input type="checkbox" checked={labelYAxis} onChange={(e) => onLabelYAxis(e.target.checked)} />{" "}
+          <span>Show value labels</span>
         </label>
 
-        <label className="stacked-label">
-          <span>Min height</span>
-          <Segmented name="min-range">
-            <SegmentedButton value={"ok"}>100</SegmentedButton>
-            <SegmentedButton value={"ok"}>150</SegmentedButton>
-            <SegmentedButton value={"ok"}>200</SegmentedButton>
-          </Segmented>
+        <label className="block-label">
+          <input type="checkbox" checked={snapToGrid} onChange={(e) => onSnapToGrid(e.target.checked)} />{" "}
+          <span>Snap to grid</span>
         </label>
-      </div> */}
-
-      <label className="block-label">
-        <input type="checkbox" checked={snapToGrid} onChange={(e) => onSnapToGrid(e.target.checked)} />{" "}
-        <span>Snap to grid</span>
-      </label>
+      </div>
 
       <h2>Output</h2>
 
@@ -146,7 +137,9 @@ export const Inspector = memo(function Inspector({ selected, onChangeSelected, .
 
           <div className="col-2">
             <label className="stacked-label">
-              <span>Offset</span>
+              <span>
+                Offset <span className="text-light">%</span>
+              </span>
               <input
                 type="number"
                 id={xId}
@@ -156,7 +149,9 @@ export const Inspector = memo(function Inspector({ selected, onChangeSelected, .
             </label>
 
             <label className="stacked-label">
-              <span>Value</span>
+              <span>
+                Value <span className="text-light">%</span>
+              </span>
               <input
                 id={yId}
                 value={normalY(selected.y)}

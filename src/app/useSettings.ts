@@ -11,6 +11,7 @@ interface Settings {
   invertValues: boolean;
   snapToGrid: boolean;
   repeatPreview: boolean;
+  labelYAxis: boolean;
 }
 
 /**
@@ -29,6 +30,7 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
     case "invertValues":
     case "snapToGrid":
     case "repeatPreview":
+    case "labelYAxis":
       return typeof value === "boolean";
 
     case "outProperty":

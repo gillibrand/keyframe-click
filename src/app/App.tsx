@@ -55,6 +55,7 @@ function App() {
   const [outProperty, setOutProperty] = useSetting("outProperty", "translateX");
   const [sampleCount, setSampleCount] = useSetting("sampleCount", 10);
   const [snapToGrid, setSnapToGrid] = useSetting("snapToGrid", true);
+  const [labelYAxis, setLabelYAxis] = useSetting("labelYAxis", true);
   const [invertValues, setInvertValues] = useSetting("invertValues", false);
 
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
@@ -102,6 +103,13 @@ function App() {
       if (timelineRef.current) timelineRef.current.setSnapToGrid(snapToGrid);
     },
     [snapToGrid]
+  );
+
+  useEffect(
+    function pushSnapToGrid() {
+      if (timelineRef.current) timelineRef.current.setLabelYAxis(labelYAxis);
+    },
+    [labelYAxis]
   );
 
   useEffect(
@@ -252,6 +260,8 @@ function App() {
           onSnapToGrid={setSnapToGrid}
           selected={selectedDot}
           onChangeSelected={handleInspectorSelectedChange}
+          labelYAxis={labelYAxis}
+          onLabelYAxis={setLabelYAxis}
         />
       </div>
       <div>
