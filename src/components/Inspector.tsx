@@ -40,6 +40,8 @@ const GlobalSettings = memo(function GlobalSettings({
   labelYAxis,
   onLabelYAxis,
 }: GlobalProps) {
+  const samplesId = useId();
+
   return (
     <>
       <h2>Timeline</h2>
@@ -70,7 +72,7 @@ const GlobalSettings = memo(function GlobalSettings({
       </label>
 
       <label className="stacked-label">
-        <span>Samples</span>
+        <span>Steps</span>
         <div className="flex gap-4">
           <input
             type="range"
@@ -79,8 +81,9 @@ const GlobalSettings = memo(function GlobalSettings({
             className="flex-auto"
             value={sampleCount}
             onChange={(e) => onSampleCount(parseInt(e.target.value))}
+            id={samplesId}
           />
-          <span>{sampleCount}</span>
+          <output htmlFor={samplesId}>{sampleCount}</output>
         </div>
       </label>
 
@@ -151,7 +154,7 @@ export const Inspector = memo(function Inspector({
           </button>
         </div>
         <div className="hint text-light text-x-small">
-          Hold <kbd>Shift</kbd> to add points quickly.
+          Hold <kbd>Shift</kbd> to add points quickly
         </div>
       </div>
 
