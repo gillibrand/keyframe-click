@@ -229,14 +229,10 @@ function App() {
     return genCssKeyframeText(timelineRef.current.getSamples(), outProperty, invertValues);
   }, [outProperty, invertValues, timelineDrawCount]);
 
-  function handleMessageMouseOver() {
-    console.info(">>> over");
-  }
-
   return (
     <div className="stack">
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
-      <div className="timeline-row" onMouseEnter={showMessage ? handleMessageMouseOver : undefined}>
+      <div className="timeline-row">
         <div className="timeline-wrapper">
           {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
           <canvas

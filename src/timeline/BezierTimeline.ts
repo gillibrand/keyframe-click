@@ -109,17 +109,14 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   const ScaleX = 9;
   const ScaleY = 2;
-
   const InsetX = 10;
   const InsetY = 10;
   const Height = _canvas.clientHeight;
   const Width = _canvas.clientWidth;
-  console.info(">>> Width", Width);
-
-  const _cx = _canvas.getContext("2d")!;
-
   const OffsetX = 0 + InsetX;
   const OffsetY = 400 + InsetY;
+
+  const _cx = _canvas.getContext("2d")!;
 
   const _dots = savedUserDots.map((p) => asPhysDot(p));
   const _samples: Point[] = [];
@@ -348,12 +345,16 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     // above 100% gray
     _cx.fillStyle = Gray50;
-    const py0 = asPhysY(0);
-    const ph100 = py0 - asPhysY(100);
-    _cx.fillRect(InsetX, InsetY, Width - 2 * InsetX, ph100);
+
+    const p200 = asPhysY(200);
+    const pNeg100 = asPhysY(-100);
+    const fullDiff = pNeg100 - p200;
+
+    _cx.fillStyle = White;
+    _cx.fillRect(InsetX, InsetY, Width - 2 * InsetX, fullDiff);
 
     // below 100% gray
-    _cx.fillRect(InsetX, py0, Width - 2 * InsetX, ph100);
+    // _cx.fillRect(InsetX, py0, Width - 2 * InsetX, ph100);
 
     // vertical lines
     for (let x = 0; x <= 100; x += 10) {
@@ -376,7 +377,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
         // zero baseline
         _cx.strokeStyle = Gray500;
       } else if (y % 100 === 0) {
-        _cx.strokeStyle = Gray300;
+        _cx.strokeStyle = Gray400;
       } else {
         _cx.strokeStyle = Gray200;
       }
@@ -385,12 +386,26 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       _cx.stroke();
     }
 
+    if (document.activeElement === _canvas) {
+      // Draw our own focus ring. This is because we draw large dots that appear to break out of the canvas
+      _cx.lineWidth = 2;
+      _cx.strokeStyle = "#1c7ef3";
+      _cx.lineJoin = "round";
+    } else {
+      _cx.lineWidth = 1;
+      _cx.strokeStyle = Gray900;
+    }
+
+    _cx.strokeRect(InsetX, InsetY, Width - 2 * InsetX, fullDiff);
+    _cx.lineWidth = 1;
+
     drawAxisText();
   }
 
   function drawAxisText() {
     if (!_labelYAxis) return;
 
+    _cx.textAlign = "left";
     _cx.textRendering = "optimizeSpeed";
     _cx.textBaseline = "middle";
     _cx.font = "14px sans-serif ";
@@ -402,7 +417,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       const r = _cx.measureText(text);
 
       _cx.fillStyle = White;
-      _cx.fillRect(tp.x - 1, tp.y - 5, r.width + 2, 10);
+      _cx.fillRect(tp.x, tp.y - 4, r.width, 8);
 
       _cx.fillStyle = Gray400;
       _cx.fillText(text, tp.x, tp.y);
@@ -469,7 +484,6 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       const s = _samples[i];
       _cx.lineTo(s.x, s.y);
     }
-    console.info(">>> Width - OffsetX", Width - OffsetX);
     _cx.lineTo(Width - OffsetX, OffsetY);
     _cx.lineTo(OffsetX, OffsetY);
     _cx.fillStyle = "rgba(255 0 0 / .075)";
@@ -506,8 +520,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     if (drawTimer !== null) return;
 
     drawTimer = requestAnimationFrame(() => {
-      drawTimer = null;
       drawNow(notify);
+      drawTimer = null;
     });
   }
 
@@ -652,22 +666,32 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     draw();
   }
 
+  function onFocus() {
+    draw();
+  }
+
+  function onBlur() {
+    draw();
+  }
+
   // Always listen for mouse down
+  _canvas.addEventListener("focus", onFocus);
+  _canvas.addEventListener("blur", onBlur);
   _canvas.addEventListener("mousedown", onMouseDown);
   _canvas.addEventListener("keydown", onKeyDown);
-  // _canvas.addEventListener("dblclick", onDblClick);
-  // _canvas.addEventListener("click", onClick);
 
   function destroy() {
-    // _canvas.addEventListener("dblclick", onDblClick);
     _canvas.removeEventListener("keydown", onKeyDown);
     _canvas.removeEventListener("mousedown", onMouseDown);
+    _canvas.addEventListener("focus", onFocus);
+    _canvas.addEventListener("blur", onBlur);
 
     _canvas.removeEventListener("mousemove", onMouseMoveDrag);
     _canvas.removeEventListener("mouseup", onMouseUpDrag);
 
     _canvas.removeEventListener("mousemove", onMouseMoveAdding);
-    // _canvas.removeEventListener("mousedown", onMouseDown);
+
+    if (drawTimer !== null) cancelAnimationFrame(drawTimer);
   }
 
   function updateSelectedDot(p: UserDot) {
