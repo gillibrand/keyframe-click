@@ -499,8 +499,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     if (y === null) y = _addingAtPoint.y;
 
     _cx.beginPath();
-    _cx.moveTo(_addingAtPoint.x, 0);
-    _cx.lineTo(_addingAtPoint.x, _canvas.height);
+    _cx.moveTo(_addingAtPoint.x, InsetX);
+    _cx.lineTo(_addingAtPoint.x, Height - InsetX);
     _cx.stroke();
 
     bullsEye({ x: _addingAtPoint.x, y }, _cx);
@@ -681,6 +681,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   _canvas.addEventListener("keydown", onKeyDown);
 
   function destroy() {
+    endAddingDot();
+
     _canvas.removeEventListener("keydown", onKeyDown);
     _canvas.removeEventListener("mousedown", onMouseDown);
     _canvas.addEventListener("focus", onFocus);
@@ -772,6 +774,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       if (!didAdd) {
         // add at end
         _dots.push(newDot);
+        _selectedIndex = _dots.length - 1;
       }
     }
 

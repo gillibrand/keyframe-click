@@ -130,9 +130,70 @@ input[type="checkbox"] {
 
 .flex {
   display: flex;
+  /* gap: 1rem; */
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
   gap: 1rem;
 }
 
 .flex-auto {
   flex: auto;
+}
+
+.basis-1 {
+  flex-basis: 1px;
+}
+
+.push-button {
+  appearance: none;
+  border: solid 1px #bbb;
+  border-color: #bbb;
+
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.3rem;
+  background-color: #fff;
+  min-width: 12ch;
+
+  opacity: 0.6;
+
+  &:not(:disabled) {
+    opacity: 1;
+    border-bottom-color: #777;
+
+    &:hover {
+      background-color: #f7f7f7;
+      background-color: #f7f7f7;
+    }
+
+    &:active {
+      background-color: #dedede;
+    }
+
+    &.is-pressed {
+      border-bottom-color: #bbb;
+      border-top-color: #777;
+      background-color: #f7f7f7;
+    }
+  }
+
+  &:not([disabled]).is-default {
+    color: white;
+    color: rgba(255, 255, 255, 1);
+    background-color: var(--c-blue);
+    border-color: var;
+    border-bottom-color: #113762;
+
+    &:hover {
+      background-color: #3b7ae5;
+    }
+
+    &:active {
+      background-color: rgb(29, 110, 191);
+    }
+  }
 }

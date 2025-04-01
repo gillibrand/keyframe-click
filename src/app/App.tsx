@@ -159,16 +159,23 @@ function App() {
     [isDataDirty, saveDots]
   );
 
-  function handleClickAdd() {
+  const handleClickAdd = useCallback(() => {
     if (!canvasRef.current) return;
 
     setShowMessage(true);
-    timelineRef.current!.beginAddingDot();
-  }
+    const timeline = timelineRef.current;
+    if (!timeline) return;
 
-  function handleClickDelete() {
+    if (isAdding) {
+      timeline.cancel();
+    } else {
+      timeline.beginAddingDot();
+    }
+  }, [isAdding]);
+
+  const handleClickDelete = useCallback(() => {
     timelineRef.current!.deleteSelectedDot();
-  }
+  }, []);
 
   const lastMouseRef = useRef<Point>({ x: -1, y: -1 });
 
@@ -212,7 +219,7 @@ function App() {
     };
   }, []);
 
-  function handleInspectorSelectedChange(dot: UserDot) {
+  const handleInspectorSelectedChange = useCallback((dot: UserDot) => {
     if (!timelineRef.current) return;
 
     timelineRef.current.updateSelectedDot(dot);
@@ -220,7 +227,7 @@ function App() {
     // Update the selected dot not so it is not throttled. While this will get pulled again in
     // response to the timeline drawing, that is throttled and we don't want to wait.
     setSelectedDot(dot);
-  }
+  }, []);
 
   const keyframeText = useMemo(() => {
     void timelineDrawCount;
@@ -228,6 +235,11 @@ function App() {
 
     return genCssKeyframeText(timelineRef.current.getSamples(), outProperty, invertValues);
   }, [outProperty, invertValues, timelineDrawCount]);
+
+  useEffect(() => {
+    document.body.classList.toggle("is-adding", isAdding);
+    return () => document.body.classList.remove("is-adding");
+  }, [isAdding]);
 
   return (
     <div className="stack">
@@ -255,19 +267,13 @@ function App() {
           onInvertValues={setInvertValues}
           onSnapToGrid={setSnapToGrid}
           selected={selectedDot}
-          onChangeSelected={handleInspectorSelectedChange}
+          onChangeSelectedProps={handleInspectorSelectedChange}
           labelYAxis={labelYAxis}
           onLabelYAxis={setLabelYAxis}
+          onClickAdd={handleClickAdd}
+          onClickDelete={handleClickDelete}
+          isAdding={isAdding}
         />
-      </div>
-      <div>
-        <button onClick={handleClickAdd} disabled={isAdding}>
-          Add
-        </button>
-
-        <button onClick={handleClickDelete} disabled={!selectedDot}>
-          Delete
-        </button>
       </div>
 
       <Preview keyframeText={keyframeText} />

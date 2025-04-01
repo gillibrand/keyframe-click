@@ -5,6 +5,8 @@ import { memo, useId } from "react";
 import { OutFunctions, OutProperty } from "../app/OutFunctions";
 import { round3dp } from "../util/index";
 
+import cx from "classnames";
+
 interface GlobalProps {
   snapToGrid: boolean;
   invertValues: boolean;
@@ -20,7 +22,10 @@ interface GlobalProps {
 
 interface Props extends GlobalProps {
   selected: UserDot | null;
-  onChangeSelected: (dot: UserDot) => void;
+  onChangeSelectedProps: (dot: UserDot) => void;
+  onClickAdd: () => void;
+  onClickDelete: () => void;
+  isAdding: boolean;
 }
 
 const GlobalSettings = memo(function GlobalSettings({
@@ -66,7 +71,7 @@ const GlobalSettings = memo(function GlobalSettings({
 
       <label className="stacked-label">
         <span>Samples</span>
-        <div className="flex">
+        <div className="flex gap-4">
           <input
             type="range"
             min={3}
@@ -97,36 +102,61 @@ function normalY(n: number) {
   return round3dp(n);
 }
 
-export const Inspector = memo(function Inspector({ selected, onChangeSelected, ...props }: Props) {
+export const Inspector = memo(function Inspector({
+  selected,
+  onChangeSelectedProps,
+  onClickAdd,
+  onClickDelete,
+  isAdding,
+  ...props
+}: Props) {
   const xId = useId();
   const yId = useId();
 
   function handleChangeX(x: number) {
     if (!selected || isNaN(x)) return;
     const dot = { ...selected, x };
-    onChangeSelected(dot);
+    onChangeSelectedProps(dot);
   }
 
   function handleChangeY(y: number) {
     if (!selected || isNaN(y)) return;
     const dot = { ...selected, y };
-    onChangeSelected(dot);
+    onChangeSelectedProps(dot);
   }
 
   function handleTypeChange(value: string) {
     if (!selected) return;
     const dot: UserDot = { ...selected, type: value as DotType };
-    onChangeSelected(dot);
+    onChangeSelectedProps(dot);
   }
 
   return (
     <aside className="Inspector stack">
       <GlobalSettings {...props} />
 
+      <h2>Point</h2>
+
+      <div className="stack-small">
+        <div className="flex gap-2">
+          <button
+            className={cx("push-button flex-auto basis-1", { "is-pressed": isAdding })}
+            aria-pressed={isAdding}
+            onClick={onClickAdd}
+          >
+            Add
+          </button>
+          <button className="push-button flex-auto basis-1" onClick={onClickDelete} disabled={!selected}>
+            Delete{" "}
+          </button>
+        </div>
+        <div className="hint text-light text-x-small">
+          Hold <kbd>Shift</kbd> to add points quickly.
+        </div>
+      </div>
+
       {selected && (
         <>
-          <h2>Point</h2>
-
           <label className="stacked-label">
             <span>Style</span>
             <select onChange={(e) => handleTypeChange(e.target.value)} value={selected.type}>

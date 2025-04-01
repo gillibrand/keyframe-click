@@ -3,10 +3,13 @@
   &:focus {
     outline: none;
   }
+}
 
-  &.is-adding {
-    cursor: crosshair;
-    cursor: copy;
+body.is-adding {
+  &,
+  & * {
+    /* cursor: crosshair; */
+    /* cursor: copy !important; */
   }
 }
 
