@@ -742,20 +742,26 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   function onClickAdding() {
     if (_addingAtPoint !== null) {
-      let y = findYForXInCurve(_addingAtPoint.x, _dots);
+      let x = _addingAtPoint.x;
+      let y = findYForXInCurve(x, _dots);
       if (y === null) y = _addingAtPoint.y;
+
+      if (_snapToGrid) {
+        x = asPhysX(Math.round(asUserX(x)));
+        y = asPhysY(Math.round(asUserY(y)));
+      }
 
       const newDot: PhysDot = {
         type: "square",
         space: "physical",
-        x: _addingAtPoint.x,
+        x: x,
         y: y,
         h1: {
-          x: _addingAtPoint.x - 50,
+          x: x - 50,
           y: y,
         },
         h2: {
-          x: _addingAtPoint.x + 50,
+          x: x + 50,
           y: y,
         },
       };
