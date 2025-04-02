@@ -1,5 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { useSetting } from "../app/useSettings";
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { debounce, nullFn } from "../util";
 import "./Preview.css";
 import { ProgressBar } from "./ProgressBar";
@@ -14,13 +13,26 @@ function createNamedKeyframes(animName: string, keyframeText: string) {
   return styleSheet;
 }
 
-export const Preview = memo(function Preview({ keyframeText }: { keyframeText: string }) {
+interface UsePreview {
+  startPreview(): void;
+  stopPreview(): void;
+  isRunning: boolean;
+  preview: ReactElement;
+}
+
+interface Props {
+  keyframeText: string;
+  durationMs: number;
+  repeat: boolean;
+}
+
+export function usePreview({ keyframeText, durationMs, repeat }: Props): UsePreview {
   const ref = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
-  const [repeat, setRepeat] = useSetting("repeatPreview", false);
-  const [durationMs] = useState(1000);
 
-  function startAnimation(keyframeText: string) {
+  const startAnimationCancellerRef = useRef(nullFn);
+
+  const startAnimation = useCallback(() => {
     if (!ballRef.current || !ref.current) return;
 
     // remove old styles first
@@ -35,63 +47,60 @@ export const Preview = memo(function Preview({ keyframeText }: { keyframeText: s
     ballRef.current.classList.remove("is-animate");
     void ballRef.current.offsetHeight;
     ballRef.current.classList.add("is-animate");
-  }
+  }, [keyframeText]);
 
-  function stopAnimation() {
-    if (!ballRef.current || !ref.current) return;
-    ballRef.current.classList.remove("is-animate");
-
+  const stopAnimation = useCallback(() => {
+    startAnimationCancellerRef?.current();
     setIsRunning(false);
     setProgress(0);
-  }
+    // setRepeat(false);
 
-  const startAnimationSoon = useMemo(() => debounce(startAnimation, 500), []);
+    if (ballRef.current) ballRef.current.classList.remove("is-animate");
+  }, []);
 
-  const startAnimationCancellerRef = useRef(nullFn);
+  const startAnimationSoon = useMemo(() => {
+    if (startAnimationCancellerRef.current) startAnimationCancellerRef.current();
+    return debounce(startAnimation, 500);
+  }, [startAnimation]);
 
   useEffect(() => {
-    const cancel = startAnimationSoon(keyframeText);
+    if (startAnimationCancellerRef.current) startAnimationCancellerRef.current();
+    const cancel = startAnimationSoon();
     startAnimationCancellerRef.current = cancel;
     return cancel;
   }, [keyframeText, startAnimationSoon]);
 
-  const repeatStyle = !repeat
-    ? undefined
-    : ({
-        "--repeat": "infinite",
-      } as React.CSSProperties);
-
-  function handleClickStart() {
-    startAnimation(keyframeText);
-  }
-
-  function handleClickStop() {
-    startAnimationCancellerRef?.current();
-    stopAnimation();
-    setRepeat(false);
-  }
+  const repeatStyle = useMemo(
+    () =>
+      !repeat
+        ? undefined
+        : ({
+            "--repeat": "infinite",
+          } as React.CSSProperties),
+    [repeat]
+  );
 
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const intervalTimer = useRef(-1);
 
-  function didStart() {
+  const didStart = useCallback(() => {
     setIsRunning(true);
     setProgress(0);
-  }
+  }, []);
 
-  function didEnd() {
+  const didEnd = useCallback(() => {
     setIsRunning(false);
     setProgress(100);
-  }
+  }, []);
 
-  function didIteration() {
+  const didIteration = useCallback(() => {
     setProgress(0);
-  }
+  }, []);
 
   useEffect(
-    function updateProgress() {
+    function updateProgressInterval() {
       clearInterval(intervalTimer.current);
 
       if (!isRunning) {
@@ -111,17 +120,6 @@ export const Preview = memo(function Preview({ keyframeText }: { keyframeText: s
     [isRunning, durationMs]
   );
 
-  function handleClickRepeat(e: React.ChangeEvent<HTMLInputElement>) {
-    const willRepeat = e.target.checked;
-    setRepeat(willRepeat);
-
-    if (willRepeat) {
-      startAnimation(keyframeText);
-    } else {
-      stopAnimation();
-    }
-  }
-
   const progressBarPosition = useMemo(
     () =>
       ({
@@ -132,29 +130,26 @@ export const Preview = memo(function Preview({ keyframeText }: { keyframeText: s
     []
   );
 
-  return (
-    <div onAnimationStart={didStart} onAnimationEnd={didEnd} onAnimationIteration={didIteration}>
-      <div className="Preview" ref={ref} style={repeatStyle} onClick={handleClickStart}>
-        <div className="Preview__content">
-          <div className="Preview__ball" ref={ballRef}></div>
-        </div>
-        <ProgressBar value={progress} style={progressBarPosition} />
+  const preview = (
+    <div
+      className="Preview"
+      ref={ref}
+      style={repeatStyle}
+      onAnimationStart={didStart}
+      onAnimationEnd={didEnd}
+      onAnimationIteration={didIteration}
+    >
+      <div className="Preview__content">
+        <div className="Preview__ball" ref={ballRef}></div>
       </div>
-      <label className="block-label">
-        <input type="checkbox" checked={repeat} onChange={handleClickRepeat} />
-        <span>Loop</span>
-      </label>
-      <div>
-        {isRunning ? (
-          <button className="push-button" onClick={handleClickStop}>
-            Stop
-          </button>
-        ) : (
-          <button className="push-button" onClick={handleClickStart}>
-            Start
-          </button>
-        )}
-      </div>
+      <ProgressBar value={progress} style={progressBarPosition} />
     </div>
   );
-});
+
+  return {
+    startPreview: startAnimation,
+    stopPreview: stopAnimation,
+    isRunning,
+    preview,
+  };
+}

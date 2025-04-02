@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Inspector } from "../components/Inspector";
-import { Preview } from "../components/Preview";
+import { usePreview } from "../components/Preview";
 import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline";
 import { Point, UserDot, createRound, createSquare } from "../timeline/point";
 import { debounce, round2dp, throttle } from "../util";
@@ -241,9 +241,17 @@ function App() {
     return () => document.body.classList.remove("is-adding");
   }, [isAdding]);
 
+  const { preview, isRunning, startPreview, stopPreview } = usePreview({
+    keyframeText,
+    durationMs: 1000,
+    repeat: false,
+  });
+
   return (
     <div className="stack">
+      {/* <h2>Animation Timeline</h2> */}
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
+
       <div className="sidebar-row">
         <div className="timeline-wrapper">
           {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
@@ -276,9 +284,21 @@ function App() {
         />
       </div>
 
+      <h2>Preview</h2>
+
       <div className="sidebar-row">
-        <Preview keyframeText={keyframeText} />
-        <div></div>
+        {preview}
+        <div>
+          {isRunning ? (
+            <button className="push-button" onClick={stopPreview}>
+              Stop
+            </button>
+          ) : (
+            <button className="push-button" onClick={startPreview}>
+              Start
+            </button>
+          )}
+        </div>
       </div>
 
       <div>

@@ -44,7 +44,7 @@ const GlobalSettings = memo(function GlobalSettings({
 
   return (
     <>
-      <h2>Timeline</h2>
+      {/* <h2>Timeline</h2> */}
 
       <div className="stack-small">
         <label className="block-label">
@@ -147,7 +147,7 @@ export const Inspector = memo(function Inspector({
             aria-pressed={isAdding}
             onClick={onClickAdd}
           >
-            Add
+            Add Point
           </button>
           <button className="push-button flex-auto basis-1" onClick={onClickDelete} disabled={!selected}>
             Delete{" "}
