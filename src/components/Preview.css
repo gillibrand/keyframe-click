@@ -1,19 +1,23 @@
 .Preview {
   border: solid 1px gray;
   background-color: white;
+  /* background-color: #0688c9; */
+  /* background-image: linear-gradient(#2aaeef, #0688c9); */
   aspect-ratio: 1;
   width: 20rem;
   display: inline-grid;
   place-items: center;
   overflow: hidden;
-
   cursor: pointer;
+
+  position: relative;
 }
 
 .Preview__content {
   aspect-ratio: 1;
   width: 5rem;
   position: relative;
+  /* border: dashed 1px rgba(255 255 255 / 0.7); */
   border: dashed 1px gray;
 }
 
@@ -38,4 +42,10 @@
     top: 1rem;
     left: 1rem;
   }
+}
+
+.Preview__progressBar {
+  position: absolute;
+  bottom: 0;
+  inset: 0;
 }

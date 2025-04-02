@@ -1,0 +1,15 @@
+.ProgressBar {
+  background-color: var(--c-gray-100);
+  position: relative;
+}
+
+.ProgressBar,
+.ProgressBar__bar {
+  height: 3px;
+}
+
+.ProgressBar__bar {
+  background-color: var(--c-blue);
+  transform-origin: left;
+  scale: var(--percent, 0.5) 1;
+}

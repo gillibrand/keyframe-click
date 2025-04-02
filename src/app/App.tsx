@@ -244,7 +244,7 @@ function App() {
   return (
     <div className="stack">
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
-      <div className="timeline-row">
+      <div className="sidebar-row">
         <div className="timeline-wrapper">
           {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
           <canvas
@@ -276,7 +276,10 @@ function App() {
         />
       </div>
 
-      <Preview keyframeText={keyframeText} />
+      <div className="sidebar-row">
+        <Preview keyframeText={keyframeText} />
+        <div></div>
+      </div>
 
       <div>
         <textarea cols={80} rows={10} disabled value={keyframeText}></textarea>

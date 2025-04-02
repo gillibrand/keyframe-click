@@ -64,3 +64,5 @@ export function round3dp(n: number): number {
 export function unreachable(value: never) {
   return new Error("unreachable value: " + value);
 }
+
+export function nullFn(): void {}
