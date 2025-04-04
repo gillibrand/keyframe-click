@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { unreachable } from "../util";
-import { OutFunctions } from "./OutFunctions";
+import { unreachable } from "@util";
+import { OutFunctions } from "@timeline/OutFunctions";
 
 const TimeUnits = ["ms", "s"] as const;
 export type TimeUnit = (typeof TimeUnits)[number];

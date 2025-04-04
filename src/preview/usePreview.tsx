@@ -1,6 +1,6 @@
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Duration, useSetting } from "../app/useSettings";
-import { debounce, nullFn, unreachable } from "../util";
+import { Duration, useSetting } from "@app/useSettings";
+import { debounce, nullFn, unreachable } from "@util";
 import "./Preview.css";
 import { ProgressBar } from "./ProgressBar";
 

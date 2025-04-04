@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./global.css";
+import "@style/global.css";
 import App from "./app/App.tsx";
 
 createRoot(document.getElementById("root")!).render(

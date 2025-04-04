@@ -1,6 +1,6 @@
-import { Duration, TimeUnit } from "../app/useSettings";
-import "./inspector.css";
-import { Hint } from "./Hint";
+import { Duration, TimeUnit } from "@app/useSettings";
+import "@style/inspector.css";
+import { Hint } from "@components/Hint";
 
 interface Props {
   duration: Duration;

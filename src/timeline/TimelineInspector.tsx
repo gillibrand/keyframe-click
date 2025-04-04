@@ -1,13 +1,11 @@
-import { DotType, UserDot } from "../timeline/point";
-import "./inspector.css";
-
-import { memo, useId } from "react";
-import { OutFunctions, OutProperty } from "../app/OutFunctions";
-import { round3dp } from "../util/index";
-
+import { Hint } from "@components/Hint";
+import "@style/inspector.css";
+import { OutFunctions, OutProperty } from "@timeline/OutFunctions";
+import { DotType, UserDot } from "@timeline/point";
+import { useStable } from "@util/hooks";
+import { round3dp } from "@util/index";
 import cx from "classnames";
-import { Hint } from "./Hint";
-import { useStable } from "../util/hooks";
+import { memo, useId } from "react";
 
 interface GlobalProps {
   snapToGrid: boolean;

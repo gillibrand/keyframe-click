@@ -1,4 +1,4 @@
-import { Point } from "../timeline/point";
+import { Point } from "@timeline/point";
 
 export function throttle<T extends unknown[]>(fn: (...args: T) => void, delay: number) {
   let lastArgs: T | null = null;

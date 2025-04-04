@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { PreviewInspector } from "../components/PreviewInspector";
-import { TimelineInspector } from "../components/TimelineInspector";
-import { usePreview } from "../components/usePreview";
-import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline";
-import { Point, UserDot, createRound, createSquare } from "../timeline/point";
-import { debounce, round2dp, throttle } from "../util";
+import { PreviewInspector } from "@preview/PreviewInspector";
+import { TimelineInspector } from "@timeline/TimelineInspector";
+import { usePreview } from "@preview/usePreview";
+import { BezierTimeline, createBezierTimeline } from "@timeline/BezierTimeline";
+import { Point, UserDot, createRound, createSquare } from "@timeline/point";
+import { debounce, round2dp, throttle } from "@util";
 import "./App.css";
-import { OutFunctions, OutProperty } from "./OutFunctions";
+import { OutFunctions, OutProperty } from "@timeline/OutFunctions";
 import { useSetting } from "./useSettings";
 
 const defaultDots: UserDot[] = [
