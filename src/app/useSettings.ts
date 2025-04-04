@@ -2,16 +2,26 @@ import { useState } from "react";
 import { unreachable } from "../util";
 import { OutFunctions } from "./OutFunctions";
 
+const TimeUnits = ["ms", "s"] as const;
+export type TimeUnit = (typeof TimeUnits)[number];
+
+export interface Duration {
+  time: number;
+  unit: TimeUnit;
+}
+
 /**
  * Types of all global settings.
  */
 interface Settings {
   outProperty: keyof typeof OutFunctions;
   sampleCount: number;
-  invertValues: boolean;
-  snapToGrid: boolean;
-  repeatPreview: boolean;
-  labelYAxis: boolean;
+  isInvertValues: boolean;
+  isSnapToGrid: boolean;
+  // isPreviewRepeat: boolean;
+  isLabelYAxis: boolean;
+  previewDurationTime: number;
+  previewDurationUnit: TimeUnit;
 }
 
 /**
@@ -27,10 +37,16 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
     case "sampleCount":
       return typeof value === "number" && value > 3;
 
-    case "invertValues":
-    case "snapToGrid":
-    case "repeatPreview":
-    case "labelYAxis":
+    case "previewDurationTime":
+      return typeof value === "number" && value >= 0;
+
+    case "previewDurationUnit":
+      return TimeUnits.findIndex((unit) => unit === value) !== -1;
+
+    // case "isPreviewRepeat":
+    case "isInvertValues":
+    case "isSnapToGrid":
+    case "isLabelYAxis":
       return typeof value === "boolean";
 
     case "outProperty":
@@ -38,7 +54,10 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
       return typeof value === "string";
 
     default: {
-      throw unreachable(name);
+      // XXX: this should never happen unless we change setting names. This this will throw cause
+      // all settings to reset to default.
+      unreachable(name);
+      return false;
     }
   }
 }
@@ -52,24 +71,6 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
 function storageKey(name: string) {
   return `kc.${name}`;
 }
-
-/**
- * Gets the default value for a setting. Used on first load or if saved data is invalid.
- *
- * @param name Setting name.
- * @returns Default value for that setting.
- */
-// function getDefault<K extends keyof Settings>(name: K) {
-//   const defaults: Settings = {
-//     outProperty: Object.keys(OutputFunctions)[0],
-//     sampleCount: 10,
-//     invertValues: false,
-//     snapToGrid: true,
-//     repeatPreview: false,
-//   };
-
-//   return defaults[name];
-// }
 
 /**
  * Reads a saved setting from local storage. Done on first render. After, we read from the in-memory

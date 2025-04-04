@@ -70,9 +70,27 @@ h2 {
 body {
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 
-  padding: 1rem;
+  /* padding: 1rem; */
+  /* margin-inline: auto; */
+  margin: 0;
+  padding: 0;
+  /* background-color: rgb(255, 227, 176); */
+}
+
+.big-row {
+  margin: 1rem 0;
+
+  & + & {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    background-image: linear-gradient(180deg, rgba(0 0 0 / 0.035), transparent 25%);
+  }
+}
+
+.container {
   max-width: 1200px;
-  margin-inline: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .stack > * + * {
@@ -124,7 +142,6 @@ input[type="checkbox"] {
 
 .col-2 {
   display: grid;
-  gap: 0.5rem;
   grid-template-columns: 1fr 1fr;
 }
 
@@ -147,6 +164,10 @@ input[type="checkbox"] {
 
 .basis-1 {
   flex-basis: 1px;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .push-button {
@@ -195,5 +216,15 @@ input[type="checkbox"] {
     &:active {
       background-color: rgb(29, 110, 191);
     }
+  }
+}
+
+code {
+  border: solid 1px gray;
+  padding: 0.5rem 0.75rem;
+  background-color: white;
+
+  pre {
+    margin: 0;
   }
 }

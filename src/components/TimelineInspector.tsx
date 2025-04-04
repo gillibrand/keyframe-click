@@ -1,5 +1,5 @@
 import { DotType, UserDot } from "../timeline/point";
-import "./Inspector.css";
+import "./inspector.css";
 
 import { memo, useId } from "react";
 import { OutFunctions, OutProperty } from "../app/OutFunctions";
@@ -44,7 +44,41 @@ const GlobalSettings = memo(function GlobalSettings({
 
   return (
     <>
-      {/* <h2>Timeline</h2> */}
+      <h2>Animation</h2>
+
+      <label className="stacked-label">
+        <span>Property</span>
+        <select value={outProperty} onChange={(e) => onOutProperty(e.target.value as OutProperty)}>
+          {Object.entries(OutFunctions).map(([key, namedFn]) => (
+            <option key={key} value={key}>
+              {namedFn.label}
+            </option>
+          ))}
+        </select>
+
+        <label className="stacked-label">
+          <span>Steps</span>
+          <div className="flex gap-4">
+            <input
+              type="range"
+              min={3}
+              max={50}
+              className="flex-auto"
+              value={sampleCount}
+              onChange={(e) => onSampleCount(parseInt(e.target.value))}
+              id={samplesId}
+            />
+            <output htmlFor={samplesId}>{sampleCount}</output>
+          </div>
+        </label>
+
+        <label className="block-label">
+          <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
+          <span>Flip values</span>
+        </label>
+      </label>
+
+      <h2>Grid options</h2>
 
       <div className="stack-small">
         <label className="block-label">
@@ -57,40 +91,6 @@ const GlobalSettings = memo(function GlobalSettings({
           <span>Snap to grid</span>
         </label>
       </div>
-
-      <h2>Output</h2>
-
-      <label className="stacked-label">
-        <span>Property</span>
-        <select value={outProperty} onChange={(e) => onOutProperty(e.target.value as OutProperty)}>
-          {Object.entries(OutFunctions).map(([key, namedFn]) => (
-            <option key={key} value={key}>
-              {namedFn.label}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="stacked-label">
-        <span>Steps</span>
-        <div className="flex gap-4">
-          <input
-            type="range"
-            min={3}
-            max={50}
-            className="flex-auto"
-            value={sampleCount}
-            onChange={(e) => onSampleCount(parseInt(e.target.value))}
-            id={samplesId}
-          />
-          <output htmlFor={samplesId}>{sampleCount}</output>
-        </div>
-      </label>
-
-      <label className="block-label">
-        <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
-        <span>Flip values</span>
-      </label>
     </>
   );
 });
@@ -105,7 +105,7 @@ function normalY(n: number) {
   return round3dp(n);
 }
 
-export const Inspector = memo(function Inspector({
+export const TimelineInspector = memo(function Inspector({
   selected,
   onChangeSelectedProps,
   onClickAdd,
@@ -135,7 +135,7 @@ export const Inspector = memo(function Inspector({
   }
 
   return (
-    <aside className="Inspector stack">
+    <aside className="inspector stack">
       <GlobalSettings {...props} />
 
       <h2>Point</h2>
@@ -168,7 +168,7 @@ export const Inspector = memo(function Inspector({
             </select>
           </label>
 
-          <div className="col-2">
+          <div className="col-2 gap-2">
             <label className="stacked-label">
               <span>
                 Offset <span className="text-light">%</span>

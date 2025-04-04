@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { Inspector } from "../components/Inspector";
-import { usePreview } from "../components/Preview";
+import { PreviewInspector } from "../components/PreviewInspector";
+import { TimelineInspector } from "../components/TimelineInspector";
+import { usePreview } from "../components/usePreview";
 import { BezierTimeline, createBezierTimeline } from "../timeline/BezierTimeline";
 import { Point, UserDot, createRound, createSquare } from "../timeline/point";
 import { debounce, round2dp, throttle } from "../util";
@@ -51,12 +52,14 @@ function App() {
   const [isAdding, setIsAdding] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
 
-  // settings
+  // timeline settings
   const [outProperty, setOutProperty] = useSetting("outProperty", "translateX");
   const [sampleCount, setSampleCount] = useSetting("sampleCount", 10);
-  const [snapToGrid, setSnapToGrid] = useSetting("snapToGrid", true);
-  const [labelYAxis, setLabelYAxis] = useSetting("labelYAxis", true);
-  const [invertValues, setInvertValues] = useSetting("invertValues", false);
+  const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
+  const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
+  const [invertValues, setInvertValues] = useSetting("isInvertValues", false);
+
+  // preview
 
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
   // React, we instead listen to its callback and manually call this.
@@ -241,70 +244,87 @@ function App() {
     return () => document.body.classList.remove("is-adding");
   }, [isAdding]);
 
-  const { preview, isRunning, startPreview, stopPreview } = usePreview({
+  const { preview, isPlaying, playPreview, stopPreview, duration, setDuration, setIsRepeat, isRepeat } = usePreview({
     keyframeText,
-    durationMs: 1000,
-    repeat: false,
   });
 
   return (
-    <div className="stack">
+    <>
       {/* <h2>Animation Timeline</h2> */}
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
 
-      <div className="sidebar-row">
-        <div className="timeline-wrapper">
-          {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
-          <canvas
-            width={920}
-            height={620}
-            id="canvas"
-            ref={canvasRef}
-            tabIndex={0}
-            className={"timeline " + (isAdding ? "is-adding" : "")}
-          />
-        </div>
+      <div className="big-row">
+        <div className="container">
+          <div className="inspector-sidebar">
+            <div className="timeline-wrapper">
+              {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
+              <canvas
+                width={920}
+                height={620}
+                id="canvas"
+                ref={canvasRef}
+                tabIndex={0}
+                className={"timeline " + (isAdding ? "is-adding" : "")}
+              />
+            </div>
 
-        <Inspector
-          outProperty={outProperty}
-          sampleCount={sampleCount}
-          invertValues={invertValues}
-          snapToGrid={snapToGrid}
-          onOutProperty={setOutProperty}
-          onSampleCount={setSampleCount}
-          onInvertValues={setInvertValues}
-          onSnapToGrid={setSnapToGrid}
-          selected={selectedDot}
-          onChangeSelectedProps={handleInspectorSelectedChange}
-          labelYAxis={labelYAxis}
-          onLabelYAxis={setLabelYAxis}
-          onClickAdd={handleClickAdd}
-          onClickDelete={handleClickDelete}
-          isAdding={isAdding}
-        />
-      </div>
-
-      <h2>Preview</h2>
-
-      <div className="sidebar-row">
-        {preview}
-        <div>
-          {isRunning ? (
-            <button className="push-button" onClick={stopPreview}>
-              Stop
-            </button>
-          ) : (
-            <button className="push-button" onClick={startPreview}>
-              Start
-            </button>
-          )}
+            <TimelineInspector
+              outProperty={outProperty}
+              sampleCount={sampleCount}
+              invertValues={invertValues}
+              snapToGrid={snapToGrid}
+              onOutProperty={setOutProperty}
+              onSampleCount={setSampleCount}
+              onInvertValues={setInvertValues}
+              onSnapToGrid={setSnapToGrid}
+              selected={selectedDot}
+              onChangeSelectedProps={handleInspectorSelectedChange}
+              labelYAxis={labelYAxis}
+              onLabelYAxis={setLabelYAxis}
+              onClickAdd={handleClickAdd}
+              onClickDelete={handleClickDelete}
+              isAdding={isAdding}
+            />
+          </div>
         </div>
       </div>
 
-      <div>
-        <textarea cols={80} rows={10} disabled value={keyframeText}></textarea>
+      <div className="big-row big-row--alt">
+        <div className="container">
+          <aside className="inspector-sidebar">
+            <div className="col-2 gap-4">
+              <code>
+                <pre>{keyframeText}</pre>
+              </code>
+              {preview}
+            </div>
+
+            <PreviewInspector
+              isPlaying={isPlaying}
+              duration={duration}
+              onChangeDuration={setDuration}
+              isRepeat={isRepeat}
+              onChangeIsRepeat={setIsRepeat}
+              onClickPlay={playPreview}
+              onClickStop={stopPreview}
+            />
+
+            {/* <div className="inspector">
+              <h2>Preview</h2>
+              {isPlaying ? (
+                <button className="push-button" onClick={stopPreview}>
+                  Stop
+                </button>
+              ) : (
+                <button className="push-button" onClick={startPreview}>
+                  Play
+                </button>
+              )}
+            </div> */}
+          </aside>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

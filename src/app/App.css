@@ -5,10 +5,10 @@
   }
 }
 
-.sidebar-row {
+.inspector-sidebar {
   display: grid;
   gap: 1rem;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 920px 1fr;
   align-items: start;
 }
 
