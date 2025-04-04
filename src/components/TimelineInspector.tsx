@@ -6,6 +6,8 @@ import { OutFunctions, OutProperty } from "../app/OutFunctions";
 import { round3dp } from "../util/index";
 
 import cx from "classnames";
+import { Hint } from "./Hint";
+import { useStable } from "../util/hooks";
 
 interface GlobalProps {
   snapToGrid: boolean;
@@ -153,9 +155,13 @@ export const TimelineInspector = memo(function Inspector({
             Delete{" "}
           </button>
         </div>
-        <div className="hint text-light text-x-small">
-          Hold <kbd>Shift</kbd> to add points quickly
-        </div>
+        <Hint>
+          {useStable(
+            <>
+              Hold <kbd>Shift</kbd> to add points quickly
+            </>
+          )}
+        </Hint>
       </div>
 
       {selected && (

@@ -23,6 +23,8 @@ interface UsePreview {
   duration: Duration;
   isRepeat: boolean;
   setIsRepeat(repeat: boolean): void;
+  isAutoPlay: boolean;
+  setIsAutoPlay(autoPlay: boolean): void;
 }
 
 interface Props {
@@ -34,12 +36,13 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   const ballRef = useRef<HTMLDivElement>(null);
 
   const [isRepeat, setIsRepeatRaw] = useState(false);
+  const [isAutoPlay, setIsAutoPlay] = useSetting("isPreviewAutoPlay", true);
   const [durationUnit, setDurationUnit] = useSetting("previewDurationUnit", "ms");
   const [durationTime, setDurationTime] = useSetting("previewDurationTime", 1000);
 
   function setDuration(duration: Duration) {
     // TODO: validate time and unit
-    setDurationTime(duration.time);
+    setDurationTime(Math.max(1, duration.time));
     setDurationUnit(duration.unit);
   }
 
@@ -65,7 +68,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     }
   }, [durationUnit, durationTime]);
 
-  const startAnimationCancellerRef = useRef(nullFn);
+  const playSoonCancellerRef = useRef(nullFn);
 
   const playAnimation = useCallback(() => {
     if (!ballRef.current || !ref.current) return;
@@ -85,18 +88,18 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   }, [keyframeText]);
 
   const stopAnimation = useCallback(() => {
-    startAnimationCancellerRef?.current();
+    playSoonCancellerRef?.current();
     setIsPlaying(false);
     setProgress(0);
-    setIsRepeatRaw(false);
 
     if (ballRef.current) ballRef.current.classList.remove("is-animate");
-  }, [setIsRepeatRaw]);
+  }, []);
 
   const setIsRepeat = useCallback(
     (repeat: boolean) => {
+      setIsRepeatRaw(repeat);
+
       if (repeat) {
-        setIsRepeatRaw(true);
         playAnimation();
       } else {
         stopAnimation();
@@ -105,17 +108,22 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     [playAnimation, stopAnimation, setIsRepeatRaw]
   );
 
-  const startAnimationSoon = useMemo(() => {
-    if (startAnimationCancellerRef.current) startAnimationCancellerRef.current();
+  const playAnimationSoon = useMemo(() => {
+    if (playSoonCancellerRef.current) playSoonCancellerRef.current();
     return debounce(playAnimation, 500);
   }, [playAnimation]);
 
-  useEffect(() => {
-    if (startAnimationCancellerRef.current) startAnimationCancellerRef.current();
-    const cancel = startAnimationSoon();
-    startAnimationCancellerRef.current = cancel;
-    return cancel;
-  }, [keyframeText, startAnimationSoon]);
+  useEffect(
+    function autoPlay() {
+      if (!isAutoPlay && !isRepeat) return;
+
+      if (playSoonCancellerRef.current) playSoonCancellerRef.current();
+      const cancel = playAnimationSoon();
+      playSoonCancellerRef.current = cancel;
+      return cancel;
+    },
+    [keyframeText, playAnimationSoon, isAutoPlay, isRepeat]
+  );
 
   const style = useMemo(
     () =>
@@ -183,6 +191,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       onAnimationStart={didStart}
       onAnimationEnd={didEnd}
       onAnimationIteration={didIteration}
+      onClick={playAnimation}
     >
       <div className="Preview__content">
         <div className="Preview__ball" ref={ballRef}></div>
@@ -200,5 +209,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     setDuration,
     isRepeat,
     setIsRepeat,
+    isAutoPlay,
+    setIsAutoPlay,
   };
 }

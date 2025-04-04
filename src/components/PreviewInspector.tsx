@@ -1,5 +1,6 @@
 import { Duration, TimeUnit } from "../app/useSettings";
 import "./inspector.css";
+import { Hint } from "./Hint";
 
 interface Props {
   duration: Duration;
@@ -11,6 +12,9 @@ interface Props {
   isPlaying: boolean;
   onClickPlay: () => void;
   onClickStop: () => void;
+
+  isAutoPlay: boolean;
+  onChangeAutoPlay: (autoPlay: boolean) => void;
 }
 
 export function PreviewInspector({
@@ -21,6 +25,8 @@ export function PreviewInspector({
   isRepeat,
   duration,
   onChangeDuration,
+  isAutoPlay,
+  onChangeAutoPlay,
 }: Props) {
   function handleDurationTimChange(timeString: string) {
     const time = parseInt(timeString);
@@ -42,15 +48,34 @@ export function PreviewInspector({
   return (
     <aside className="inspector stack">
       <h2>Preview</h2>
-      {isPlaying ? (
-        <button className="push-button w-full" onClick={onClickStop}>
-          Stop
-        </button>
-      ) : (
-        <button className="push-button w-full" onClick={onClickPlay}>
-          Play
-        </button>
-      )}
+
+      <div className="stack-small">
+        {isPlaying ? (
+          <button className="push-button w-full" onClick={onClickStop}>
+            Stop
+          </button>
+        ) : (
+          <button className="push-button w-full" onClick={onClickPlay}>
+            Play
+          </button>
+        )}
+
+        <Hint>Click preview to play</Hint>
+      </div>
+
+      <div className="stack-small">
+        <label className="block-label">
+          <input type="checkbox" onChange={(e) => onChangeIsRepeat(e.target.checked)} checked={isRepeat} />
+          <span>Repeat</span>
+        </label>
+
+        <label className="block-label">
+          <input type="checkbox" checked={isAutoPlay} onChange={(e) => onChangeAutoPlay(e.target.checked)} />
+          <span>Auto-play</span>
+        </label>
+      </div>
+
+      <hr />
 
       <label className="stacked-label">
         <span>Image</span>
@@ -62,17 +87,18 @@ export function PreviewInspector({
       <label className="stacked-label">
         <span>Duration</span>
         <div className="col-2 gap-2">
-          <input type="number" onChange={(e) => handleDurationTimChange(e.target.value)} value={duration.time} />
+          <input
+            type="number"
+            min={1}
+            onChange={(e) => handleDurationTimChange(e.target.value)}
+            value={duration.time}
+          />
 
           <select value={duration.unit} onChange={(e) => handleDurationUnitChange(e.target.value)}>
             <option value="ms">milliseconds</option>
             <option value="s">seconds</option>
           </select>
         </div>
-      </label>
-      <label className="block-label">
-        <input type="checkbox" onChange={(e) => onChangeIsRepeat(e.target.checked)} checked={isRepeat} />
-        <span>Repeat</span>
       </label>
     </aside>
   );

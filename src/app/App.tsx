@@ -244,13 +244,23 @@ function App() {
     return () => document.body.classList.remove("is-adding");
   }, [isAdding]);
 
-  const { preview, isPlaying, playPreview, stopPreview, duration, setDuration, setIsRepeat, isRepeat } = usePreview({
+  const {
+    preview,
+    isPlaying,
+    playPreview,
+    stopPreview,
+    duration,
+    setDuration,
+    setIsRepeat,
+    isRepeat,
+    isAutoPlay,
+    setIsAutoPlay,
+  } = usePreview({
     keyframeText,
   });
 
   return (
     <>
-      {/* <h2>Animation Timeline</h2> */}
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
 
       <div className="big-row">
@@ -307,20 +317,9 @@ function App() {
               onChangeIsRepeat={setIsRepeat}
               onClickPlay={playPreview}
               onClickStop={stopPreview}
+              isAutoPlay={isAutoPlay}
+              onChangeAutoPlay={setIsAutoPlay}
             />
-
-            {/* <div className="inspector">
-              <h2>Preview</h2>
-              {isPlaying ? (
-                <button className="push-button" onClick={stopPreview}>
-                  Stop
-                </button>
-              ) : (
-                <button className="push-button" onClick={startPreview}>
-                  Play
-                </button>
-              )}
-            </div> */}
           </aside>
         </div>
       </div>

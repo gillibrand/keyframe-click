@@ -18,7 +18,7 @@ interface Settings {
   sampleCount: number;
   isInvertValues: boolean;
   isSnapToGrid: boolean;
-  // isPreviewRepeat: boolean;
+  isPreviewAutoPlay: boolean;
   isLabelYAxis: boolean;
   previewDurationTime: number;
   previewDurationUnit: TimeUnit;
@@ -38,7 +38,7 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
       return typeof value === "number" && value > 3;
 
     case "previewDurationTime":
-      return typeof value === "number" && value >= 0;
+      return typeof value === "number" && value > 0;
 
     case "previewDurationUnit":
       return TimeUnits.findIndex((unit) => unit === value) !== -1;
@@ -47,6 +47,7 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
     case "isInvertValues":
     case "isSnapToGrid":
     case "isLabelYAxis":
+    case "isPreviewAutoPlay":
       return typeof value === "boolean";
 
     case "outProperty":

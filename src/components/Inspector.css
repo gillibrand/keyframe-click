@@ -18,6 +18,12 @@
     }
   }
 
+  h2:not(:first-child),
+  hr {
+    border-block-start: solid 1px #ddd;
+    margin-bottom: 0;
+  }
+
   h3 {
     font-size: var(--sz-small);
   }
