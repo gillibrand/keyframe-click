@@ -526,6 +526,16 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   }
 
   /**
+   * Clips the canvas to the timeline area. This is used for most drawing except the dots themselves
+   * so they can be dragged more easily near the edges.
+   */
+  function clipTimeline() {
+    _cx.beginPath();
+    _cx.rect(InsetX, InsetY, Width - 2 * InsetX, Height - 2 * InsetY);
+    _cx.clip();
+  }
+
+  /**
    * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next
    * animation frame for better performance.
    *
@@ -543,26 +553,30 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     // draw curve
     if (_dots.length > 0) {
-      _cx.strokeStyle = Gray900;
-      const origin = _dots[0];
-      _cx.beginPath();
-      _cx.moveTo(origin.x, origin.y);
+      willDraw(_cx, () => {
+        clipTimeline();
 
-      for (let i = 1; i < _dots.length; i++) {
-        const pp = _dots[i - 1];
-        const p = _dots[i];
+        _cx.strokeStyle = Gray900;
+        const origin = _dots[0];
+        _cx.beginPath();
+        _cx.moveTo(origin.x, origin.y);
 
-        const cp1 = pp.type === "square" ? pp : pp.h2;
-        const cp2 = p.type === "square" ? p : p.h1;
-        _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
-      }
-      _cx.setLineDash([]);
-      _cx.lineWidth = 3;
-      _cx.stroke();
+        for (let i = 1; i < _dots.length; i++) {
+          const pp = _dots[i - 1];
+          const p = _dots[i];
 
-      _cx.lineWidth = 1;
+          const cp1 = pp.type === "square" ? pp : pp.h2;
+          const cp2 = p.type === "square" ? p : p.h1;
+          _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
+        }
+        _cx.setLineDash([]);
+        _cx.lineWidth = 3;
+        _cx.stroke();
 
-      drawSamples();
+        _cx.lineWidth = 1;
+
+        drawSamples();
+      });
 
       // draw the key points and their handles
       for (let i = 0; i < _dots.length; i++) {
@@ -573,6 +587,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
           const h2 = p.h2;
 
           willDraw(_cx, () => {
+            clipTimeline();
+
             _cx.strokeStyle = Blue;
             _cx.setLineDash([5, 2]);
 
