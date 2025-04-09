@@ -156,7 +156,7 @@ export const TimelineInspector = memo(function Inspector({
         <Hint>
           {useStable(
             <>
-              Hold <kbd>Shift</kbd> to add points quickly
+              Hold <kbd>Shift</kbd> on timeline to add points quickly
             </>
           )}
         </Hint>
