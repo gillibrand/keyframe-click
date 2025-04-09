@@ -13,8 +13,8 @@ interface Props {
   onClickPlay: () => void;
   onClickStop: () => void;
 
-  isAutoPlay: boolean;
-  onChangeAutoPlay: (autoPlay: boolean) => void;
+  // isAutoPlay: boolean;
+  // onChangeAutoPlay: (autoPlay: boolean) => void;
 }
 
 export function PreviewInspector({
@@ -25,9 +25,9 @@ export function PreviewInspector({
   isRepeat,
   duration,
   onChangeDuration,
-  isAutoPlay,
-  onChangeAutoPlay,
-}: Props) {
+}: // isAutoPlay,
+// onChangeAutoPlay,
+Props) {
   function handleDurationTimChange(timeString: string) {
     const time = parseInt(timeString);
     if (isNaN(time) || time < 0) return;
@@ -69,10 +69,10 @@ export function PreviewInspector({
           <span>Repeat</span>
         </label>
 
-        <label className="block-label">
+        {/* <label className="block-label">
           <input type="checkbox" checked={isAutoPlay} onChange={(e) => onChangeAutoPlay(e.target.checked)} />
-          <span>Auto-play</span>
-        </label>
+          <span>Play after each change</span>
+        </label> */}
       </div>
 
       <hr />

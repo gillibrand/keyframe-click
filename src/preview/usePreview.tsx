@@ -1,18 +1,8 @@
-import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Duration, useSetting } from "@app/useSettings";
 import { debounce, nullFn, unreachable } from "@util";
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
 import { ProgressBar } from "./ProgressBar";
-
-function createNamedKeyframes(animName: string, keyframeText: string) {
-  const styleSheet = document.createElement("style");
-  styleSheet.textContent = `
-    @keyframes ${animName} {
-      ${keyframeText}
-    }
-  `;
-  return styleSheet;
-}
 
 interface UsePreview {
   preview: ReactElement;
@@ -70,24 +60,16 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const playSoonCancellerRef = useRef(nullFn);
 
-  const playAnimation = useCallback(() => {
+  const playAnimation = useCallback(function playAnimation() {
     if (!ballRef.current || !ref.current) return;
-
-    // remove old styles first
-    for (const el of Array.from(ref.current.children)) {
-      if (el.nodeName === "STYLE") el.parentNode?.removeChild(el);
-    }
-
-    const styleEl = createNamedKeyframes("preview-anim1", keyframeText);
-    ref.current.appendChild(styleEl);
 
     // Must toggle animate class off and on to ensure it runs. Just changing the keyframes is not enough
     ballRef.current.classList.remove("is-animate");
     void ballRef.current.offsetHeight;
     ballRef.current.classList.add("is-animate");
-  }, [keyframeText]);
+  }, []);
 
-  const stopAnimation = useCallback(() => {
+  const stopAnimation = useCallback(function stopAnimation() {
     playSoonCancellerRef?.current();
     setIsPlaying(false);
     setProgress(0);
@@ -96,16 +78,16 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   }, []);
 
   const setIsRepeat = useCallback(
-    (repeat: boolean) => {
+    function setIsRepeat(repeat: boolean) {
       setIsRepeatRaw(repeat);
 
       if (repeat) {
+        // Play when repeat is set to true as a convenience since they probably want this. When
+        // repeat is set to false, we just let the current animation continue, but it won't repeat.
         playAnimation();
-      } else {
-        stopAnimation();
       }
     },
-    [playAnimation, stopAnimation, setIsRepeatRaw]
+    [playAnimation, setIsRepeatRaw]
   );
 
   const playAnimationSoon = useMemo(() => {
@@ -113,9 +95,21 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     return debounce(playAnimation, 500);
   }, [playAnimation]);
 
+  const prevKeyframeTextRef = useRef("");
+
   useEffect(
-    function autoPlay() {
-      if (!isAutoPlay && !isRepeat) return;
+    function playAutomatically() {
+      // Must always store the last keyframe even if off. Otherwise, when setting repeat to false we
+      // will come in here, thinks it's a changed and fire the animation an extra time since we
+      // won't know if it's a response to a change or not.
+      if (keyframeText === prevKeyframeTextRef.current) return;
+      prevKeyframeTextRef.current = keyframeText;
+
+      // only fire if autoPlay is set
+      if (!isAutoPlay) return;
+
+      // if we're repeating anyway, we can ignore this.
+      if (isRepeat) return;
 
       if (playSoonCancellerRef.current) playSoonCancellerRef.current();
       const cancel = playAnimationSoon();
@@ -125,14 +119,6 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     [keyframeText, playAnimationSoon, isAutoPlay, isRepeat]
   );
 
-  const style = useMemo(
-    () =>
-      ({
-        "--repeat": isRepeat ? "infinite" : "1",
-        "--duration": `${durationMs}ms`,
-      } as React.CSSProperties),
-    [isRepeat, durationMs]
-  );
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -183,16 +169,31 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     []
   );
 
+  const cssVariables = useMemo(
+    () =>
+      ({
+        "--repeat": isRepeat ? "infinite" : "1",
+        "--duration": `${durationMs}ms`,
+      } as React.CSSProperties),
+    [isRepeat, durationMs]
+  );
+
+  const namedKeyframes = useMemo(() => {
+    void keyframeText;
+    return `@keyframes preview-anim1 {\n${keyframeText}\n}`;
+  }, [keyframeText]);
+
   const preview = (
     <div
       className="Preview"
       ref={ref}
-      style={style}
+      style={cssVariables}
       onAnimationStart={didStart}
       onAnimationEnd={didEnd}
       onAnimationIteration={didIteration}
       onClick={playAnimation}
     >
+      <style>{namedKeyframes}</style>
       <div className="Preview__content">
         <div className="Preview__ball" ref={ballRef}></div>
       </div>
