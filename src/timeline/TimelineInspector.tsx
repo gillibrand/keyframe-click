@@ -1,7 +1,7 @@
 import { Hint } from "@components/Hint";
 import "@style/inspector.css";
 import { OutFunctions, OutProperty } from "@timeline/OutFunctions";
-import { DotType, UserDot } from "@timeline/point";
+import { DotType, moveDot, UserDot } from "@timeline/point";
 import { useStable } from "@util/hooks";
 import { round3dp } from "@util/index";
 import cx from "classnames";
@@ -96,13 +96,15 @@ export const TimelineInspector = memo(function Inspector({
 
   function handleChangeX(x: number) {
     if (!selected || isNaN(x)) return;
-    const dot = { ...selected, x };
+    const dot = { ...selected };
+    moveDot(dot, x, selected.y);
     onChangeSelectedProps(dot);
   }
 
   function handleChangeY(y: number) {
     if (!selected || isNaN(y)) return;
-    const dot = { ...selected, y };
+    const dot = { ...selected };
+    moveDot(dot, selected.x, y);
     onChangeSelectedProps(dot);
   }
 
@@ -145,8 +147,8 @@ export const TimelineInspector = memo(function Inspector({
           <label className="stacked-label">
             <span>Style</span>
             <select onChange={(e) => handleTypeChange(e.target.value)} value={selected.type}>
-              <option value="square">Corner</option>
-              <option value="round">Rounded</option>
+              <option value="square">Square</option>
+              <option value="round">Round</option>
             </select>
           </label>
 

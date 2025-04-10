@@ -15,7 +15,7 @@ import {
   White,
   willDraw,
 } from "./drawing";
-import { BaseDot, diffPt, findYForX, findYForXInCurve, nearPt, PhysDot, Point, togglePt, UserDot } from "./point";
+import { diffPt, findYForX, findYForXInCurve, nearPt, PhysDot, Point, togglePt, UserDot } from "./point";
 
 type DraggingPoint = {
   point: PhysDot;
@@ -294,7 +294,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     return y * ScaleY * -1 + OffsetY;
   }
 
-  function moveDot(p: BaseDot, toX: number, toY: number) {
+  function moveDot(p: PhysDot, toX: number, toY: number) {
     const origin = { ...p };
 
     if (_snapToGrid) {

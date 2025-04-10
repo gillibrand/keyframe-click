@@ -44,6 +44,22 @@ export function roundPt(p: Point) {
   p.y = Math.round(p.y);
 }
 
+/**
+ * Modify the point position and the handle positions to match. Updates in place.
+ * @param p Dot to update.
+ * @param x New x in user space.
+ * @param y New y in user space.
+ */
+export function moveDot(p: UserDot, x: number, y: number) {
+  const diffPt = { x: p.x - x, y: p.y - y };
+  p.x = x;
+  p.y = y;
+  p.h1.x -= diffPt.x;
+  p.h1.y -= diffPt.y;
+  p.h2.x -= diffPt.x;
+  p.h2.y -= diffPt.y;
+}
+
 export function togglePt(p: BaseDot) {
   p.type = p.type === "square" ? "round" : "square";
 }
