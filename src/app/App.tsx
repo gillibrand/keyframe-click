@@ -1,13 +1,17 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
-import { TimelineInspector } from "@timeline/TimelineInspector";
 import { usePreview } from "@preview/usePreview";
 import { BezierTimeline, createBezierTimeline } from "@timeline/BezierTimeline";
-import { Point, UserDot, createRound, createSquare } from "@timeline/point";
-import { debounce, round2dp, throttle } from "@util";
-import "./App.css";
 import { OutFunctions, OutProperty } from "@timeline/OutFunctions";
+import { Point, UserDot, createRound, createSquare } from "@timeline/point";
+import { TimelineInspector } from "@timeline/TimelineInspector";
+import { debounce, round2dp, throttle } from "@util";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import "./App.css";
 import { useSetting } from "./useSettings";
+
+import Gear from "@images/gear.svg?react";
+import { MenuProvider } from "@components/menu/MenuContext";
 
 const defaultDots: UserDot[] = [
   createSquare(0, 0),
@@ -248,12 +252,44 @@ function App() {
     keyframeText,
   });
 
+  const items: MenuItem[] = [
+    {
+      type: "label",
+      label: "Grid settings",
+    },
+    {
+      type: "toggle",
+      label: "Snap to grid",
+      isChecked: snapToGrid,
+      onClick: () => {
+        setSnapToGrid(!snapToGrid);
+      },
+    },
+    {
+      type: "toggle",
+      label: "Show value labels",
+      isChecked: labelYAxis,
+      onClick: () => {
+        setLabelYAxis(!labelYAxis);
+      },
+    },
+  ];
+
   return (
     <>
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
 
       <div className="big-row">
-        <div className="container">
+        <div className="container relative">
+          <MenuProvider items={items}>
+            <MenuButton
+              style={{ position: "absolute", top: "-4px", right: "0", zIndex: 1, color: "var(--c-gray-600)" }}
+              title="Settings"
+            >
+              <Gear />
+            </MenuButton>
+          </MenuProvider>
+
           <div className="inspector-sidebar">
             <div className="timeline-wrapper">
               {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
@@ -271,15 +307,11 @@ function App() {
               outProperty={outProperty}
               sampleCount={sampleCount}
               invertValues={invertValues}
-              snapToGrid={snapToGrid}
               onOutProperty={setOutProperty}
               onSampleCount={setSampleCount}
               onInvertValues={setInvertValues}
-              onSnapToGrid={setSnapToGrid}
               selected={selectedDot}
               onChangeSelectedProps={handleInspectorSelectedChange}
-              labelYAxis={labelYAxis}
-              onLabelYAxis={setLabelYAxis}
               onClickAdd={handleClickAdd}
               onClickDelete={handleClickDelete}
               isAdding={isAdding}

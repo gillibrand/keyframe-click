@@ -8,13 +8,9 @@ import cx from "classnames";
 import { memo, useId } from "react";
 
 interface GlobalProps {
-  snapToGrid: boolean;
   invertValues: boolean;
   sampleCount: number;
   outProperty: string;
-  labelYAxis: boolean;
-  onSnapToGrid: (value: boolean) => void;
-  onLabelYAxis: (value: boolean) => void;
   onInvertValues: (value: boolean) => void;
   onSampleCount: (count: number) => void;
   onOutProperty: (property: OutProperty) => void;
@@ -29,16 +25,12 @@ interface Props extends GlobalProps {
 }
 
 const GlobalSettings = memo(function GlobalSettings({
-  snapToGrid,
   invertValues,
   sampleCount,
   outProperty,
   onInvertValues,
-  onSnapToGrid,
   onSampleCount,
   onOutProperty,
-  labelYAxis,
-  onLabelYAxis,
 }: GlobalProps) {
   const samplesId = useId();
 
@@ -77,20 +69,6 @@ const GlobalSettings = memo(function GlobalSettings({
           <span>Flip values</span>
         </label>
       </label>
-
-      <h2>Grid options</h2>
-
-      <div className="stack-small">
-        <label className="block-label">
-          <input type="checkbox" checked={labelYAxis} onChange={(e) => onLabelYAxis(e.target.checked)} />{" "}
-          <span>Show value labels</span>
-        </label>
-
-        <label className="block-label">
-          <input type="checkbox" checked={snapToGrid} onChange={(e) => onSnapToGrid(e.target.checked)} />{" "}
-          <span>Snap to grid</span>
-        </label>
-      </div>
     </>
   );
 });
@@ -167,8 +145,8 @@ export const TimelineInspector = memo(function Inspector({
           <label className="stacked-label">
             <span>Style</span>
             <select onChange={(e) => handleTypeChange(e.target.value)} value={selected.type}>
-              <option value="square">Square</option>
-              <option value="round">Smooth</option>
+              <option value="square">Corner</option>
+              <option value="round">Rounded</option>
             </select>
           </label>
 

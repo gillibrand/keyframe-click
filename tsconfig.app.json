@@ -28,7 +28,8 @@
       "@util": ["./src/util"],
       "@util/*": ["./src/util/*"],
       "@style/*": ["./src/style/*"],
-      "@components/*": ["./src/components/*"]
+      "@components/*": ["./src/components/*"],
+      "@images/*": ["./src/images/*"]
     }
   },
   "include": ["src"]

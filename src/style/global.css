@@ -42,6 +42,9 @@
   color: var(--c-gray-400);
 }
 
+.text-small {
+  font-size: var(--sz-small);
+}
 .text-x-small {
   font-size: var(--sz-x-small);
 }
@@ -67,14 +70,15 @@ h2 {
   font-size: var(--sz-h2);
 }
 
-body {
+body,
+input,
+button {
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
 
-  /* padding: 1rem; */
-  /* margin-inline: auto; */
+body {
   margin: 0;
   padding: 0;
-  /* background-color: rgb(255, 227, 176); */
 }
 
 .big-row {
@@ -103,6 +107,10 @@ body {
 
 .block {
   display: block;
+}
+
+.relative {
+  position: relative;
 }
 
 input[type="checkbox"] {
