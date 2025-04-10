@@ -37,6 +37,8 @@ export const ToggleMenuItem = memo(function ToggleMenuItem({
 export const LabelMenuItem = memo(function LabelMenuItem({ label }: { label: string }) {
   return (
     <li className="LabelMenuItem" role="heading">
+      <span className="ToggleMenuItem__checkmark">{/* dumb spacer; not visible */}</span>
+
       <span className="LabelMenuItem__label">{label}</span>
     </li>
   );
