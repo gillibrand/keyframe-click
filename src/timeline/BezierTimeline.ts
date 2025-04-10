@@ -412,8 +412,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _cx.fillStyle = Gray500;
 
     for (let y = -100; y <= 200; y += 100) {
-      const tp = asPhysPoint({ x: 1, y });
-      const text = y === 0 ? "0" : `${y}%`;
+      const tp = asPhysPoint({ x: 1.5, y });
+      const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
       const r = _cx.measureText(text);
 
       _cx.fillStyle = White;
