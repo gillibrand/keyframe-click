@@ -1,6 +1,5 @@
 import { Duration, TimeUnit } from "@app/useSettings";
 import "@style/inspector.css";
-import { Hint } from "@components/Hint";
 
 interface Props {
   duration: Duration;
@@ -59,8 +58,6 @@ Props) {
             Play
           </button>
         )}
-
-        <Hint>Click preview to play</Hint>
       </div>
 
       <div className="stack-small">

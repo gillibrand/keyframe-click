@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, SetStateAction, useCallback, useId, useLayoutEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Menu } from "./Menu";
 import "./menu.css";
@@ -10,7 +10,7 @@ interface MenuButtonProps extends PropsWithChildren {
 }
 export function MenuButton({ style, children, title }: MenuButtonProps) {
   const { hoverNext, hoverPrev, clickHovered, setHoverIndex } = useMenuApi();
-  const [isPressed, setIsPressedRaw] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
@@ -18,18 +18,14 @@ export function MenuButton({ style, children, title }: MenuButtonProps) {
   const menuId = useId();
   const menuPortal = !isPressed ? null : createPortal(<Menu ref={menuRef} id={menuId} />, document.body);
 
-  const setIsPressed = useCallback(
-    (pressed: SetStateAction<boolean>) => {
-      setIsPressedRaw((prevPressed) => {
-        const newPressed = typeof pressed === "function" ? pressed(prevPressed) : pressed;
-
-        // Reset to an empty hover state on close or else it might pre hover one when next opened.
-        if (!newPressed) setHoverIndex(-1);
-
-        return newPressed;
-      });
+  useEffect(
+    function resetHoverIndexOnClose() {
+      // Note that this is an effect since it modifies the parent context. We can't do it doing
+      // setHoverIndex wrapper function since that can be called during render and cause an error. That means
+      // this causes an extra render on close just to clear this index :(
+      if (!isPressed) setHoverIndex(-1);
     },
-    [setHoverIndex]
+    [isPressed, setHoverIndex]
   );
 
   function handleClickButton(e: React.MouseEvent<HTMLButtonElement>) {

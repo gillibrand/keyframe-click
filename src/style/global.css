@@ -26,6 +26,7 @@
   --c-gray-950: oklch(0.13 0.028 261.692);
 
   --c-blue: #1c7ef3;
+  --c-body: var(--c-gray-700);
 
   --c-sky-50: oklch(0.977 0.013 236.62);
   --c-sky-100: oklch(0.951 0.026 236.824);
@@ -50,6 +51,7 @@
 }
 
 body {
+  color: var(--c-body);
   background-color: #f9f9f9;
 }
 
@@ -58,6 +60,7 @@ input,
 textarea,
 select {
   font-size: var(--sz-base);
+  color: var(--c-body);
 }
 
 h1,
