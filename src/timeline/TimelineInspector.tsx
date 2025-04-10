@@ -47,27 +47,27 @@ const GlobalSettings = memo(function GlobalSettings({
             </option>
           ))}
         </select>
+      </label>
 
-        <label className="stacked-label">
-          <span>Steps</span>
-          <div className="flex gap-4">
-            <input
-              type="range"
-              min={3}
-              max={50}
-              className="flex-auto"
-              value={sampleCount}
-              onChange={(e) => onSampleCount(parseInt(e.target.value))}
-              id={samplesId}
-            />
-            <output htmlFor={samplesId}>{sampleCount}</output>
-          </div>
-        </label>
+      <label className="stacked-label">
+        <span>Steps</span>
+        <div className="flex gap-4">
+          <input
+            type="range"
+            min={3}
+            max={50}
+            className="flex-auto"
+            value={sampleCount}
+            onChange={(e) => onSampleCount(parseInt(e.target.value))}
+            id={samplesId}
+          />
+          <output htmlFor={samplesId}>{sampleCount}</output>
+        </div>
+      </label>
 
-        <label className="block-label">
-          <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
-          <span>Flip values</span>
-        </label>
+      <label className="block-label">
+        <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
+        <span>Flip values</span>
       </label>
     </>
   );
