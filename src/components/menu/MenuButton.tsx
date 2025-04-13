@@ -78,7 +78,7 @@ export function MenuButton({ style, children, title }: MenuButtonProps) {
         style={style}
         onClick={handleClickButton}
         ref={buttonRef}
-        className="MenuButton"
+        className="round-btn"
         aria-pressed={isPressed}
         onBlur={closeOnBlur}
         aria-haspopup="menu"

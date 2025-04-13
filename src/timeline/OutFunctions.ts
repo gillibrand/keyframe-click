@@ -1,6 +1,9 @@
+import { Color } from "@components/tab/RadioTabGroup";
+
 interface NamedFn {
   label: string;
   fn: (n: number) => string;
+  color: Color;
 }
 
 const typedKeys = <K extends string>(object: Record<K, NamedFn>) => object;
@@ -11,6 +14,7 @@ const OutFunctions = typedKeys({
     fn: (s) => {
       return `scale: ${Math.round(s) / 100}`;
     },
+    color: "green",
   },
 
   scaleX: {
@@ -18,6 +22,7 @@ const OutFunctions = typedKeys({
     fn: (s) => {
       return `scale: ${Math.round(s) / 100} 1`;
     },
+    color: "fuchsia",
   },
 
   scaleY: {
@@ -25,6 +30,7 @@ const OutFunctions = typedKeys({
     fn: (s) => {
       return `scale: 1 ${Math.round(s) / 100}`;
     },
+    color: "blue",
   },
 
   translateX: {
@@ -32,6 +38,7 @@ const OutFunctions = typedKeys({
     fn: (x) => {
       return `translate: ${x}% 0;`;
     },
+    color: "orange",
   },
 
   translateY: {
@@ -39,6 +46,7 @@ const OutFunctions = typedKeys({
     fn: (y) => {
       return `translate: 0 ${y}%;`;
     },
+    color: "cyan",
   },
 
   opacity: {
@@ -46,6 +54,7 @@ const OutFunctions = typedKeys({
     fn: (n) => {
       return `opacity: ${n / 100};`;
     },
+    color: "emerald",
   },
 
   rotate: {
@@ -53,6 +62,7 @@ const OutFunctions = typedKeys({
     fn: (n) => {
       return `rotate: ${n / 100}turn;`;
     },
+    color: "yellow",
   },
 } as const);
 

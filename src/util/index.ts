@@ -66,3 +66,37 @@ export function unreachable(value: never) {
 }
 
 export function nullFn(): void {}
+
+/**
+ * Type guard to check if a node is a full DOM element.
+ * @param node Node to check.
+ * @returns True if it's an HTML element.
+ */
+export function isEl(node: unknown): node is HTMLElement {
+  return node instanceof HTMLElement;
+}
+
+function isVisible(el: HTMLElement): boolean {
+  return el.offsetParent !== null || getComputedStyle(el).visibility !== "hidden";
+}
+
+export function getFirstFocusableElement(parent: HTMLElement, andFocus: boolean = false): HTMLElement | null {
+  const focusableSelectors = [
+    "a[href]",
+    "area[href]",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "button:not([disabled])",
+    "iframe",
+    "object",
+    "embed",
+    '[tabindex]:not([tabindex="-1"])',
+    '[contenteditable]:not([contenteditable="false"])',
+  ];
+
+  const focusable = parent.querySelectorAll<HTMLElement>(focusableSelectors.join(","));
+  const firstVisible = Array.from(focusable).find((el) => isVisible(el)) || null;
+  if (firstVisible && andFocus) firstVisible.focus();
+  return firstVisible;
+}

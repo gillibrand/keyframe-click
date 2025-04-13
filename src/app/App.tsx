@@ -12,6 +12,7 @@ import { useSetting } from "./useSettings";
 
 import Gear from "@images/gear.svg?react";
 import { MenuProvider } from "@components/menu/MenuContext";
+import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 
 const defaultDots: UserDot[] = [
   createSquare(0, 0),
@@ -275,12 +276,109 @@ function App() {
     },
   ];
 
+  const [tabs, setTabs] = useState(() => {
+    // const fn = OutFunctions[outProperty];
+    // const Opacity = OutFunctions.opacity;
+
+    const arr: TabData[] = [
+      {
+        label: "blue is one",
+        color: "blue",
+        value: "blue",
+      },
+      {
+        label: "red",
+        color: "red",
+        value: "red",
+      },
+      {
+        label: "Pink",
+        color: "pink",
+        value: "pink",
+      },
+      {
+        label: "fuchsia",
+        color: "fuchsia",
+        value: "fuchsia",
+      },
+      {
+        label: "emerald",
+        color: "emerald",
+        value: "emerald",
+      },
+    ];
+    return arr;
+  });
+
+  // const tabs = useMemo<TabData[]>(() => {
+  //   const fn = OutFunctions[outProperty];
+  //   const Opacity = OutFunctions.opacity;
+
+  //   const arr: TabData[] = [
+  //     {
+  //       label: fn.label,
+  //       color: fn.color,
+  //       value: outProperty,
+  //     },
+  //     {
+  //       label: Opacity.label,
+  //       color: Opacity.color,
+  //       value: "opacity",
+  //     },
+  //     {
+  //       label: "Pink",
+  //       color: "pink",
+  //       value: "pink",
+  //     },
+  //   ];
+  //   return arr;
+  // }, [outProperty]);
+
+  // [
+  //   { label: "Scale X", color: "red", value: "red" },
+  //   { label: "Scale Y", color: "orange", value: "orange" },
+  //   { label: "scale-x", color: "yellow", value: "yellow" },
+  //   { label: "scale-x", color: "emerald", value: "emerald" },
+  //   { label: "scale", color: "blue", value: "blue" },
+  //   { label: "Opacity", color: "indigo", value: "indigo" },
+  //   { label: "Transform", color: "violet", value: "violet" },
+  // ];
+
+  function handleDeleteTab(value: string) {
+    setTabs((prev) => {
+      const i = prev.findIndex((t) => t.value === value);
+      if (i === -1) return prev;
+      const tabs = [...prev];
+      tabs.splice(i, 1);
+      return tabs;
+    });
+  }
+
+  const count = useRef(0);
+
+  function handleNewTab() {
+    setTabs((prev) => {
+      const value = count.current++;
+      const newTabs: TabData[] = [
+        ...prev,
+        {
+          label: "New " + value,
+          value: String(value),
+          color: "rose",
+        },
+      ];
+      return newTabs;
+    });
+  }
+
   return (
     <>
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
 
       <div className="big-row">
-        <div className="container relative">
+        <div className="container relative stack">
+          <RadioTabGroup tabs={tabs} name="property" onDelete={handleDeleteTab} onNew={handleNewTab} />
+
           <MenuProvider items={items}>
             <MenuButton
               style={{ position: "absolute", top: "-4px", right: "0", zIndex: 1, color: "var(--c-gray-600)" }}

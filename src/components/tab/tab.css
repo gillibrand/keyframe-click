@@ -1,0 +1,64 @@
+.RadioTabGroup {
+  /* padding-block-end: 0.375rem; */
+  /* border-block-end: solid 1px gray; */
+
+  & > *:not(:last-child) > * {
+    margin-inline-end: 0.5rem;
+  }
+}
+
+.RadioTab {
+  font-size: var(--sz-small);
+  padding: 0.325em 0.9375rem;
+  padding-inline-end: 0.325em;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  white-space: nowrap;
+
+  --default-tab-bg-color: var(--tab-bg-color, gray);
+  background-color: color-mix(in srgb, var(--default-tab-bg-color) 10%, white);
+
+  border: solid 1px;
+  border-radius: 999px;
+  border-color: var(--default-tab-bg-color);
+
+  &:has(:focus-visible) {
+    outline: solid 2px var(--c-blue);
+    outline-offset: 1px;
+  }
+
+  &:has(:checked) {
+    color: white;
+    background-color: color-mix(in srgb, var(--default-tab-bg-color) 100%, transparent);
+  }
+
+  > input {
+    /* visually hidden radio button; keyboard accessible */
+    position: absolute;
+    clip-path: inset(50%);
+  }
+
+  .round-btn {
+    background-color: rgba(255 255 255 / 0.75);
+    padding: 0.325em;
+    color: white;
+    color: black;
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgba(255 255 255 / 0.85);
+    }
+
+    &:active {
+      background-color: rgba(255 255 255 / 0.6);
+    }
+  }
+
+  &:not(.can-delete),
+  &:not(:has(:checked)) {
+    .round-btn {
+      visibility: hidden;
+    }
+  }
+}
