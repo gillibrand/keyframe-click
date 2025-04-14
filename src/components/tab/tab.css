@@ -18,8 +18,9 @@
 
   --default-tab-bg-color: var(--tab-bg-color, gray);
   background-color: color-mix(in srgb, var(--default-tab-bg-color) 10%, white);
+  background-color: white;
 
-  border: solid 1px;
+  border: solid 2px;
   border-radius: 999px;
   border-color: var(--default-tab-bg-color);
 
@@ -34,7 +35,7 @@
   }
 
   > label {
-    cursor: pointer;
+    cursor: inherit;
   }
 
   > input {
