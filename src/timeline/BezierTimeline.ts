@@ -51,7 +51,7 @@ export interface BezierTimeline {
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
   getUserDots(): UserDot[];
-  getSamples(): Point[];
+  getUserSamples(): Point[];
   setSampleCount(count: number): void;
 
   set onDraw(onChangeCallback: (() => void) | undefined);
@@ -727,7 +727,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     draw();
   }
 
-  function getSamples() {
+  function getUserSamples() {
     return _samples.map((s) => asUserPoint(s));
   }
 
@@ -860,7 +860,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     destroy,
     updateSelectedDot,
     setSnapToGrid,
-    getSamples,
+    getUserSamples,
     getSelectedDot,
     set onDraw(onDrawCallback: (() => void) | undefined) {
       _onDidDraw = onDrawCallback;

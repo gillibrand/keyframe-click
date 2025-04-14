@@ -241,7 +241,7 @@ function App() {
     void timelineDrawCount;
     if (!timelineRef.current) return "";
 
-    return genCssKeyframeText(timelineRef.current.getSamples(), outProperty, invertValues);
+    return genCssKeyframeText(timelineRef.current.getUserSamples(), outProperty, invertValues);
   }, [outProperty, invertValues, timelineDrawCount]);
 
   useEffect(() => {
@@ -309,40 +309,6 @@ function App() {
     ];
     return arr;
   });
-
-  // const tabs = useMemo<TabData[]>(() => {
-  //   const fn = OutFunctions[outProperty];
-  //   const Opacity = OutFunctions.opacity;
-
-  //   const arr: TabData[] = [
-  //     {
-  //       label: fn.label,
-  //       color: fn.color,
-  //       value: outProperty,
-  //     },
-  //     {
-  //       label: Opacity.label,
-  //       color: Opacity.color,
-  //       value: "opacity",
-  //     },
-  //     {
-  //       label: "Pink",
-  //       color: "pink",
-  //       value: "pink",
-  //     },
-  //   ];
-  //   return arr;
-  // }, [outProperty]);
-
-  // [
-  //   { label: "Scale X", color: "red", value: "red" },
-  //   { label: "Scale Y", color: "orange", value: "orange" },
-  //   { label: "scale-x", color: "yellow", value: "yellow" },
-  //   { label: "scale-x", color: "emerald", value: "emerald" },
-  //   { label: "scale", color: "blue", value: "blue" },
-  //   { label: "Opacity", color: "indigo", value: "indigo" },
-  //   { label: "Transform", color: "violet", value: "violet" },
-  // ];
 
   function handleDeleteTab(value: string) {
     setTabs((prev) => {
