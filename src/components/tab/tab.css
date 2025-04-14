@@ -33,6 +33,10 @@
     background-color: color-mix(in srgb, var(--default-tab-bg-color) 100%, transparent);
   }
 
+  > label {
+    cursor: pointer;
+  }
+
   > input {
     /* visually hidden radio button; keyboard accessible */
     position: absolute;

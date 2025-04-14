@@ -1,6 +1,6 @@
 import Close from "@images/close.svg?react";
 import cx from "classnames";
-import { CSSProperties, useMemo } from "react";
+import { CSSProperties, useId, useMemo, useRef } from "react";
 import type { Color } from "./RadioTabGroup";
 import { Colors } from "./RadioTabGroup";
 
@@ -41,29 +41,50 @@ export function RadioTab({ label, radioName, checked, color, onCheck, value, can
     }
   }
 
+  function moveFocusToInputOnClick(e: React.MouseEvent) {
+    if (e.target === inputRef.current || (e.target as Node).nodeName === "LABEL") {
+      e.stopPropagation();
+      return;
+    }
+
+    inputRef.current?.click();
+    inputRef.current?.focus();
+  }
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = useId();
+
   return (
-    <div>
-      <label
-        className={cx("RadioTab flex flex-nowrap gap-3 items-center o", { "can-delete": !!canDelete })}
-        style={style}
-        onKeyDown={handleDelKey}
+    <div
+      className={cx("RadioTab flex flex-nowrap gap-3 items-center", { "can-delete": !!canDelete })}
+      style={style}
+      onKeyDown={handleDelKey}
+      onClick={moveFocusToInputOnClick}
+      data-value={value}
+    >
+      <label htmlFor={inputId}>{label}</label>
+
+      <input
+        ref={inputRef}
+        id={inputId}
+        type="radio"
+        name={radioName}
+        value={label}
+        checked={checked}
+        onChange={(e) => {
+          if (e.target.checked) onCheck(value);
+        }}
+      />
+
+      <button
+        className="round-btn"
+        title="close"
+        onClick={promptToDelete}
+        tabIndex={-1} // no focus; use Del key to invoke instead
+        onFocus={() => inputRef.current?.focus()}
       >
-        <style>--tab-bg-color: {Colors[color]};</style>
-        <span>{label}</span>
-        <div className="round-btn" tabIndex={-1} title="close" role="button" onClick={promptToDelete}>
-          {/* a real button in a label causes problems, so kinda fake one. No keyboard focus; use Del key instead */}
-          <Close />
-        </div>
-        <input
-          type="radio"
-          name={radioName}
-          value={label}
-          checked={checked}
-          onChange={(e) => {
-            if (e.target.checked) onCheck(value);
-          }}
-        />
-      </label>
+        <Close />
+      </button>
     </div>
   );
 }
