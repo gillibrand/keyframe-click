@@ -1,5 +1,5 @@
-import { asRealX } from "./convert";
-import { findYForX, Point, RealDot } from "./point";
+import { asRealDot, asRealX } from "./convert";
+import { findYForX, Point, RealDot, UserDot } from "./point";
 
 /**
  * A single animatable property and it's complete state. A timeline is built of multiple property
@@ -14,6 +14,19 @@ interface RealLayer {
 
   // transient
   samples: Point[] | null;
+}
+
+export function layersFromUserData(userDots: UserDot[], sampleCount: number) {
+  const dots = userDots.map((d) => asRealDot(d));
+  const layer: RealLayer = {
+    dots,
+    sampleCount,
+    isInvertValue: false,
+    cssProp: "todo",
+    samples: null,
+  };
+
+  return new Layers([layer]);
 }
 
 export class Layers {
@@ -39,13 +52,9 @@ export class Layers {
     return this.getActiveLayer().dots;
   }
 
-  getActiveSamples() {
+  getActiveSamples(): Point[] {
     const layer = this.getActiveLayer();
-    if (!layer.samples) {
-      computeSamples(layer);
-    }
-
-    return layer.samples;
+    return layer.samples ? layer.samples : cacheSamples(layer);
   }
 
   purgeActiveSamples() {
@@ -56,6 +65,12 @@ export class Layers {
     this.active = Math.max(0, Math.min(n, this.layers.length - 1));
     this.purgeActiveSamples();
   }
+
+  setActiveSampleCount(count: number) {
+    count = Math.max(2, Math.min(count, 100));
+    this.getActiveLayer().sampleCount = count;
+    this.purgeActiveSamples();
+  }
 }
 
 /**
@@ -63,11 +78,11 @@ export class Layers {
  *
  * @param layer Layer to update samples on from its current dots.
  */
-function computeSamples(layer: RealLayer) {
+function cacheSamples(layer: RealLayer) {
   const dots = layer.dots;
   const samples: Point[] = (layer.samples = []);
 
-  if (dots.length < 2) return;
+  if (dots.length < 2) return samples;
 
   let dotIndex = 1;
 
@@ -105,4 +120,6 @@ function computeSamples(layer: RealLayer) {
       samples.push(sample);
     }
   }
+
+  return samples;
 }

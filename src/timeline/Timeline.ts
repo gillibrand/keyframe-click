@@ -17,6 +17,7 @@ import {
 } from "./convert";
 import { bullsEye, circle, dash, diamond, willDraw } from "./drawing";
 import { diffPt, findYForX, findYForXInCurve, nearPt, RealDot, Point, togglePt, UserDot } from "./point";
+import { layersFromUserData } from "./Layers";
 
 type DraggingPoint = {
   point: RealDot;
@@ -113,8 +114,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
   const _cx = _canvas.getContext("2d")!;
 
-  const _dots = savedUserDots.map((p) => asRealDot(p));
-  const _samples: Point[] = [];
+  const _layers = layersFromUserData(savedUserDots, 10);
 
   let _snapToGrid = true;
   let _labelYAxis = true;
@@ -130,7 +130,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
   function cloneSelectedDot(): RealDot | null {
     // XXX: shallow clone. Good enough for React to notice a diff
-    return _selectedIndex === null ? null : { ..._dots[_selectedIndex] };
+    return _selectedIndex === null ? null : { ..._layers.getActiveDots()[_selectedIndex] };
   }
 
   function getSelectedDot(): UserDot | null {
@@ -159,10 +159,12 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     const isConvertClick = e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey;
     let newSelected: number | null = null;
 
+    const dots = _layers.getActiveDots();
+
     try {
       if (isConvertClick) {
-        for (let i = 0; i < _dots.length; i++) {
-          const p = _dots[i];
+        for (let i = 0; i < dots.length; i++) {
+          const p = dots[i];
 
           if (nearPt(p, x, y)) {
             togglePt(p);
@@ -174,12 +176,12 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
           }
         }
       } else {
-        for (let i = 0; i < _dots.length; i++) {
-          const p = _dots[i];
+        for (let i = 0; i < dots.length; i++) {
+          const p = dots[i];
           if (nearPt(p, x, y)) {
             newSelected = i;
-            const maxX = _dots[i + 1] ? _dots[i + 1].x - ScaleX : Width;
-            const minX = i > 0 ? _dots[i - 1].x + ScaleX : 0;
+            const maxX = dots[i + 1] ? dots[i + 1].x - ScaleX : Width;
+            const minX = i > 0 ? dots[i - 1].x + ScaleX : 0;
             _dragging = { point: p, maxX, minX };
             break;
           }
@@ -374,13 +376,14 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
   }
 
   function drawSamples() {
-    _samples.length = 0;
-    if (_dots.length < 2) return;
+    // _samples.length = 0;
+    const dots = _layers.getActiveDots();
+    if (dots.length < 2) return;
 
     let dotIndex = 1;
 
-    let da = _dots[dotIndex - 1];
-    let db = _dots[dotIndex];
+    let da = dots[dotIndex - 1];
+    let db = dots[dotIndex];
 
     const inc = 100 / (_sampleCount - 1);
 
@@ -397,9 +400,9 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
       while (rx > db.x) {
         // Keep moving to next curve segment until contains the point
-        if (dotIndex++ >= _dots.length - 1) break;
-        da = _dots[dotIndex - 1];
-        db = _dots[dotIndex];
+        if (dotIndex++ >= dots.length - 1) break;
+        da = dots[dotIndex - 1];
+        db = dots[dotIndex];
       }
 
       const [x0, y0] = [da.x, da.y];
@@ -411,7 +414,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
       if (py !== null) {
         const sample = { x: rx, y: py };
-        _samples.push(sample);
+        // _samples.push(sample);
 
         // draw the guide lines
         willDraw(_cx, () => {
@@ -429,8 +432,9 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     // Fill the sample area
     _cx.beginPath();
     _cx.moveTo(OffsetX, OffsetY);
-    for (let i = 0; i < _samples.length; i++) {
-      const s = _samples[i];
+    const samples = _layers.getActiveSamples();
+    for (let i = 0; i < samples.length; i++) {
+      const s = samples[i];
       _cx.lineTo(s.x, s.y);
     }
     _cx.lineTo(Width - OffsetX, OffsetY);
@@ -444,7 +448,8 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
     _cx.strokeStyle = Colors.Blue;
 
-    let y = findYForXInCurve(_addingAtPoint.x, _dots);
+    const dots = _layers.getActiveDots();
+    let y = findYForXInCurve(_addingAtPoint.x, dots);
     if (y === null) y = _addingAtPoint.y;
 
     _cx.beginPath();
@@ -500,19 +505,22 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       drawGrid();
     });
 
+    _layers.purgeActiveSamples();
+    const dots = _layers.getActiveDots();
+
     // draw curve
-    if (_dots.length > 0) {
+    if (dots.length > 0) {
       willDraw(_cx, () => {
         clipTimeline();
 
         _cx.strokeStyle = Colors.Gray900;
-        const origin = _dots[0];
+        const origin = dots[0];
         _cx.beginPath();
         _cx.moveTo(origin.x, origin.y);
 
-        for (let i = 1; i < _dots.length; i++) {
-          const pp = _dots[i - 1];
-          const p = _dots[i];
+        for (let i = 1; i < dots.length; i++) {
+          const pp = dots[i - 1];
+          const p = dots[i];
 
           const cp1 = pp.type === "square" ? pp : pp.h2;
           const cp2 = p.type === "square" ? p : p.h1;
@@ -528,8 +536,8 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       });
 
       // draw the key points and their handles
-      for (let i = 0; i < _dots.length; i++) {
-        const p = _dots[i];
+      for (let i = 0; i < dots.length; i++) {
+        const p = dots[i];
 
         if (p.type === "round" && i === _selectedIndex) {
           const h1 = p.h1;
@@ -575,7 +583,9 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
     // const amount = e.shiftKey ? 10 : 1;
 
-    const d = _selectedIndex === null ? null : _dots[_selectedIndex];
+    const dots = _layers.getActiveDots();
+
+    const d = _selectedIndex === null ? null : dots[_selectedIndex];
 
     switch (e.key) {
       case "Delete":
@@ -585,7 +595,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
       case "c": {
         if (_selectedIndex === null) return;
-        const p = _dots[_selectedIndex];
+        const p = dots[_selectedIndex];
         togglePt(p);
         break;
       }
@@ -593,14 +603,14 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       case ".":
         if (_selectedIndex === null) {
           _selectedIndex = 0;
-        } else if (_selectedIndex < _dots.length - 1) {
+        } else if (_selectedIndex < dots.length - 1) {
           _selectedIndex++;
         }
         break;
 
       case ",":
         if (_selectedIndex === null) {
-          _selectedIndex = _dots.length - 1;
+          _selectedIndex = dots.length - 1;
         } else if (_selectedIndex > 0) {
           _selectedIndex--;
         }
@@ -663,7 +673,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
   function updateSelectedDot(d: UserDot) {
     if (_selectedIndex === null) return;
-    _dots[_selectedIndex] = asRealDot(d);
+    _layers.getActiveDots()[_selectedIndex] = asRealDot(d);
     draw();
   }
 
@@ -677,7 +687,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
   }
 
   function getUserSamples() {
-    return _samples.map((s) => asUserPoint(s));
+    return _layers.getActiveSamples().map((s) => asUserPoint(s));
   }
 
   function endAddingDot() {
@@ -707,8 +717,10 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
   function onClickAdding() {
     if (_addingAtPoint !== null) {
+      const dots = _layers.getActiveDots();
+
       let x = _addingAtPoint.x;
-      let y = findYForXInCurve(x, _dots);
+      let y = findYForXInCurve(x, dots);
       if (y === null) y = _addingAtPoint.y;
 
       if (_snapToGrid) {
@@ -733,10 +745,10 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
       // try to add before next highest x
       let didAdd = false;
-      for (let i = 0; i < _dots.length; i++) {
-        if (_dots[i].x >= newDot.x) {
+      for (let i = 0; i < dots.length; i++) {
+        if (dots[i].x >= newDot.x) {
           didAdd = true;
-          _dots.splice(i, 0, newDot);
+          dots.splice(i, 0, newDot);
           _selectedIndex = i;
           break;
         }
@@ -744,8 +756,8 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
       if (!didAdd) {
         // add at end
-        _dots.push(newDot);
-        _selectedIndex = _dots.length - 1;
+        dots.push(newDot);
+        _selectedIndex = dots.length - 1;
       }
     }
 
@@ -781,9 +793,10 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
   function deleteSelectedDot() {
     if (_selectedIndex === null) return;
 
-    _dots.splice(_selectedIndex, 1);
+    const dots = _layers.getActiveDots();
+    dots.splice(_selectedIndex, 1);
 
-    if (_dots.length === 0) {
+    if (dots.length === 0) {
       _selectedIndex = null;
     } else if (_selectedIndex !== 0) {
       _selectedIndex--;
@@ -818,7 +831,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       _onIsAdding = onAddCallback;
     },
     getUserDots: () => {
-      return _dots.map((d) => asUserDot(d));
+      return _layers.getActiveDots().map((d) => asUserDot(d));
     },
     beginAddingDot,
     deleteSelectedDot,
