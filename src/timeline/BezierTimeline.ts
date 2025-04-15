@@ -1,4 +1,20 @@
 import {
+  asPhysDot,
+  asPhysPoint,
+  asPhysX,
+  asPhysY,
+  asUserDot,
+  asUserPoint,
+  asUserX,
+  asUserY,
+  InsetX,
+  InsetY,
+  OffsetX,
+  OffsetY,
+  ScaleX,
+  ScaleY,
+} from "./conversion";
+import {
   Black,
   Blue,
   bullsEye,
@@ -107,14 +123,8 @@ function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boole
 export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierTimelineProps): BezierTimeline {
   enableRetina(_canvas);
 
-  const ScaleX = 9;
-  const ScaleY = 2;
-  const InsetX = 10;
-  const InsetY = 10;
   const Height = _canvas.clientHeight;
   const Width = _canvas.clientWidth;
-  const OffsetX = 0 + InsetX;
-  const OffsetY = 400 + InsetY;
 
   const _cx = _canvas.getContext("2d")!;
 
@@ -207,36 +217,6 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     if (_dragging) startDrag(x, y);
   }
 
-  function asPhysPoint(user: Point): Point {
-    return { x: user.x * ScaleX + OffsetX, y: user.y * ScaleY * -1 + OffsetY };
-  }
-
-  function asUserPoint(pd: Point) {
-    return { x: (pd.x - OffsetX) / ScaleX, y: ((pd.y - OffsetY) / ScaleY) * -1 };
-  }
-
-  function asPhysDot(user: UserDot): PhysDot {
-    return {
-      space: "physical",
-      type: user.type,
-      x: user.x * ScaleX + OffsetX,
-      y: user.y * ScaleY * -1 + OffsetY,
-      h1: asPhysPoint(user.h1),
-      h2: asPhysPoint(user.h2),
-    };
-  }
-
-  function asUserDot(pd: PhysDot): UserDot {
-    return {
-      ...pd,
-      x: (pd.x - OffsetX) / ScaleX,
-      y: ((pd.y - OffsetY) / ScaleY) * -1,
-      space: "user",
-      h1: asUserPoint(pd.h1),
-      h2: asUserPoint(pd.h2),
-    };
-  }
-
   let isPastThreshold: (e: MouseEvent) => boolean = () => false;
 
   /**
@@ -276,22 +256,6 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     otherHandle.y = point.y - diff.y;
 
     draw();
-  }
-
-  function asUserX(x: number): number {
-    return (x - OffsetX) / ScaleX;
-  }
-
-  function asUserY(y: number): number {
-    return ((y - OffsetY) / ScaleY) * -1;
-  }
-
-  function asPhysX(x: number): number {
-    return x * ScaleX + OffsetX;
-  }
-
-  function asPhysY(y: number): number {
-    return y * ScaleY * -1 + OffsetY;
   }
 
   function moveDot(p: PhysDot, toX: number, toY: number) {

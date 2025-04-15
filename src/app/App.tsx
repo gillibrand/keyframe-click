@@ -52,22 +52,24 @@ function loadSavedDots(): UserDot[] {
 function App() {
   const timelineRef = useRef<BezierTimeline | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // transient state
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
   const [isDataDirty, isDotsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
 
-  // timeline settings
+  // timeline layer data
   const [outProperty, setOutProperty] = useSetting("outProperty", "translateX");
   const [sampleCount, setSampleCount] = useSetting("sampleCount", 10);
-  const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
-  const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
   const [invertValues, setInvertValues] = useSetting("isInvertValues", false);
 
-  // preview
+  // timeline global settings
+  const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
+  const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
-  // React, we instead listen to its callback and manually call this.
+  // React, we instead listen to its callback and manually call this to force a render if needed.
   const [timelineDrawCount, incrementTimelineDrawCount] = useReducer((old: number) => {
     return old + 1;
   }, 0);
