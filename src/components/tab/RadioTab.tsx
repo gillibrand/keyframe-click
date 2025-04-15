@@ -1,15 +1,14 @@
 import Close from "@images/close.svg?react";
+import { ColorName, Colors } from "@util/Colors";
 import cx from "classnames";
 import { CSSProperties, useId, useMemo, useRef } from "react";
-import type { Color } from "./RadioTabGroup";
-import { Colors } from "./RadioTabGroup";
 
 interface Props {
   label: string;
   radioName: string;
   value: string;
   checked?: boolean;
-  color: Color;
+  color: ColorName;
   onCheck: (value: string) => void;
   canDelete?: (label: string) => Promise<boolean>;
   onDelete: (value: string) => void;

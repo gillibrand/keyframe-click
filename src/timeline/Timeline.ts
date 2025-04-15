@@ -1,4 +1,4 @@
-import { Colors } from "@util/Colors";
+import { ColorName, Colors } from "@util/Colors";
 import {
   asRealDot,
   asRealPoint,
@@ -375,8 +375,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     }
   }
 
-  function drawSamples() {
-    // _samples.length = 0;
+  function drawSamples(color: ColorName) {
     const dots = _layers.getActiveDots();
     if (dots.length < 2) return;
 
@@ -387,6 +386,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
     const inc = 100 / (_sampleCount - 1);
 
+    _cx.lineWidth = 1;
     _cx.setLineDash([]);
 
     for (let x = 0; x < 101; x += inc) {
@@ -414,11 +414,10 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
       if (py !== null) {
         const sample = { x: rx, y: py };
-        // _samples.push(sample);
 
         // draw the guide lines
         willDraw(_cx, () => {
-          _cx.strokeStyle = Colors.Red;
+          _cx.strokeStyle = Colors[color];
           dash(sample, _cx);
           _cx.setLineDash([5, 5]);
           _cx.beginPath();
@@ -439,7 +438,9 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     }
     _cx.lineTo(Width - OffsetX, OffsetY);
     _cx.lineTo(OffsetX, OffsetY);
-    _cx.fillStyle = "rgba(255 0 0 / .075)";
+    // _cx.fillStyle = "rgba(255 0 0 / .075)";
+    _cx.fillStyle = Colors[color];
+    _cx.globalAlpha = 0.15;
     _cx.fill();
   }
 
@@ -489,6 +490,24 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     _cx.clip();
   }
 
+  function drawCurveForDots(dots: RealDot[], color: ColorName) {
+    // _cx.strokeStyle = Colors.Gray900;
+    _cx.strokeStyle = Colors[color];
+
+    const origin = dots[0];
+    _cx.beginPath();
+    _cx.moveTo(origin.x, origin.y);
+
+    for (let i = 1; i < dots.length; i++) {
+      const pp = dots[i - 1];
+      const p = dots[i];
+
+      const cp1 = pp.type === "square" ? pp : pp.h2;
+      const cp2 = p.type === "square" ? p : p.h1;
+      _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
+    }
+  }
+
   /**
    * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next
    * animation frame for better performance.
@@ -513,26 +532,14 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       willDraw(_cx, () => {
         clipTimeline();
 
-        _cx.strokeStyle = Colors.Gray900;
-        const origin = dots[0];
-        _cx.beginPath();
-        _cx.moveTo(origin.x, origin.y);
+        const color = _layers.getActiveColor();
+        drawCurveForDots(dots, color);
 
-        for (let i = 1; i < dots.length; i++) {
-          const pp = dots[i - 1];
-          const p = dots[i];
-
-          const cp1 = pp.type === "square" ? pp : pp.h2;
-          const cp2 = p.type === "square" ? p : p.h1;
-          _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
-        }
         _cx.setLineDash([]);
         _cx.lineWidth = 3;
         _cx.stroke();
 
-        _cx.lineWidth = 1;
-
-        drawSamples();
+        drawSamples(color);
       });
 
       // draw the key points and their handles

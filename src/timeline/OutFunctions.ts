@@ -1,9 +1,9 @@
-import { Color } from "@components/tab/RadioTabGroup";
+import { ColorName } from "@util/Colors";
 
 interface NamedFn {
   label: string;
   fn: (n: number) => string;
-  color: Color;
+  color: ColorName;
 }
 
 const typedKeys = <K extends string>(object: Record<K, NamedFn>) => object;

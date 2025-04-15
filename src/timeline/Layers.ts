@@ -1,13 +1,14 @@
 import { asRealDot, asRealX } from "./convert";
-import { findYForX, Point, RealDot, UserDot } from "./point";
+import { OutFunctions, OutProperty } from "./OutFunctions";
+import { createRound, createSquare, findYForX, Point, RealDot, UserDot } from "./point";
 
 /**
  * A single animatable property and it's complete state. A timeline is built of multiple property
  * layers to produce the final animation.
  */
 interface RealLayer {
-  cssProp: string;
-  isInvertValue: boolean;
+  cssProp: OutProperty;
+  isInvertValues: boolean;
   dots: RealDot[];
 
   sampleCount: number;
@@ -18,17 +19,39 @@ interface RealLayer {
 
 export function layersFromUserData(userDots: UserDot[], sampleCount: number) {
   const dots = userDots.map((d) => asRealDot(d));
+
   const layer: RealLayer = {
     dots,
     sampleCount,
-    isInvertValue: false,
-    cssProp: "todo",
+    isInvertValues: false,
+    cssProp: "scaleX",
     samples: null,
   };
 
-  return new Layers([layer]);
+  const exampleDots: UserDot[] = [
+    createSquare(0, 0),
+    { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
+    createRound(50, 10),
+    createSquare(75, 50),
+    createSquare(100, 0),
+  ];
+
+  const exampleLayer: RealLayer = {
+    dots: exampleDots.map((d) => asRealDot(d)),
+    sampleCount,
+    isInvertValues: false,
+    cssProp: "scale",
+    samples: null,
+  };
+
+  return new Layers([layer, exampleLayer]);
 }
 
+/**
+ * Holds all data for the different layers of the timeline. Each layer is a separate CSS property
+ * with its own dots. There is one active layer at a time which is what the user can drag around.
+ * All layers are used for output.
+ */
 export class Layers {
   private active = 0;
   private layers: RealLayer[];
@@ -70,6 +93,11 @@ export class Layers {
     count = Math.max(2, Math.min(count, 100));
     this.getActiveLayer().sampleCount = count;
     this.purgeActiveSamples();
+  }
+
+  getActiveColor() {
+    const layer = this.getActiveLayer();
+    return OutFunctions[layer.cssProp].color;
   }
 }
 
