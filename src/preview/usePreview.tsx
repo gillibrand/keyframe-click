@@ -2,7 +2,7 @@ import { Duration, useSetting } from "@app/useSettings";
 import { debounce, nullFn, unreachable } from "@util";
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
-import { ProgressBar } from "./ProgressBar";
+import { AutoProgressBar } from "./AutoProgressBar";
 
 interface UsePreview {
   preview: ReactElement;
@@ -72,7 +72,6 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   const stopAnimation = useCallback(function stopAnimation() {
     playSoonCancellerRef?.current();
     setIsPlaying(false);
-    setProgress(0);
 
     if (ballRef.current) ballRef.current.classList.remove("is-animate");
   }, []);
@@ -120,44 +119,18 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   );
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  const intervalTimer = useRef(-1);
 
   const didStart = useCallback(() => {
     setIsPlaying(true);
-    setProgress(0);
   }, []);
 
   const didEnd = useCallback(() => {
     setIsPlaying(false);
-    setProgress(100);
   }, []);
 
   const didIteration = useCallback(() => {
-    setProgress(0);
+    setIterationCount((prev) => prev + 1);
   }, []);
-
-  useEffect(
-    function updateProgressInterval() {
-      clearInterval(intervalTimer.current);
-
-      if (!isPlaying) {
-        return;
-      }
-
-      const frequencyMs = durationMs / 100;
-
-      intervalTimer.current = setInterval(() => {
-        setProgress((prev) => {
-          return prev + 1;
-        });
-      }, frequencyMs);
-
-      return () => clearInterval(intervalTimer.current);
-    },
-    [isPlaying, durationMs]
-  );
 
   const progressBarPosition = useMemo(
     () =>
@@ -183,6 +156,10 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     return `@keyframes preview-anim1 {\n${keyframeText}\n}`;
   }, [keyframeText]);
 
+  // This key is used to force a remount of the ProgressPlayer, effectively restarting it. React is weird.
+  const [iterationCount, setIterationCount] = useState(0);
+  const progressPlayerKey = useMemo(() => String(iterationCount), [iterationCount]);
+
   const preview = (
     <div
       className="Preview"
@@ -197,7 +174,13 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       <div className="Preview__content">
         <div className="Preview__ball" ref={ballRef}></div>
       </div>
-      <ProgressBar value={progress} style={progressBarPosition} />
+
+      <AutoProgressBar
+        durationMs={durationMs}
+        isPlaying={isPlaying}
+        style={progressBarPosition}
+        key={progressPlayerKey}
+      />
     </div>
   );
 
