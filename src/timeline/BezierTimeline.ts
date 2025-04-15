@@ -1,3 +1,4 @@
+import { Colors } from "@util/Colors";
 import {
   asRealDot,
   asRealPoint,
@@ -14,23 +15,7 @@ import {
   ScaleX,
   ScaleY,
 } from "./convert";
-import {
-  Black,
-  Blue,
-  bullsEye,
-  circle,
-  dash,
-  diamond,
-  Gray200,
-  Gray300,
-  Gray400,
-  Gray50,
-  Gray500,
-  Gray900,
-  Red,
-  White,
-  willDraw,
-} from "./drawing";
+import { bullsEye, circle, dash, diamond, willDraw } from "./drawing";
 import { diffPt, findYForX, findYForXInCurve, nearPt, RealDot, Point, togglePt, UserDot } from "./point";
 
 type DraggingPoint = {
@@ -308,13 +293,13 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _cx.lineWidth = 1;
 
     // above 100% gray
-    _cx.fillStyle = Gray50;
+    _cx.fillStyle = Colors.Gray50;
 
     const p200 = asRealY(200);
     const pNeg100 = asRealY(-100);
     const fullDiff = pNeg100 - p200;
 
-    _cx.fillStyle = White;
+    _cx.fillStyle = Colors.White;
     _cx.fillRect(InsetX, InsetY, Width - 2 * InsetX, fullDiff);
 
     // below 100% gray
@@ -322,7 +307,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     // vertical lines
     for (let x = 0; x <= 100; x += 10) {
-      _cx.strokeStyle = x % 50 === 0 ? Gray300 : Gray200;
+      _cx.strokeStyle = x % 50 === 0 ? Colors.Gray300 : Colors.Gray200;
 
       const px = asRealX(x);
       _cx.beginPath();
@@ -339,11 +324,11 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
       if (y === 0) {
         // zero baseline
-        _cx.strokeStyle = Gray500;
+        _cx.strokeStyle = Colors.Gray500;
       } else if (y % 100 === 0) {
-        _cx.strokeStyle = Gray400;
+        _cx.strokeStyle = Colors.Gray400;
       } else {
-        _cx.strokeStyle = Gray200;
+        _cx.strokeStyle = Colors.Gray200;
       }
 
       _cx.lineTo(Width - InsetX, py);
@@ -357,7 +342,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       _cx.lineJoin = "round";
     } else {
       _cx.lineWidth = 1;
-      _cx.strokeStyle = Gray900;
+      _cx.strokeStyle = Colors.Gray900;
     }
 
     _cx.strokeRect(InsetX, InsetY, Width - 2 * InsetX, fullDiff);
@@ -373,17 +358,17 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _cx.textRendering = "optimizeSpeed";
     _cx.textBaseline = "middle";
     _cx.font = "14px sans-serif ";
-    _cx.fillStyle = Gray500;
+    _cx.fillStyle = Colors.Gray500;
 
     for (let y = -100; y <= 200; y += 100) {
       const tp = asRealPoint({ x: 1.5, y });
       const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
       const r = _cx.measureText(text);
 
-      _cx.fillStyle = White;
+      _cx.fillStyle = Colors.White;
       _cx.fillRect(tp.x, tp.y - 4, r.width, 8);
 
-      _cx.fillStyle = Gray400;
+      _cx.fillStyle = Colors.Gray400;
       _cx.fillText(text, tp.x, tp.y);
     }
   }
@@ -430,7 +415,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
         // draw the guide lines
         willDraw(_cx, () => {
-          _cx.strokeStyle = Red;
+          _cx.strokeStyle = Colors.Red;
           dash(sample, _cx);
           _cx.setLineDash([5, 5]);
           _cx.beginPath();
@@ -457,7 +442,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   function drawAddMarker() {
     if (_addingAtPoint === null) return;
 
-    _cx.strokeStyle = Blue;
+    _cx.strokeStyle = Colors.Blue;
 
     let y = findYForXInCurve(_addingAtPoint.x, _dots);
     if (y === null) y = _addingAtPoint.y;
@@ -520,7 +505,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       willDraw(_cx, () => {
         clipTimeline();
 
-        _cx.strokeStyle = Gray900;
+        _cx.strokeStyle = Colors.Gray900;
         const origin = _dots[0];
         _cx.beginPath();
         _cx.moveTo(origin.x, origin.y);
@@ -553,7 +538,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
           willDraw(_cx, () => {
             clipTimeline();
 
-            _cx.strokeStyle = Blue;
+            _cx.strokeStyle = Colors.Blue;
             _cx.setLineDash([5, 2]);
 
             for (const h of [h1, h2]) {
@@ -564,15 +549,15 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
             }
 
             if (p.type === "round") {
-              _cx.fillStyle = Blue;
+              _cx.fillStyle = Colors.Blue;
               diamond(p.h1, _cx);
               diamond(p.h2, _cx);
             }
           });
         }
 
-        _cx.fillStyle = White;
-        _cx.strokeStyle = Black;
+        _cx.fillStyle = Colors.White;
+        _cx.strokeStyle = Colors.Black;
         if (_selectedIndex === i && _addingAtPoint === null) {
           bullsEye(p, _cx);
         } else {
