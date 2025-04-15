@@ -4,7 +4,7 @@ interface Point {
 }
 
 type DotType = "square" | "round";
-type DotSpace = "physical" | "user";
+type DotSpace = "real" | "user";
 
 interface BaseDot extends Point {
   space: DotSpace;
@@ -13,8 +13,8 @@ interface BaseDot extends Point {
   h2: Point;
 }
 
-export interface PhysDot extends BaseDot {
-  space: "physical";
+export interface RealDot extends BaseDot {
+  space: "real";
 }
 
 export interface UserDot extends BaseDot {
@@ -46,18 +46,19 @@ export function roundPt(p: Point) {
 
 /**
  * Modify the point position and the handle positions to match. Updates in place.
- * @param p Dot to update.
+ * @param d Dot to update.
  * @param x New x in user space.
  * @param y New y in user space.
  */
-export function moveDot(p: UserDot, x: number, y: number) {
-  const diffPt = { x: p.x - x, y: p.y - y };
-  p.x = x;
-  p.y = y;
-  p.h1.x -= diffPt.x;
-  p.h1.y -= diffPt.y;
-  p.h2.x -= diffPt.x;
-  p.h2.y -= diffPt.y;
+export function moveDot(d: UserDot, x: number, y: number) {
+  const diffPt = { x: d.x - x, y: d.y - y };
+  d.x = x;
+  d.y = y;
+
+  d.h1.x -= diffPt.x;
+  d.h1.y -= diffPt.y;
+  d.h2.x -= diffPt.x;
+  d.h2.y -= diffPt.y;
 }
 
 export function togglePt(p: BaseDot) {
@@ -113,7 +114,7 @@ export function findYForX(
   return null;
 }
 
-export function findYForXInCurve(x: number, curves: PhysDot[], tolerance = 1e-6, maxIterations = 100) {
+export function findYForXInCurve(x: number, curves: RealDot[], tolerance = 1e-6, maxIterations = 100) {
   let i = 0;
   let j = 0;
   for (i = 1; i < curves.length; i++) {

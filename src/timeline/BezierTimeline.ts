@@ -1,8 +1,8 @@
 import {
-  asPhysDot,
-  asPhysPoint,
-  asPhysX,
-  asPhysY,
+  asRealDot,
+  asRealPoint,
+  asRealX,
+  asRealY,
   asUserDot,
   asUserPoint,
   asUserX,
@@ -13,7 +13,7 @@ import {
   OffsetY,
   ScaleX,
   ScaleY,
-} from "./conversion";
+} from "./convert";
 import {
   Black,
   Blue,
@@ -31,16 +31,16 @@ import {
   White,
   willDraw,
 } from "./drawing";
-import { diffPt, findYForX, findYForXInCurve, nearPt, PhysDot, Point, togglePt, UserDot } from "./point";
+import { diffPt, findYForX, findYForXInCurve, nearPt, RealDot, Point, togglePt, UserDot } from "./point";
 
 type DraggingPoint = {
-  point: PhysDot;
+  point: RealDot;
   minX: number;
   maxX: number;
 };
 
 type DraggingHandle = {
-  point: PhysDot;
+  point: RealDot;
   handle: Point;
   otherHandle: Point;
 };
@@ -76,7 +76,7 @@ export interface BezierTimeline {
   beginAddingDot(at?: Point): void;
 
   getSelectedDot(): UserDot | null;
-  updateSelectedDot: (p: UserDot) => void;
+  updateSelectedDot: (d: UserDot) => void;
   deleteSelectedDot: () => void;
   cancel: () => void;
 }
@@ -128,7 +128,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   const _cx = _canvas.getContext("2d")!;
 
-  const _dots = savedUserDots.map((p) => asPhysDot(p));
+  const _dots = savedUserDots.map((p) => asRealDot(p));
   const _samples: Point[] = [];
 
   let _snapToGrid = true;
@@ -143,7 +143,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
   let _state: State = "default";
 
-  function cloneSelectedDot(): PhysDot | null {
+  function cloneSelectedDot(): RealDot | null {
     // XXX: shallow clone. Good enough for React to notice a diff
     return _selectedIndex === null ? null : { ..._dots[_selectedIndex] };
   }
@@ -258,32 +258,32 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     draw();
   }
 
-  function moveDot(p: PhysDot, toX: number, toY: number) {
-    const origin = { ...p };
+  function moveDot(d: RealDot, toX: number, toY: number) {
+    const origin = { ...d };
 
     if (_snapToGrid) {
       const toUserX = Math.round(asUserX(toX));
       const toUserY = Math.round(asUserY(toY));
 
-      const fromUserX = Math.round(asUserX(p.x));
-      const fromUserY = Math.round(asUserY(p.y));
+      const fromUserX = Math.round(asUserX(d.x));
+      const fromUserY = Math.round(asUserY(d.y));
 
       // bail if no real change
       if (toUserX === fromUserX && toUserY === fromUserY) return;
-      toX = asPhysX(toUserX);
-      toY = asPhysY(toUserY);
+      toX = asRealX(toUserX);
+      toY = asRealY(toUserY);
     }
 
     // move point
-    p.x = toX;
-    p.y = toY;
+    d.x = toX;
+    d.y = toY;
 
     // move handles
-    const diffPoint = diffPt(p, origin);
-    p.h1.x += diffPoint.x;
-    p.h1.y += diffPoint.y;
-    p.h2.x += diffPoint.x;
-    p.h2.y += diffPoint.y;
+    const diffPoint = diffPt(d, origin);
+    d.h1.x += diffPoint.x;
+    d.h1.y += diffPoint.y;
+    d.h2.x += diffPoint.x;
+    d.h2.y += diffPoint.y;
 
     draw();
   }
@@ -310,8 +310,8 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     // above 100% gray
     _cx.fillStyle = Gray50;
 
-    const p200 = asPhysY(200);
-    const pNeg100 = asPhysY(-100);
+    const p200 = asRealY(200);
+    const pNeg100 = asRealY(-100);
     const fullDiff = pNeg100 - p200;
 
     _cx.fillStyle = White;
@@ -324,7 +324,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     for (let x = 0; x <= 100; x += 10) {
       _cx.strokeStyle = x % 50 === 0 ? Gray300 : Gray200;
 
-      const px = asPhysX(x);
+      const px = asRealX(x);
       _cx.beginPath();
       _cx.moveTo(px, InsetY);
       _cx.lineTo(px, Height - InsetY);
@@ -334,7 +334,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     // horizontal lines
     for (let y = -100; y <= 200; y += 10) {
       _cx.beginPath();
-      const py = asPhysY(y);
+      const py = asRealY(y);
       _cx.moveTo(InsetX, py);
 
       if (y === 0) {
@@ -376,7 +376,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     _cx.fillStyle = Gray500;
 
     for (let y = -100; y <= 200; y += 100) {
-      const tp = asPhysPoint({ x: 1.5, y });
+      const tp = asRealPoint({ x: 1.5, y });
       const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
       const r = _cx.measureText(text);
 
@@ -403,7 +403,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     for (let x = 0; x < 101; x += inc) {
       if (x > 100) x = 100;
-      const px = asPhysX(x);
+      const px = asRealX(x);
 
       if (px < da.x) {
         // Haven't hit a curve yet, so skip this dot
@@ -590,7 +590,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
 
     // const amount = e.shiftKey ? 10 : 1;
 
-    const p = _selectedIndex === null ? null : _dots[_selectedIndex];
+    const d = _selectedIndex === null ? null : _dots[_selectedIndex];
 
     switch (e.key) {
       case "Delete":
@@ -622,19 +622,19 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
         break;
 
       case "ArrowUp":
-        if (p) moveDot(p, p.x, p.y - ScaleY);
+        if (d) moveDot(d, d.x, d.y - ScaleY);
         e.preventDefault();
         break;
       case "ArrowDown":
-        if (p) moveDot(p, p.x, p.y + ScaleY);
+        if (d) moveDot(d, d.x, d.y + ScaleY);
         e.preventDefault();
         break;
       case "ArrowLeft":
-        if (p) moveDot(p, p.x - ScaleX, p.y);
+        if (d) moveDot(d, d.x - ScaleX, d.y);
         e.preventDefault();
         break;
       case "ArrowRight":
-        if (p) moveDot(p, p.x + ScaleX, p.y);
+        if (d) moveDot(d, d.x + ScaleX, d.y);
         e.preventDefault();
         break;
 
@@ -676,9 +676,9 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
     if (drawTimer !== null) cancelAnimationFrame(drawTimer);
   }
 
-  function updateSelectedDot(p: UserDot) {
+  function updateSelectedDot(d: UserDot) {
     if (_selectedIndex === null) return;
-    _dots[_selectedIndex] = asPhysDot(p);
+    _dots[_selectedIndex] = asRealDot(d);
     draw();
   }
 
@@ -727,13 +727,13 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
       if (y === null) y = _addingAtPoint.y;
 
       if (_snapToGrid) {
-        x = asPhysX(Math.round(asUserX(x)));
-        y = asPhysY(Math.round(asUserY(y)));
+        x = asRealX(Math.round(asUserX(x)));
+        y = asRealY(Math.round(asUserY(y)));
       }
 
-      const newDot: PhysDot = {
+      const newDot: RealDot = {
         type: "square",
-        space: "physical",
+        space: "real",
         x: x,
         y: y,
         h1: {
