@@ -388,14 +388,14 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
 
     for (let x = 0; x < 101; x += inc) {
       if (x > 100) x = 100;
-      const px = asRealX(x);
+      const rx = asRealX(x);
 
-      if (px < da.x) {
+      if (rx < da.x) {
         // Haven't hit a curve yet, so skip this dot
         continue;
       }
 
-      while (px > db.x) {
+      while (rx > db.x) {
         // Keep moving to next curve segment until contains the point
         if (dotIndex++ >= _dots.length - 1) break;
         da = _dots[dotIndex - 1];
@@ -407,10 +407,10 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       const [x2, y2] = db.type === "square" ? [db.x, db.y] : [db.h1.x, db.h1.y];
       const [x3, y3] = [db.x, db.y];
 
-      const py = findYForX(px, x0, y0, x1, y1, x2, y2, x3, y3);
+      const py = findYForX(rx, x0, y0, x1, y1, x2, y2, x3, y3);
 
       if (py !== null) {
-        const sample = { x: px, y: py };
+        const sample = { x: rx, y: py };
         _samples.push(sample);
 
         // draw the guide lines
@@ -419,8 +419,8 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
           dash(sample, _cx);
           _cx.setLineDash([5, 5]);
           _cx.beginPath();
-          _cx.moveTo(px, OffsetY);
-          _cx.lineTo(px, py);
+          _cx.moveTo(rx, OffsetY);
+          _cx.lineTo(rx, py);
           _cx.stroke();
         });
       }
