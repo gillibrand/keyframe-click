@@ -1,7 +1,7 @@
 import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
-import { BezierTimeline, createBezierTimeline } from "@timeline/BezierTimeline";
+import { Timeline, createTimeline } from "@timeline/Timeline";
 import { OutFunctions, OutProperty } from "@timeline/OutFunctions";
 import { Point, UserDot, createRound, createSquare } from "@timeline/point";
 import { TimelineInspector } from "@timeline/TimelineInspector";
@@ -50,7 +50,7 @@ function loadSavedDots(): UserDot[] {
 }
 
 function App() {
-  const timelineRef = useRef<BezierTimeline | null>(null);
+  const timelineRef = useRef<Timeline | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // transient state
@@ -88,7 +88,7 @@ function App() {
   /**
    * Callback when canvas element is created. Wraps it with a timeline.
    */
-  useEffect(function createTimeline() {
+  useEffect(function wrapCanvasInTimeline() {
     if (timelineRef.current) {
       timelineRef.current.destroy();
       timelineRef.current = null;
@@ -97,7 +97,7 @@ function App() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const timeline = createBezierTimeline({ canvas, savedUserDots: loadSavedDots() });
+    const timeline = createTimeline({ canvas, savedUserDots: loadSavedDots() });
     timelineRef.current = timeline;
   }, []);
 

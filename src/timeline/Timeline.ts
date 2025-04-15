@@ -46,7 +46,7 @@ function createThreshold(origin: Point, threshold: number) {
   };
 }
 
-export interface BezierTimeline {
+export interface Timeline {
   destroy: () => void;
 
   setSnapToGrid: (snapToGrid: boolean) => void;
@@ -66,7 +66,7 @@ export interface BezierTimeline {
   cancel: () => void;
 }
 
-export interface BezierTimelineProps {
+export interface TimelineProps {
   canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean };
   savedUserDots: UserDot[];
 }
@@ -105,7 +105,7 @@ function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boole
  * Wraps an existing canvas element with logic to draw a timeline.
  * @returns Controller to interact with the graph.
  */
-export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierTimelineProps): BezierTimeline {
+export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps): Timeline {
   enableRetina(_canvas);
 
   const Height = _canvas.clientHeight;
@@ -804,7 +804,7 @@ export function createBezierTimeline({ canvas: _canvas, savedUserDots }: BezierT
   // initial render
   draw();
 
-  // type BezierTimeline
+  // type Timeline
   return {
     destroy,
     updateSelectedDot,
