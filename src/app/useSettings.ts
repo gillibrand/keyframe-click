@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { unreachable } from "@util";
-import { OutFunctions } from "@timeline/OutFunctions";
+import { CssProp } from "@timeline/CssInfo";
 
 const TimeUnits = ["ms", "s"] as const;
 export type TimeUnit = (typeof TimeUnits)[number];
@@ -14,7 +14,7 @@ export interface Duration {
  * Types of all global settings.
  */
 interface Settings {
-  outProperty: keyof typeof OutFunctions;
+  cssProp: CssProp;
   sampleCount: number;
   isInvertValues: boolean;
   isSnapToGrid: boolean;
@@ -50,7 +50,7 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
     case "isPreviewAutoPlay":
       return typeof value === "boolean";
 
-    case "outProperty":
+    case "cssProp":
       // maybe check actual output functions?
       return typeof value === "string";
 

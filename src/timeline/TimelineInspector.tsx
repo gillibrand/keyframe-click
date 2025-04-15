@@ -1,6 +1,6 @@
 import { Hint } from "@components/Hint";
 import "@style/inspector.css";
-import { OutFunctions, OutProperty } from "@timeline/OutFunctions";
+import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { DotType, moveDot, UserDot } from "@timeline/point";
 import { useStable } from "@util/hooks";
 import { round3dp } from "@util/index";
@@ -10,10 +10,10 @@ import { memo, useId } from "react";
 interface GlobalProps {
   invertValues: boolean;
   sampleCount: number;
-  outProperty: string;
+  cssProp: string;
   onInvertValues: (value: boolean) => void;
   onSampleCount: (count: number) => void;
-  onOutProperty: (property: OutProperty) => void;
+  onCssProp: (property: CssProp) => void;
 }
 
 interface Props extends GlobalProps {
@@ -27,10 +27,10 @@ interface Props extends GlobalProps {
 const GlobalSettings = memo(function GlobalSettings({
   invertValues,
   sampleCount,
-  outProperty,
+  cssProp,
   onInvertValues,
   onSampleCount,
-  onOutProperty,
+  onCssProp,
 }: GlobalProps) {
   const samplesId = useId();
 
@@ -40,8 +40,8 @@ const GlobalSettings = memo(function GlobalSettings({
 
       <label className="stacked-label">
         <span>Property</span>
-        <select value={outProperty} onChange={(e) => onOutProperty(e.target.value as OutProperty)}>
-          {Object.entries(OutFunctions).map(([key, namedFn]) => (
+        <select value={cssProp} onChange={(e) => onCssProp(e.target.value as CssProp)}>
+          {Object.entries(CssInfos).map(([key, namedFn]) => (
             <option key={key} value={key}>
               {namedFn.label}
             </option>

@@ -1,5 +1,5 @@
 import { asRealDot, asRealX } from "./convert";
-import { OutFunctions, OutProperty } from "./OutFunctions";
+import { CssInfos, CssProp } from "./CssInfo";
 import { createRound, createSquare, findYForX, Point, RealDot, UserDot } from "./point";
 
 /**
@@ -7,7 +7,7 @@ import { createRound, createSquare, findYForX, Point, RealDot, UserDot } from ".
  * layers to produce the final animation.
  */
 interface RealLayer {
-  cssProp: OutProperty;
+  cssProp: CssProp;
   isInvertValues: boolean;
   dots: RealDot[];
 
@@ -97,7 +97,7 @@ export class Layers {
 
   getActiveColor() {
     const layer = this.getActiveLayer();
-    return OutFunctions[layer.cssProp].color;
+    return CssInfos[layer.cssProp].color;
   }
 }
 

@@ -2,7 +2,7 @@ import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
 import { Timeline, createTimeline } from "@timeline/Timeline";
-import { OutFunctions, OutProperty } from "@timeline/OutFunctions";
+import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot, createRound, createSquare } from "@timeline/point";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, round2dp, throttle } from "@util";
@@ -22,10 +22,10 @@ const defaultDots: UserDot[] = [
   createSquare(100, 0),
 ];
 
-function genCssKeyframeText(samples: Point[], outProperty: OutProperty, invertValues: boolean): string {
+function genCssKeyframeText(samples: Point[], cssProp: CssProp, invertValues: boolean): string {
   const frames = [];
 
-  const fn = OutFunctions[outProperty].fn;
+  const fn = CssInfos[cssProp].fn;
 
   for (const sample of samples) {
     const timePercent = round2dp(sample.x);
@@ -60,7 +60,7 @@ function App() {
   const [showMessage, setShowMessage] = useState(false);
 
   // timeline layer data
-  const [outProperty, setOutProperty] = useSetting("outProperty", "translateX");
+  const [cssProp, setCssProp] = useSetting("cssProp", "translateX");
   const [sampleCount, setSampleCount] = useSetting("sampleCount", 10);
   const [invertValues, setInvertValues] = useSetting("isInvertValues", false);
 
@@ -243,8 +243,8 @@ function App() {
     void timelineDrawCount;
     if (!timelineRef.current) return "";
 
-    return genCssKeyframeText(timelineRef.current.getUserSamples(), outProperty, invertValues);
-  }, [outProperty, invertValues, timelineDrawCount]);
+    return genCssKeyframeText(timelineRef.current.getUserSamples(), cssProp, invertValues);
+  }, [cssProp, invertValues, timelineDrawCount]);
 
   useEffect(() => {
     document.body.classList.toggle("is-adding", isAdding);
@@ -279,9 +279,6 @@ function App() {
   ];
 
   const [tabs, setTabs] = useState(() => {
-    // const fn = OutFunctions[outProperty];
-    // const Opacity = OutFunctions.opacity;
-
     const arr: TabData[] = [
       {
         label: "blue is one",
@@ -370,10 +367,10 @@ function App() {
             </div>
 
             <TimelineInspector
-              outProperty={outProperty}
+              cssProp={cssProp}
               sampleCount={sampleCount}
               invertValues={invertValues}
-              onOutProperty={setOutProperty}
+              onCssProp={setCssProp}
               onSampleCount={setSampleCount}
               onInvertValues={setInvertValues}
               selected={selectedDot}

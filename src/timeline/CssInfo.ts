@@ -1,14 +1,14 @@
 import { ColorName } from "@util/Colors";
 
-interface NamedFn {
+interface CssInfo {
   label: string;
   fn: (n: number) => string;
   color: ColorName;
 }
 
-const typedKeys = <K extends string>(object: Record<K, NamedFn>) => object;
+const typedKeys = <K extends string>(object: Record<K, CssInfo>) => object;
 
-const OutFunctions = typedKeys({
+const CssInfos = typedKeys({
   scale: {
     label: "Scale",
     fn: (s) => {
@@ -66,5 +66,5 @@ const OutFunctions = typedKeys({
   },
 } as const);
 
-export type OutProperty = keyof typeof OutFunctions;
-export { OutFunctions };
+export type CssProp = keyof typeof CssInfos;
+export { CssInfos };
