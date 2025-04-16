@@ -6,7 +6,7 @@ import { Point, UserDot, createRound, createSquare } from "@timeline/point";
 import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, round2dp, throttle } from "@util";
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { useSetting } from "./useSettings";
 
@@ -14,7 +14,7 @@ import { MenuProvider } from "@components/menu/MenuContext";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import Gear from "@images/gear.svg?react";
 import { Layers, layersFromUserData } from "@timeline/Layers";
-import { useInitedRef } from "@util/hooks";
+import { useForceRender, useInitedRef } from "@util/hooks";
 
 const defaultDots: UserDot[] = [
   createSquare(0, 0),
@@ -40,18 +40,18 @@ function genCssKeyframeText(samples: Point[], cssProp: CssProp, invertValues: bo
 
 const StorageDots = "kc.dots";
 
-function loadSavedDots(): Layers {
+function loadSaveLayersXXX(cssProp: CssProp): Layers {
   const json = localStorage.getItem(StorageDots);
   if (!json) {
     console.info("No saved dots. Using default.");
-    return layersFromUserData(defaultDots, 10);
+    return layersFromUserData(defaultDots, cssProp, 10);
   }
 
   try {
-    return layersFromUserData(JSON.parse(json) as UserDot[], 10);
+    return layersFromUserData(JSON.parse(json) as UserDot[], cssProp, 10);
   } catch (e) {
     console.warn("Error loading saved data. Using defaults. " + e);
-    return layersFromUserData(defaultDots, 10);
+    return layersFromUserData(defaultDots, cssProp, 10);
   }
 }
 
@@ -65,22 +65,25 @@ function App() {
   const [isAdding, setIsAdding] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
 
-  // timeline layer data
-  const [cssProp, setCssProp] = useSetting("cssProp", "translateX");
-  const [sampleCount, setSampleCount] = useSetting("sampleCount", 10);
-  const [invertValues, setInvertValues] = useSetting("isInvertValues", false);
+  // inspector values for active layer
+  const [inspectorCssProp, setInspectorCssProp] = useSetting("cssProp", "translateX");
+  const [inspectorSampleCount, setInspectorSampleCount] = useSetting("sampleCount", 10);
+  const [inspectorIsInvert, setInspectorIsInvert] = useSetting("isInvertValues", false);
 
   // timeline global settings
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
+  const [activeLayer, setActiveLayer] = useState(0);
+
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
   // React, we instead listen to its callback and manually call this to force a render if needed.
-  const [timelineDrawCount, incrementTimelineDrawCount] = useReducer((old: number) => {
-    return old + 1;
-  }, 0);
+  const [timelineDidChange, fireTimelineChange] = useForceRender();
+  const [layersDidChange, fireLayerChange] = useForceRender();
 
-  const layersRef = useInitedRef(loadSavedDots);
+  const layersRef = useInitedRef(() => {
+    return loadSaveLayersXXX(inspectorCssProp);
+  });
 
   /**
    * Save dot and settings data to localStorage.
@@ -97,56 +100,20 @@ function App() {
    * Callback when canvas element is created. Wraps it with a timeline.
    */
   useEffect(
-    function wrapCanvasInTimeline() {
-      if (timelineRef.current) {
-        timelineRef.current.destroy();
-        timelineRef.current = null;
+    function setupTimeline() {
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        console.error("no canvas to create timeline with");
+        return;
       }
 
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
       const timeline = createTimeline({ canvas, layers: layersRef.current });
-      timelineRef.current = timeline;
-    },
-    [layersRef]
-  );
-
-  useEffect(
-    function pushPropsToTimeline() {
-      if (timelineRef.current) timelineRef.current.setSnapToGrid(snapToGrid);
-    },
-    [snapToGrid]
-  );
-
-  useEffect(
-    function pushPropsToTimelineAndRedraw() {
-      // Update shared layers data
-      layersRef.current.setActiveCssProp(cssProp);
-
-      // Update timeline specific data and force a draw
-      const timeline = timelineRef.current;
-      if (!timeline) return;
-      timeline.setLabelYAxis(labelYAxis);
-      timeline.setSampleCount(sampleCount);
-      timeline.draw();
-    },
-    [cssProp, layersRef, labelYAxis, sampleCount]
-  );
-
-  useEffect(
-    /**
-     * Adds callback to timeline for data changes.
-     */
-    function setCallbacksOnTimeline() {
-      const timeline = timelineRef.current;
-      if (!timeline) return;
 
       const saveDotsDebounced = debounce(saveDots, 2000);
 
       const didDrawThrottled = throttle(() => {
         setSelectedDot(timeline.getSelectedDot());
-        incrementTimelineDrawCount();
+        fireTimelineChange();
       }, 100);
 
       timeline.onDraw = () => {
@@ -159,8 +126,53 @@ function App() {
         if (!adding) setShowMessage(false);
         setIsAdding(adding);
       };
+
+      timelineRef.current = timeline;
+
+      return () => {
+        timeline.destroy();
+        timelineRef.current = null;
+      };
     },
-    [saveDots]
+    [layersRef, saveDots, fireTimelineChange]
+  );
+
+  useEffect(
+    function pushPropsToLayers() {
+      layersRef.current.setCssProp(inspectorCssProp);
+      // Fire explicit change to get the tabs to rerender the new CSS prop name
+      fireLayerChange();
+    },
+    [inspectorCssProp, layersRef, fireLayerChange]
+  );
+
+  useEffect(
+    function pushPropsToLayersQuiet() {
+      const layers = layersRef.current;
+      layers.setSampleCount(inspectorSampleCount);
+      layers.setIsInvertValues(inspectorIsInvert);
+    },
+    [inspectorIsInvert, inspectorSampleCount, layersRef]
+  );
+
+  useEffect(
+    function pushPropsToTimelineQuiet() {
+      if (!timelineRef.current) return;
+      timelineRef.current.setSnapToGrid(snapToGrid);
+    },
+    [snapToGrid]
+  );
+
+  useEffect(
+    function pushPropsToTimeline() {
+      const timeline = timelineRef.current;
+      if (!timeline) return;
+
+      timeline.setLabelYAxis(labelYAxis);
+      timeline.setSampleCount(inspectorSampleCount);
+      timeline.draw();
+    },
+    [inspectorSampleCount, inspectorCssProp, labelYAxis, layersRef, activeLayer]
   );
 
   useEffect(
@@ -252,11 +264,11 @@ function App() {
   }, []);
 
   const keyframeText = useMemo(() => {
-    void timelineDrawCount;
+    void timelineDidChange;
     if (!timelineRef.current) return "";
 
-    return genCssKeyframeText(timelineRef.current.getUserSamples(), cssProp, invertValues);
-  }, [cssProp, invertValues, timelineDrawCount]);
+    return genCssKeyframeText(timelineRef.current.getUserSamples(), inspectorCssProp, inspectorIsInvert);
+  }, [inspectorCssProp, inspectorIsInvert, timelineDidChange]);
 
   useEffect(() => {
     document.body.classList.toggle("is-adding", isAdding);
@@ -290,52 +302,68 @@ function App() {
     },
   ];
 
-  const [tabs, setTabs] = useState<TabData<CssProp>[]>(() => {
+  const tabs = useMemo<TabData<number>[]>(() => {
+    void layersDidChange;
+
     const layers = layersRef.current;
     if (!layers) return [];
 
-    return layers.getAll().map((layer) => {
+    return layers.getAll().map((layer, i) => {
       const cssInfo = CssInfos[layer.cssProp];
       return {
         label: cssInfo.label,
         color: cssInfo.color,
-        value: layer.cssProp,
+        value: i,
       };
     });
-  });
+  }, [layersRef, layersDidChange]);
 
   useEffect(() => {}, []);
 
-  function handleDeleteTab(value: string) {
-    setTabs((prev) => {
-      const i = prev.findIndex((t) => t.value === value);
-      if (i === -1) return prev;
-      const tabs = [...prev];
-      tabs.splice(i, 1);
-      return tabs;
-    });
+  function handleDeleteTab(value: number) {
+    console.info(">>> todo: delete tab", value);
+    // setTabs((prev) => {
+    //   const i = prev.findIndex((t) => t.value === value);
+    //   if (i === -1) return prev;
+    //   const tabs = [...prev];
+    //   tabs.splice(i, 1);
+    //   return tabs;
+    // });
   }
 
-  const count = useRef(0);
+  // const count = useRef(0);
 
   function handleNewTab() {
-    setTabs((prev) => {
-      const value = count.current++;
-      const newTabs: TabData<CssProp>[] = [
-        ...prev,
-        {
-          label: "New " + value,
-          value: String(value) as CssProp,
-          color: "rose",
-        },
-      ];
-      return newTabs;
-    });
+    console.info(">>> todo: new tab");
+    // setTabs((prev) => {
+    //   const value = count.current++;
+    //   const newTabs: TabData<number>[] = [
+    //     ...prev,
+    //     {
+    //       label: "New " + value,
+    //       value: tabs.length,
+    //       color: "rose",
+    //     },
+    //   ];
+    //   return newTabs;
+    // });
   }
+
+  // function setActiveTabName(cssProp: CssProp) {
+  //   setTabs((prev) => {
+  //     const newTabs = [...prev];
+  //     const css = CssInfos[cssProp];
+  //     const oldTab = newTabs[activeLayer];
+  //     const newTab: TabData<number> = { value: oldTab.value, label: css.label, color: css.color };
+  //     newTabs[activeLayer] = newTab;
+  //     return newTabs;
+  //   });
+  // }
 
   // const [checkedValue, setCheckedValue] = useState(tabs[0].value);
 
-  async function handleCanDelete(label: string): Promise<boolean> {
+  async function handleCanDeleteTab(label: string): Promise<boolean> {
+    console.info(">>> todo: can delete tab");
     void label;
 
     // Require 1 tab at least
@@ -345,19 +373,27 @@ function App() {
     // return confirm(`Delete "${label}"?`);
 
     // Before we can delete, change the checked value to the next value
-    const index = tabs.findIndex((t) => t.value === cssProp);
+    const index = layersRef.current.activeIndex;
     let next = tabs[index + 1];
     if (!next) next = tabs[index - 1];
 
     // Should not happen since we checked that there is >1 already
     if (!next) return false;
 
-    setCssProp(next.value);
-    return true;
+    return false;
+    // setActiveCssProp(layersRef.current.getCssPropForLayer(next.value));
+    // return true;
   }
 
-  function handleTabChange(value: CssProp) {
-    setCssProp(value);
+  function handleTabChange(i: number) {
+    setActiveLayer(i);
+    const activeLayer = layersRef.current.setActiveLayer(i);
+
+    // Update all visible React value for the layer to  match. XXX: should we return less layer data
+    // here? Feels like RealLayer might be better private
+    setInspectorCssProp(activeLayer.cssProp);
+    setInspectorIsInvert(activeLayer.isInvertValues);
+    setInspectorSampleCount(activeLayer.sampleCount);
   }
 
   return (
@@ -371,8 +407,8 @@ function App() {
             name="property"
             onDelete={handleDeleteTab}
             onNew={handleNewTab}
-            canDelete={handleCanDelete}
-            checkedValue={cssProp}
+            canDelete={handleCanDeleteTab}
+            checkedValue={activeLayer}
             onChange={handleTabChange}
           />
 
@@ -399,12 +435,12 @@ function App() {
             </div>
 
             <TimelineInspector
-              cssProp={cssProp}
-              onCssProp={setCssProp}
-              sampleCount={sampleCount}
-              onSampleCount={setSampleCount}
-              invertValues={invertValues}
-              onInvertValues={setInvertValues}
+              cssProp={inspectorCssProp}
+              onCssProp={setInspectorCssProp}
+              sampleCount={inspectorSampleCount}
+              onSampleCount={setInspectorSampleCount}
+              invertValues={inspectorIsInvert}
+              onInvertValues={setInspectorIsInvert}
               selected={selectedDot}
               onChangeSelectedProps={handleInspectorSelectedChange}
               onClickAdd={handleClickAdd}

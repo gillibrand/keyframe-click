@@ -1,3 +1,4 @@
+import { Colors } from "@util/Colors";
 import { asRealDot, asRealX } from "./convert";
 import { CssInfos, CssProp } from "./CssInfo";
 import { createRound, createSquare, findYForX, Point, RealDot, UserDot } from "./point";
@@ -19,14 +20,14 @@ interface RealLayer {
 
 export type BackgroundLayer = Pick<RealLayer, "cssProp" | "dots">;
 
-export function layersFromUserData(userDots: UserDot[], sampleCount: number) {
+export function layersFromUserData(userDots: UserDot[], cssProp: CssProp, sampleCount: number) {
   const dots = userDots.map((d) => asRealDot(d));
 
   const layer: RealLayer = {
     dots,
     sampleCount,
     isInvertValues: false,
-    cssProp: "scaleX",
+    cssProp: cssProp,
     samples: null,
   };
 
@@ -50,7 +51,7 @@ export function layersFromUserData(userDots: UserDot[], sampleCount: number) {
     dots: exampleDots.map((d) => asRealDot(d)),
     sampleCount,
     isInvertValues: false,
-    cssProp: "scale",
+    cssProp: "scaleX",
     samples: null,
   };
 
@@ -80,7 +81,7 @@ export class Layers {
     this.active = 0;
   }
 
-  private getActiveLayer() {
+  getActiveLayer() {
     if (this.active >= this.layers.length) {
       console.warn("active layer out of bound", this.active);
       return this.layers[0];
@@ -93,7 +94,7 @@ export class Layers {
     return this.getActiveLayer().dots;
   }
 
-  getActiveSamples(): Point[] {
+  getSamples(): Point[] {
     const layer = this.getActiveLayer();
     return layer.samples ? layer.samples : cacheSamples(layer);
   }
@@ -102,24 +103,32 @@ export class Layers {
     this.getActiveLayer().samples = null;
   }
 
+  /**
+   * Updates the currently active layer. This affects what is currently being modified in the
+   * timeline.
+   *
+   * @param n Index of layer to activate.
+   * @returns The new active layer (whether is changed or not).
+   */
   setActiveLayer(n: number) {
     this.active = Math.max(0, Math.min(n, this.layers.length - 1));
     this.purgeActiveSamples();
+    return this.getActiveLayer();
   }
 
-  setActiveCssProp(prop: CssProp) {
+  setCssProp(prop: CssProp) {
     this.getActiveLayer().cssProp = prop;
   }
 
-  setActiveSampleCount(count: number) {
+  setSampleCount(count: number) {
     count = Math.max(2, Math.min(count, 100));
     this.getActiveLayer().sampleCount = count;
     this.purgeActiveSamples();
   }
 
-  getActiveColor() {
+  getColor() {
     const layer = this.getActiveLayer();
-    return CssInfos[layer.cssProp].color;
+    return CssInfos[layer.cssProp].color || Colors.Gray400;
   }
 
   getBackgroundLayers(): BackgroundLayer[] {
@@ -128,6 +137,18 @@ export class Layers {
 
   getAll(): RealLayer[] {
     return this.layers;
+  }
+
+  getCssPropForLayer(index: number) {
+    return this.layers[index].cssProp;
+  }
+
+  setIsInvertValues(value: boolean) {
+    this.getActiveLayer().isInvertValues = value;
+  }
+
+  get activeIndex() {
+    return this.active;
   }
 }
 

@@ -432,7 +432,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     // Fill the sample area
     _cx.beginPath();
     _cx.moveTo(OffsetX, OffsetY);
-    const samples = _layers.getActiveSamples();
+    const samples = _layers.getSamples();
     for (let i = 0; i < samples.length; i++) {
       const s = samples[i];
       _cx.lineTo(s.x, s.y);
@@ -542,7 +542,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
         });
         _cx.globalAlpha = 1;
 
-        const color = _layers.getActiveColor();
+        const color = _layers.getColor();
         drawCurveForDots(dots, 3, color);
 
         drawSamples(color);
@@ -700,7 +700,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function getUserSamples() {
-    return _layers.getActiveSamples().map((s) => asUserPoint(s));
+    return _layers.getSamples().map((s) => asUserPoint(s));
   }
 
   function endAddingDot() {

@@ -1,4 +1,4 @@
-import { MutableRefObject, ReactNode, useCallback, useMemo, useRef } from "react";
+import { MutableRefObject, ReactNode, useCallback, useMemo, useReducer, useRef } from "react";
 
 /**
  * A custom hook that returns a memoized value that never changes. This is useful for preventing
@@ -51,4 +51,18 @@ export function useGetter<T>(value: T) {
   return useCallback(function getValue() {
     return ref.current;
   }, []);
+}
+
+/**
+ * Used to force a render by using some dummy state. This is needed if some non-reactive state is
+ * changed but we still want to perform a render against that state. This is just an opaque piece of
+ * reactive state.
+ *
+ * @returns A tuple of some state that can be used as a dependency, and a function that can be used
+ * to change that state and force a render of the current component.
+ */
+export function useForceRender() {
+  return useReducer((old: number) => {
+    return old + 1;
+  }, 0) as [unknown, () => void];
 }
