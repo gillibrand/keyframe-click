@@ -15,9 +15,10 @@ import {
   ScaleX,
   ScaleY,
 } from "./convert";
+import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, dash, diamond, willDraw } from "./drawing";
-import { diffPt, findYForX, findYForXInCurve, nearPt, RealDot, Point, togglePt, UserDot } from "./point";
-import { layersFromUserData } from "./Layers";
+import { Layers } from "./Layers";
+import { diffPt, findYForX, findYForXInCurve, nearPt, Point, RealDot, togglePt, UserDot } from "./point";
 
 type DraggingPoint = {
   point: RealDot;
@@ -50,6 +51,8 @@ function createThreshold(origin: Point, threshold: number) {
 export interface Timeline {
   destroy: () => void;
 
+  draw: () => void;
+
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
   getUserDots(): UserDot[];
@@ -69,7 +72,7 @@ export interface Timeline {
 
 export interface TimelineProps {
   canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean };
-  savedUserDots: UserDot[];
+  layers: Layers;
 }
 
 type State = "adding" | "default";
@@ -106,15 +109,13 @@ function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boole
  * Wraps an existing canvas element with logic to draw a timeline.
  * @returns Controller to interact with the graph.
  */
-export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps): Timeline {
+export function createTimeline({ canvas: _canvas, layers: _layers }: TimelineProps): Timeline {
   enableRetina(_canvas);
 
   const Height = _canvas.clientHeight;
   const Width = _canvas.clientWidth;
 
   const _cx = _canvas.getContext("2d")!;
-
-  const _layers = layersFromUserData(savedUserDots, 10);
 
   let _snapToGrid = true;
   let _labelYAxis = true;
@@ -440,7 +441,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     _cx.lineTo(OffsetX, OffsetY);
     // _cx.fillStyle = "rgba(255 0 0 / .075)";
     _cx.fillStyle = Colors[color];
-    _cx.globalAlpha = 0.15;
+    _cx.globalAlpha = 0.1;
     _cx.fill();
   }
 
@@ -490,8 +491,7 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     _cx.clip();
   }
 
-  function drawCurveForDots(dots: RealDot[], color: ColorName) {
-    // _cx.strokeStyle = Colors.Gray900;
+  function drawCurveForDots(dots: RealDot[], lineWidth: number, color: ColorName) {
     _cx.strokeStyle = Colors[color];
 
     const origin = dots[0];
@@ -506,6 +506,10 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       const cp2 = p.type === "square" ? p : p.h1;
       _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
     }
+
+    _cx.setLineDash([]);
+    _cx.lineWidth = lineWidth;
+    _cx.stroke();
   }
 
   /**
@@ -532,12 +536,14 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
       willDraw(_cx, () => {
         clipTimeline();
 
-        const color = _layers.getActiveColor();
-        drawCurveForDots(dots, color);
+        _cx.globalAlpha = 0.5;
+        _layers.getBackgroundLayers().forEach((l) => {
+          drawCurveForDots(l.dots, 1, CssInfos[l.cssProp].color);
+        });
+        _cx.globalAlpha = 1;
 
-        _cx.setLineDash([]);
-        _cx.lineWidth = 3;
-        _cx.stroke();
+        const color = _layers.getActiveColor();
+        drawCurveForDots(dots, 3, color);
 
         drawSamples(color);
       });
@@ -845,5 +851,6 @@ export function createTimeline({ canvas: _canvas, savedUserDots }: TimelineProps
     cancel,
     setSampleCount,
     setLabelYAxis,
+    draw,
   };
 }

@@ -1,60 +1,57 @@
 import Plus from "@images/plus.svg?react";
-import { useChildAnimator } from "@util/useChildAnimator";
-import { useCallback, useState } from "react";
-import { RadioTab } from "./RadioTab";
-import "./tab.css";
 import { getFirstFocusableElement, isEl } from "@util";
 import { ColorName } from "@util/Colors";
+import { useGetter } from "@util/hooks";
+import { useChildAnimator } from "@util/useChildAnimator";
+import { useCallback } from "react";
+import { RadioTab } from "./RadioTab";
+import "./tab.css";
+import { CssProp } from "@timeline/CssInfo";
 
 export interface TabData {
   label: string;
   color: ColorName;
-  value: string;
+  value: CssProp;
 }
 
 interface Props {
   name: string;
+  checkedValue: string;
   tabs: TabData[];
   onDelete: (value: string) => void;
   onNew: () => void;
+  onChange: (value: CssProp) => void;
+  canDelete?: (label: string) => Promise<boolean>;
 }
 
-export function RadioTabGroup({ tabs, name, onDelete, onNew }: Props) {
-  const [checkedValue, setCheckedValue] = useState(tabs[0].value);
-
-  const handleChange = useCallback((value: string) => {
-    setCheckedValue(value);
-  }, []);
-
-  async function handleCanDelete(label: string): Promise<boolean> {
-    void label;
-
-    // Require 1 tab at least
-    if (tabs.length <= 1) return false;
-
-    // TODO: Prompt to delete? Better with Undo later
-    // return confirm(`Delete "${label}"?`);
-
-    // Before we can delete, change the checked value to the next value
-    const index = tabs.findIndex((t) => t.value === checkedValue);
-    let next = tabs[index + 1];
-    if (!next) next = tabs[index - 1];
-
-    // Should not happen since we checked that there is >1 already
-    if (!next) return false;
-
-    setCheckedValue(next.value);
-
-    // Set keyboard focus too since we will remove the one with active focus
-    const nextTabNode = parentRef.current?.querySelector(`[data-value="${next.value}"]`);
-    if (isEl(nextTabNode)) {
-      getFirstFocusableElement(nextTabNode, true);
-    }
-
-    return true;
-  }
-
+export function RadioTabGroup({ tabs, name, onDelete, onNew, checkedValue, canDelete, onChange }: Props) {
+  const getCheckedValue = useGetter(checkedValue);
   const { parentRef } = useChildAnimator<HTMLDivElement>("both");
+
+  /**
+   * Change keyboard focus to the tab that is currently checked. This uses the ref to the checked
+   * value so that it is always up-to-date.
+   */
+  const focusOnCheckedTab = useCallback(() => {
+    const checkedTabNode = parentRef.current?.querySelector(`[data-value="${getCheckedValue()}"]`);
+
+    if (isEl(checkedTabNode)) {
+      getFirstFocusableElement(checkedTabNode, true);
+    }
+  }, [parentRef, getCheckedValue]);
+
+  const handleDelete = useCallback(
+    (value: string) => {
+      onDelete(value);
+      // Note that this WILL have an update checkedValueRef since canDelete is async and this tab
+      // will already be rendered again before the real delete. If that was not async, we'd need to
+      // setTimeout this call to be sure it's up to date.
+      //
+      // We expect the parent to change the active tab before allowing it to be deleted.
+      focusOnCheckedTab();
+    },
+    [onDelete, focusOnCheckedTab]
+  );
 
   return (
     <div className="RadioTabGroup flex" ref={parentRef} tabIndex={-1}>
@@ -68,9 +65,9 @@ export function RadioTabGroup({ tabs, name, onDelete, onNew }: Props) {
             radioName={name}
             color={t.color}
             checked={checkedValue === t.value}
-            onCheck={handleChange}
-            canDelete={tabs.length > 1 ? handleCanDelete : undefined}
-            onDelete={onDelete}
+            onCheck={onChange}
+            canDelete={tabs.length > 1 ? canDelete : undefined}
+            onDelete={handleDelete}
           />
         </div>
       ))}

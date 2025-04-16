@@ -17,6 +17,8 @@ interface RealLayer {
   samples: Point[] | null;
 }
 
+export type BackgroundLayer = Pick<RealLayer, "cssProp" | "dots">;
+
 export function layersFromUserData(userDots: UserDot[], sampleCount: number) {
   const dots = userDots.map((d) => asRealDot(d));
 
@@ -36,6 +38,14 @@ export function layersFromUserData(userDots: UserDot[], sampleCount: number) {
     createSquare(100, 0),
   ];
 
+  const exampleDots2: UserDot[] = [
+    createSquare(0, 0),
+    { x: 15, y: 70, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
+    createRound(50, 10),
+    createSquare(75, 50),
+    createSquare(100, 0),
+  ];
+
   const exampleLayer: RealLayer = {
     dots: exampleDots.map((d) => asRealDot(d)),
     sampleCount,
@@ -44,7 +54,15 @@ export function layersFromUserData(userDots: UserDot[], sampleCount: number) {
     samples: null,
   };
 
-  return new Layers([layer, exampleLayer]);
+  const exampleLayer2: RealLayer = {
+    dots: exampleDots2.map((d) => asRealDot(d)),
+    sampleCount,
+    isInvertValues: false,
+    cssProp: "translateY",
+    samples: null,
+  };
+
+  return new Layers([layer, exampleLayer, exampleLayer2]);
 }
 
 /**
@@ -89,6 +107,10 @@ export class Layers {
     this.purgeActiveSamples();
   }
 
+  setActiveCssProp(prop: CssProp) {
+    this.getActiveLayer().cssProp = prop;
+  }
+
   setActiveSampleCount(count: number) {
     count = Math.max(2, Math.min(count, 100));
     this.getActiveLayer().sampleCount = count;
@@ -98,6 +120,14 @@ export class Layers {
   getActiveColor() {
     const layer = this.getActiveLayer();
     return CssInfos[layer.cssProp].color;
+  }
+
+  getBackgroundLayers(): BackgroundLayer[] {
+    return this.layers.filter((_, i) => i !== this.active);
+  }
+
+  getAll(): RealLayer[] {
+    return this.layers;
   }
 }
 

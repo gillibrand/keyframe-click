@@ -1,18 +1,20 @@
 import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
-import { Timeline, createTimeline } from "@timeline/Timeline";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot, createRound, createSquare } from "@timeline/point";
+import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, round2dp, throttle } from "@util";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import "./App.css";
 import { useSetting } from "./useSettings";
 
-import Gear from "@images/gear.svg?react";
 import { MenuProvider } from "@components/menu/MenuContext";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
+import Gear from "@images/gear.svg?react";
+import { Layers, layersFromUserData } from "@timeline/Layers";
+import { useInitedRef } from "@util/hooks";
 
 const defaultDots: UserDot[] = [
   createSquare(0, 0),
@@ -38,14 +40,18 @@ function genCssKeyframeText(samples: Point[], cssProp: CssProp, invertValues: bo
 
 const StorageDots = "kc.dots";
 
-function loadSavedDots(): UserDot[] {
+function loadSavedDots(): Layers {
   const json = localStorage.getItem(StorageDots);
-  if (!json) return defaultDots;
+  if (!json) {
+    console.info("No saved dots. Using default.");
+    return layersFromUserData(defaultDots, 10);
+  }
 
   try {
-    return JSON.parse(json);
-  } catch {
-    return defaultDots;
+    return layersFromUserData(JSON.parse(json) as UserDot[], 10);
+  } catch (e) {
+    console.warn("Error loading saved data. Using defaults. " + e);
+    return layersFromUserData(defaultDots, 10);
   }
 }
 
@@ -74,6 +80,8 @@ function App() {
     return old + 1;
   }, 0);
 
+  const layersRef = useInitedRef(loadSavedDots);
+
   /**
    * Save dot and settings data to localStorage.
    */
@@ -88,38 +96,42 @@ function App() {
   /**
    * Callback when canvas element is created. Wraps it with a timeline.
    */
-  useEffect(function wrapCanvasInTimeline() {
-    if (timelineRef.current) {
-      timelineRef.current.destroy();
-      timelineRef.current = null;
-    }
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const timeline = createTimeline({ canvas, savedUserDots: loadSavedDots() });
-    timelineRef.current = timeline;
-  }, []);
-
   useEffect(
-    function pushSampleCount() {
-      if (timelineRef.current) timelineRef.current.setSampleCount(sampleCount);
+    function wrapCanvasInTimeline() {
+      if (timelineRef.current) {
+        timelineRef.current.destroy();
+        timelineRef.current = null;
+      }
+
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const timeline = createTimeline({ canvas, layers: layersRef.current });
+      timelineRef.current = timeline;
     },
-    [sampleCount]
+    [layersRef]
   );
 
   useEffect(
-    function pushSnapToGrid() {
+    function pushPropsToTimeline() {
       if (timelineRef.current) timelineRef.current.setSnapToGrid(snapToGrid);
     },
     [snapToGrid]
   );
 
   useEffect(
-    function pushSnapToGrid() {
-      if (timelineRef.current) timelineRef.current.setLabelYAxis(labelYAxis);
+    function pushPropsToTimelineAndRedraw() {
+      // Update shared layers data
+      layersRef.current.setActiveCssProp(cssProp);
+
+      // Update timeline specific data and force a draw
+      const timeline = timelineRef.current;
+      if (!timeline) return;
+      timeline.setLabelYAxis(labelYAxis);
+      timeline.setSampleCount(sampleCount);
+      timeline.draw();
     },
-    [labelYAxis]
+    [cssProp, layersRef, labelYAxis, sampleCount]
   );
 
   useEffect(
@@ -278,36 +290,21 @@ function App() {
     },
   ];
 
-  const [tabs, setTabs] = useState(() => {
-    const arr: TabData[] = [
-      {
-        label: "blue is one",
-        color: "blue",
-        value: "blue",
-      },
-      {
-        label: "red",
-        color: "red",
-        value: "red",
-      },
-      {
-        label: "Pink",
-        color: "pink",
-        value: "pink",
-      },
-      {
-        label: "fuchsia",
-        color: "fuchsia",
-        value: "fuchsia",
-      },
-      {
-        label: "emerald",
-        color: "emerald",
-        value: "emerald",
-      },
-    ];
-    return arr;
+  const [tabs, setTabs] = useState<TabData[]>(() => {
+    const layers = layersRef.current;
+    if (!layers) return [];
+
+    return layers.getAll().map((layer) => {
+      const cssInfo = CssInfos[layer.cssProp];
+      return {
+        label: cssInfo.label,
+        color: cssInfo.color,
+        value: layer.cssProp,
+      };
+    });
   });
+
+  useEffect(() => {}, []);
 
   function handleDeleteTab(value: string) {
     setTabs((prev) => {
@@ -328,12 +325,39 @@ function App() {
         ...prev,
         {
           label: "New " + value,
-          value: String(value),
+          value: String(value) as CssProp,
           color: "rose",
         },
       ];
       return newTabs;
     });
+  }
+
+  // const [checkedValue, setCheckedValue] = useState(tabs[0].value);
+
+  async function handleCanDelete(label: string): Promise<boolean> {
+    void label;
+
+    // Require 1 tab at least
+    if (tabs.length <= 1) return false;
+
+    // TODO: Prompt to delete? Better with Undo later
+    // return confirm(`Delete "${label}"?`);
+
+    // Before we can delete, change the checked value to the next value
+    const index = tabs.findIndex((t) => t.value === cssProp);
+    let next = tabs[index + 1];
+    if (!next) next = tabs[index - 1];
+
+    // Should not happen since we checked that there is >1 already
+    if (!next) return false;
+
+    setCssProp(next.value);
+    return true;
+  }
+
+  function handleTabChange(value: CssProp) {
+    setCssProp(value);
   }
 
   return (
@@ -342,7 +366,15 @@ function App() {
 
       <div className="big-row">
         <div className="container relative stack">
-          <RadioTabGroup tabs={tabs} name="property" onDelete={handleDeleteTab} onNew={handleNewTab} />
+          <RadioTabGroup
+            tabs={tabs}
+            name="property"
+            onDelete={handleDeleteTab}
+            onNew={handleNewTab}
+            canDelete={handleCanDelete}
+            checkedValue={cssProp}
+            onChange={handleTabChange}
+          />
 
           <MenuProvider items={items}>
             <MenuButton
@@ -368,10 +400,10 @@ function App() {
 
             <TimelineInspector
               cssProp={cssProp}
-              sampleCount={sampleCount}
-              invertValues={invertValues}
               onCssProp={setCssProp}
+              sampleCount={sampleCount}
               onSampleCount={setSampleCount}
+              invertValues={invertValues}
               onInvertValues={setInvertValues}
               selected={selectedDot}
               onChangeSelectedProps={handleInspectorSelectedChange}
