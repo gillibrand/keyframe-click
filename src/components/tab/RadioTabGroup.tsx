@@ -1,31 +1,27 @@
 import Plus from "@images/plus.svg?react";
-import { getFirstFocusableElement, isEl } from "@util";
 import { ColorName } from "@util/Colors";
-import { useGetter } from "@util/hooks";
 import { useChildAnimator } from "@util/useChildAnimator";
 import { useCallback } from "react";
 import { RadioTab } from "./RadioTab";
 import "./tab.css";
-import { CssProp } from "@timeline/CssInfo";
 
-export interface TabData {
+export interface TabData<T> {
   label: string;
   color: ColorName;
-  value: CssProp;
+  value: T;
 }
 
-interface Props {
+interface Props<T> {
   name: string;
-  checkedValue: string;
-  tabs: TabData[];
-  onDelete: (value: string) => void;
+  checkedValue: T;
+  tabs: TabData<T>[];
+  onDelete: (value: T) => void;
   onNew: () => void;
-  onChange: (value: CssProp) => void;
+  onChange: (value: T) => void;
   canDelete?: (label: string) => Promise<boolean>;
 }
 
-export function RadioTabGroup({ tabs, name, onDelete, onNew, checkedValue, canDelete, onChange }: Props) {
-  const getCheckedValue = useGetter(checkedValue);
+export function RadioTabGroup<T>({ tabs, name, onDelete, onNew, checkedValue, canDelete, onChange }: Props<T>) {
   const { parentRef } = useChildAnimator<HTMLDivElement>("both");
 
   /**
@@ -33,21 +29,18 @@ export function RadioTabGroup({ tabs, name, onDelete, onNew, checkedValue, canDe
    * value so that it is always up-to-date.
    */
   const focusOnCheckedTab = useCallback(() => {
-    const checkedTabNode = parentRef.current?.querySelector(`[data-value="${getCheckedValue()}"]`);
-
-    if (isEl(checkedTabNode)) {
-      getFirstFocusableElement(checkedTabNode, true);
-    }
-  }, [parentRef, getCheckedValue]);
+    const checkedTabNode = parentRef.current?.querySelector<HTMLInputElement>("input:checked");
+    if (checkedTabNode) checkedTabNode.focus();
+  }, [parentRef]);
 
   const handleDelete = useCallback(
-    (value: string) => {
+    (value: T) => {
       onDelete(value);
-      // Note that this WILL have an update checkedValueRef since canDelete is async and this tab
+      // Note that this WILL have an updated checked radio since canDelete is async and this tab
       // will already be rendered again before the real delete. If that was not async, we'd need to
       // setTimeout this call to be sure it's up to date.
       //
-      // We expect the parent to change the active tab before allowing it to be deleted.
+      // We expect the parent to change the checked tab before allowing it to be deleted.
       focusOnCheckedTab();
     },
     [onDelete, focusOnCheckedTab]
@@ -58,7 +51,7 @@ export function RadioTabGroup({ tabs, name, onDelete, onNew, checkedValue, canDe
       {tabs.map((t) => (
         // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
         // so can shrink to 0 width
-        <div key={t.value}>
+        <div key={String(t.value)}>
           <RadioTab
             value={t.value}
             label={t.label}

@@ -290,7 +290,7 @@ function App() {
     },
   ];
 
-  const [tabs, setTabs] = useState<TabData[]>(() => {
+  const [tabs, setTabs] = useState<TabData<CssProp>[]>(() => {
     const layers = layersRef.current;
     if (!layers) return [];
 
@@ -321,7 +321,7 @@ function App() {
   function handleNewTab() {
     setTabs((prev) => {
       const value = count.current++;
-      const newTabs: TabData[] = [
+      const newTabs: TabData<CssProp>[] = [
         ...prev,
         {
           label: "New " + value,

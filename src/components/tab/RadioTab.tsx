@@ -1,21 +1,20 @@
 import Close from "@images/close.svg?react";
-import { CssProp } from "@timeline/CssInfo";
 import { ColorName, Colors } from "@util/Colors";
 import cx from "classnames";
 import { CSSProperties, useId, useMemo, useRef } from "react";
 
-interface Props {
+interface Props<T> {
   label: string;
   radioName: string;
-  value: CssProp;
+  value: T;
   checked?: boolean;
   color: ColorName;
-  onCheck: (value: CssProp) => void;
+  onCheck: (value: T) => void;
   canDelete?: (label: string) => Promise<boolean>;
-  onDelete: (value: CssProp) => void;
+  onDelete: (value: T) => void;
 }
 
-export function RadioTab({ label, radioName, checked, color, onCheck, value, canDelete, onDelete }: Props) {
+export function RadioTab<T>({ label, radioName, checked, color, onCheck, value, canDelete, onDelete }: Props<T>) {
   const style = useMemo(
     () =>
       ({
