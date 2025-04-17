@@ -2,30 +2,23 @@ import { useEffect, useRef, useState } from "react";
 import { ProgressBar } from "./ProgressBar";
 
 interface Props {
-  /**
-   * True is playing. Resets to 0 percent when not playing. Restart from 0 when it start playing
-   * again.
-   */
+  /** True is playing. Resets to 0 percent when not playing. Restart from 0 when it start playing again. */
   isPlaying: boolean;
 
-  /**
-   * The time to complete from 0 to 100 percent. If changed, the progress starts over.
-   */
+  /** The time to complete from 0 to 100 percent. If changed, the progress starts over. */
   durationMs: number;
 
-  /**
-   * Styles to abs position the progress bar if needed.
-   */
+  /** Styles to abs position the progress bar if needed. */
   style?: React.CSSProperties;
 }
 
 /**
- * A component that auto-increments a wrapped progress bar from 0 to 100 over a given duration. Will restart
- * the progress bar if the duration changes.
+ * A component that auto-increments a wrapped progress bar from 0 to 100 over a given duration. Will restart the
+ * progress bar if the duration changes.
  *
- * This is used to confine state changes of progress to this class. Before `usePreview` was tracking
- * progress, which caused it to render a lot, and since it's a hook, any callers would rerender.
- * Isolates those progress related renders this class and the progress bar.
+ * This is used to confine state changes of progress to this class. Before `usePreview` was tracking progress, which
+ * caused it to render a lot, and since it's a hook, any callers would rerender. Isolates those progress related renders
+ * this class and the progress bar.
  */
 export function AutoProgressBar({ isPlaying, durationMs, style }: Props) {
   const [progress, setProgress] = useState(0);

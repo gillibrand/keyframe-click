@@ -9,9 +9,7 @@ export interface Duration {
   unit: TimeUnit;
 }
 
-/**
- * Types of all global settings.
- */
+/** Types of all global settings. */
 interface Settings {
   activeLayer: number;
   isSnapToGrid: boolean;
@@ -22,12 +20,12 @@ interface Settings {
 }
 
 /**
- * Validates that a setting is the right type and is a legal value. Used when loading from local
- * storage to be sure the value exists and has not been modified illegally.
+ * Validates that a setting is the right type and is a legal value. Used when loading from local storage to be sure the
+ * value exists and has not been modified illegally.
  *
  * @param name Name of setting.
  * @param value Saved value to validate.
- * @returns true if the value exists and is valid.
+ * @returns True if the value exists and is valid.
  */
 function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
   switch (name) {
@@ -65,8 +63,7 @@ function storageKey(name: string) {
 }
 
 /**
- * Reads a saved setting from local storage. Done on first render. After, we read from the in-memory
- * setting.
+ * Reads a saved setting from local storage. Done on first render. After, we read from the in-memory setting.
  *
  * @param name Base name of the setting.
  * @returns Stored setting value. Default value if missing in storage.
@@ -93,8 +90,8 @@ function writeSetting<K extends keyof Settings>(name: K, value: Settings[K]) {
 }
 
 /**
- * Hook to read and write settings. Settings are saved in localStorage automatically. Changes to
- * settings cause a reactive render.
+ * Hook to read and write settings. Settings are saved in localStorage automatically. Changes to settings cause a
+ * reactive render.
  *
  * New setting names and types must be added to the `Settings` type.
  *

@@ -76,13 +76,12 @@ export interface TimelineProps {
 type State = "adding" | "default";
 
 /**
- * Applies scaling to match the retina screen resolution. This will increase the actual canvas
- * element size, but scale it down again with CSS. The result is a crisp hi-res canvas at the same
- * size.
+ * Applies scaling to match the retina screen resolution. This will increase the actual canvas element size, but scale
+ * it down again with CSS. The result is a crisp hi-res canvas at the same size.
  *
- * @param canvas To scale. It supports an extra property to know if this was already done or not.
- * That's needed during dev since React will pass the same element it init each time and if we scale
- * it based on the current size it will get bigger each time.
+ * @param canvas To scale. It supports an extra property to know if this was already done or not. That's needed during
+ *   dev since React will pass the same element it init each time and if we scale it based on the current size it will
+ *   get bigger each time.
  */
 function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean }) {
   const isScaled = canvas.isScaledForScreenDpi || false;
@@ -105,6 +104,7 @@ function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boole
 
 /**
  * Wraps an existing canvas element with logic to draw a timeline.
+ *
  * @returns Controller to interact with the graph.
  */
 export function createTimeline({ canvas: _canvas, layers: _layers }: TimelineProps): Timeline {
@@ -207,6 +207,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   /**
    * Drag handle when dragging dots and handles
+   *
    * @param e
    * @returns
    */
@@ -462,12 +463,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   let drawTimer: number | null = null;
 
   /**
-   * Schedules the canvas to redraw completely on the next animation frames. Can be called multiple
-   * times and will only redraw once during the next frame.
+   * Schedules the canvas to redraw completely on the next animation frames. Can be called multiple times and will only
+   * redraw once during the next frame.
    *
-   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to
-   * know data changed that caused the draw. But in some cases, like drawing where a point might be
-   * added, the drawing doesn't affect the data and we can skip the callback. Defaults to true.
+   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to know data changed that
+   *   caused the draw. But in some cases, like drawing where a point might be added, the drawing doesn't affect the
+   *   data and we can skip the callback. Defaults to true.
    */
   function draw(notify: boolean = true) {
     if (drawTimer !== null) return;
@@ -479,8 +480,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   /**
-   * Clips the canvas to the timeline area. This is used for most drawing except the dots themselves
-   * so they can be dragged more easily near the edges.
+   * Clips the canvas to the timeline area. This is used for most drawing except the dots themselves so they can be
+   * dragged more easily near the edges.
    */
   function clipTimeline() {
     _cx.beginPath();
@@ -510,12 +511,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   /**
-   * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next
-   * animation frame for better performance.
+   * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next animation frame for
+   * better performance.
    *
-   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to
-   * know data changed that caused the draw. But in some cases, like drawing where a point might be
-   * added, the drawing doesn't affect the data and we can skip the callback. Defaults to true.
+   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to know data changed that
+   *   caused the draw. But in some cases, like drawing where a point might be added, the drawing doesn't affect the
+   *   data and we can skip the callback. Defaults to true.
    */
   function drawNow(notify: boolean) {
     _cx.clearRect(0, 0, _canvas.width, _canvas.height);

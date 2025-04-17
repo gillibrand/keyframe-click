@@ -19,7 +19,7 @@ export function RadioTab<T>({ label, radioName, checked, color, onCheck, value, 
     () =>
       ({
         "--tab-bg-color": Colors[color],
-      } as CSSProperties),
+      }) as CSSProperties,
     [color]
   );
 

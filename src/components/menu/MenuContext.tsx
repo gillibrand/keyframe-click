@@ -2,51 +2,40 @@ import { createContext, Dispatch, SetStateAction, useCallback, useContext, useMe
 import { MenuItem } from "./MenuItem";
 
 /**
- * The API for the current menu. This is used to manage the hover index and click the currently
- * hovered item. This lets the menu itself and any components that create the menu control it (e.g.,
- * having a combo box edit what's selected).
+ * The API for the current menu. This is used to manage the hover index and click the currently hovered item. This lets
+ * the menu itself and any components that create the menu control it (e.g., having a combo box edit what's selected).
  */
 interface MenuApi {
-  /**
-   * The index of the currently hovered item from the mouse or arrow keys. -1 if no item is hovered.
-   */
+  /** The index of the currently hovered item from the mouse or arrow keys. -1 if no item is hovered. */
   hoverIndex: number;
 
   /**
-   * Sets the index of the currently hovered item. This will do bounds checking so that the index is
-   * always between -1 and items.length - 1. -1 if no item is hovered.
+   * Sets the index of the currently hovered item. This will do bounds checking so that the index is always between -1
+   * and items.length - 1. -1 if no item is hovered.
    */
   setHoverIndex: Dispatch<SetStateAction<number>>;
 
-  /**
-   * Moves the hover index to the next item. This will loop around to the first item if the last
-   * item is hovered.
-   */
+  /** Moves the hover index to the next item. This will loop around to the first item if the last item is hovered. */
   hoverNext: () => void;
 
-  /**
-   * Moves the hover index to the previous item. This will loop around to the last item if the first
-   * item is hovered.
-   */
+  /** Moves the hover index to the previous item. This will loop around to the last item if the first item is hovered. */
   hoverPrev: () => void;
 
   /**
-   * Clicks the currently hovered item and executes its onClick function. The items needs to support
-   * onClick and be enabled.
+   * Clicks the currently hovered item and executes its onClick function. The items needs to support onClick and be
+   * enabled.
    */
   clickHovered: () => void;
 
-  /**
-   * The items in the menu.
-   */
+  /** The items in the menu. */
   items: MenuItem[];
 }
 
 const MenuContext = createContext<MenuApi | undefined>(undefined);
 
 /**
- * A hook to get the current menu details. The menu itself uses this, but component that create and
- * control the menu can too.
+ * A hook to get the current menu details. The menu itself uses this, but component that create and control the menu can
+ * too.
  *
  * @returns The current menu API.
  */
@@ -60,8 +49,8 @@ export function useMenuApi() {
 }
 
 /**
- * A provider for the menu API. This tracks the current menu items and their hover state. It creates
- * the API to change state.
+ * A provider for the menu API. This tracks the current menu items and their hover state. It creates the API to change
+ * state.
  *
  * @param children The children of the provider.
  * @param items The items in the menu.

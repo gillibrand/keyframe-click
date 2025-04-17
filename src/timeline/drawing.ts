@@ -2,8 +2,8 @@ import { Colors } from "@util/Colors";
 import { Point } from "./point";
 
 /**
- * Rounds a number to the nearest .5. This is used in drawing to ensure lines are drawn centered in
- * pixels to they are crisper.
+ * Rounds a number to the nearest .5. This is used in drawing to ensure lines are drawn centered in pixels to they are
+ * crisper.
  *
  * @param n Any number.
  * @returns Closest .5 number to n.

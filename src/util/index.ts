@@ -69,6 +69,7 @@ export function nullFn(): void {}
 
 /**
  * Type guard to check if a node is a full DOM element.
+ *
  * @param node Node to check.
  * @returns True if it's an HTML element.
  */

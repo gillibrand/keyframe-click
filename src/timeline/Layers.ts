@@ -4,8 +4,8 @@ import { CssInfos, CssProp } from "./CssInfo";
 import { findYForX, Point, RealDot } from "./point";
 
 /**
- * A single animatable property and it's complete state. A timeline is built of multiple property
- * layers to produce the final animation.
+ * A single animatable property and it's complete state. A timeline is built of multiple property layers to produce the
+ * final animation.
  */
 interface RealLayer {
   cssProp: CssProp;
@@ -62,9 +62,8 @@ export function loadSavedLayers(activeIndex: number = 0) {
 // ];
 
 /**
- * Holds all data for the different layers of the timeline. Each layer is a separate CSS property
- * with its own dots. There is one active layer at a time which is what the user can drag around.
- * All layers are used for output.
+ * Holds all data for the different layers of the timeline. Each layer is a separate CSS property with its own dots.
+ * There is one active layer at a time which is what the user can drag around. All layers are used for output.
  */
 export class Layers {
   private active = 0;
@@ -108,8 +107,7 @@ export class Layers {
   }
 
   /**
-   * Updates the currently active layer. This affects what is currently being modified in the
-   * timeline.
+   * Updates the currently active layer. This affects what is currently being modified in the timeline.
    *
    * @param n Index of layer to activate.
    * @returns The new active layer (whether is changed or not).

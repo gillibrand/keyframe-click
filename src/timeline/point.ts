@@ -46,6 +46,7 @@ export function roundPt(p: Point) {
 
 /**
  * Modify the point position and the handle positions to match. Updates in place.
+ *
  * @param d Dot to update.
  * @param x New x in user space.
  * @param y New y in user space.

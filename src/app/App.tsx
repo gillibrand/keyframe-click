@@ -64,17 +64,13 @@ function App() {
   const timelineRef = useRef<Timeline | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  /**
-   * Save dot and settings data to localStorage.
-   */
+  /** Save dot and settings data to localStorage. */
   const saveLayers = useCallback(() => {
     layers.save();
     isDotsDirty(false);
   }, [layers]);
 
-  /**
-   * Callback when canvas element is created. Wraps it with a timeline.
-   */
+  /** Callback when canvas element is created. Wraps it with a timeline. */
   useEffect(
     function setupTimeline() {
       const canvas = canvasRef.current;
@@ -161,10 +157,9 @@ function App() {
 
   useEffect(
     /**
-     * We debounce saves for a bit since changes are so frequent. If the user navigates away during
-     * that time changes would be lost. Whenever we're dirty, this adds a page-hide listener to
-     * immediately save those changes. We don't always have this since these listener can interfere
-     * with bfcaches.
+     * We debounce saves for a bit since changes are so frequent. If the user navigates away during that time changes
+     * would be lost. Whenever we're dirty, this adds a page-hide listener to immediately save those changes. We don't
+     * always have this since these listener can interfere with bfcaches.
      */
     function addSaveBeforePageHide() {
       if (!isDataDirty) return;
@@ -393,7 +388,13 @@ function App() {
 
           <MenuProvider items={items}>
             <MenuButton
-              style={{ position: "absolute", top: "-4px", right: "0", zIndex: 1, color: "var(--c-gray-600)" }}
+              style={{
+                position: "absolute",
+                top: "-4px",
+                right: "0",
+                zIndex: 1,
+                color: "var(--c-gray-600)",
+              }}
               title="Settings"
             >
               <Gear />

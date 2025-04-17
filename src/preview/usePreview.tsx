@@ -41,7 +41,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       ({
         time: durationTime,
         unit: durationUnit,
-      } as Duration),
+      }) as Duration,
     [durationUnit, durationTime]
   );
 
@@ -138,7 +138,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
         position: "absolute",
         bottom: "0",
         insetInline: "0",
-      } as React.CSSProperties),
+      }) as React.CSSProperties,
     []
   );
 
@@ -147,7 +147,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       ({
         "--repeat": isRepeat ? "infinite" : "1",
         "--duration": `${durationMs}ms`,
-      } as React.CSSProperties),
+      }) as React.CSSProperties,
     [isRepeat, durationMs]
   );
 

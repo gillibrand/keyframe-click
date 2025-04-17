@@ -82,22 +82,20 @@ type Options = {
 };
 
 /**
- * Hook to make it easy to animate elements that are added or removed from the DOM. This will
- * observe all new elements added and/or removed from a parent and will run an animation on them.
- * Simply connect the returned ref to the parent container to observe.
+ * Hook to make it easy to animate elements that are added or removed from the DOM. This will observe all new elements
+ * added and/or removed from a parent and will run an animation on them. Simply connect the returned ref to the parent
+ * container to observe.
  *
- * For "remove" animations, the node is temporarily added in to the DOM outside of the control of
- * React, animated, and then removed. So while the animation the v-dom and real dom will be out of
- * sync. For fast animations this should never cause a problem. If React reconciles the parent during
- * the animation, the element and animation can be removed early.
+ * For "remove" animations, the node is temporarily added in to the DOM outside of the control of React, animated, and
+ * then removed. So while the animation the v-dom and real dom will be out of sync. For fast animations this should
+ * never cause a problem. If React reconciles the parent during the animation, the element and animation can be removed
+ * early.
  *
  * @param type To animate changes on add, remove, or both.
- *
- * @param options Optional functions to use for actual animation or the elements. They should
- * animate in a way that match the type and return a Promise to know when the animation is complete.
- *
- * @returns A ref to the parent container that will have elements added and removed. This **must**
- * be connected to that parent element with a `ref` attribute.
+ * @param options Optional functions to use for actual animation or the elements. They should animate in a way that
+ *   match the type and return a Promise to know when the animation is complete.
+ * @returns A ref to the parent container that will have elements added and removed. This **must** be connected to that
+ *   parent element with a `ref` attribute.
  */
 export function useChildAnimator<T extends HTMLElement>(type: ChangeType, options?: Options) {
   const parentRef = useRef<T>(null);

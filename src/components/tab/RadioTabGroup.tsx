@@ -25,8 +25,8 @@ export function RadioTabGroup<T>({ tabs, name, onDelete, onNew, checkedValue, ca
   const { parentRef } = useChildAnimator<HTMLDivElement>("both");
 
   /**
-   * Change keyboard focus to the tab that is currently checked. This uses the ref to the checked
-   * value so that it is always up-to-date.
+   * Change keyboard focus to the tab that is currently checked. This uses the ref to the checked value so that it is
+   * always up-to-date.
    */
   const focusOnCheckedTab = useCallback(() => {
     const checkedTabNode = parentRef.current?.querySelector<HTMLInputElement>("input:checked");
