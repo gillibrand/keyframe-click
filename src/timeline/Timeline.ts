@@ -55,7 +55,6 @@ export interface Timeline {
 
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
-  getUserDots(): UserDot[];
   getUserSamples(): Point[];
 
   set onDraw(onChangeCallback: (() => void) | undefined);
@@ -534,7 +533,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       willDraw(_cx, () => {
         clipTimeline();
 
-        _cx.globalAlpha = 0.5;
+        _cx.globalAlpha = 0.4;
         _layers.getBackgroundLayers().forEach((l) => {
           drawCurveForDots(l.dots, 1, CssInfos[l.cssProp].color);
         });
@@ -834,9 +833,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     },
     set onAdding(onAddCallback: ((isAdding: boolean) => void) | undefined) {
       _onIsAdding = onAddCallback;
-    },
-    getUserDots: () => {
-      return _layers.getActiveDots().map((d) => asUserDot(d));
     },
     beginAddingDot,
     deleteSelectedDot,

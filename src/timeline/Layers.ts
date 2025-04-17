@@ -1,7 +1,7 @@
 import { Colors } from "@util/Colors";
-import { asRealDot, asRealX } from "./convert";
+import { asRealX } from "./convert";
 import { CssInfos, CssProp } from "./CssInfo";
-import { createRound, createSquare, findYForX, Point, RealDot, UserDot } from "./point";
+import { findYForX, Point, RealDot } from "./point";
 
 /**
  * A single animatable property and it's complete state. A timeline is built of multiple property
@@ -20,51 +20,46 @@ interface RealLayer {
 
 export type BackgroundLayer = Pick<RealLayer, "cssProp" | "dots">;
 
-export function layersFromUserData(userDots: UserDot[], cssProp: CssProp, sampleCount: number) {
-  const dots = userDots.map((d) => asRealDot(d));
+const SaveStorageKey = "kc.layers";
 
-  const layer: RealLayer = {
-    dots,
-    sampleCount,
-    isFlipped: false,
-    cssProp: cssProp,
-    samples: null,
-  };
-
-  const exampleDots: UserDot[] = [
-    createSquare(0, 0),
-    { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
-    createRound(50, 10),
-    createSquare(75, 50),
-    createSquare(100, 0),
-  ];
-
-  const exampleDots2: UserDot[] = [
-    createSquare(0, 0),
-    { x: 15, y: 70, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
-    createRound(50, 10),
-    createSquare(75, 50),
-    createSquare(100, 0),
-  ];
-
-  const exampleLayer: RealLayer = {
-    dots: exampleDots.map((d) => asRealDot(d)),
-    sampleCount,
-    isFlipped: false,
-    cssProp: "scaleX",
-    samples: null,
-  };
-
-  const exampleLayer2: RealLayer = {
-    dots: exampleDots2.map((d) => asRealDot(d)),
-    sampleCount,
-    isFlipped: false,
+function createDefaultLayer(): RealLayer {
+  // TODO: default dots
+  return {
     cssProp: "translateY",
+    dots: [],
+    isFlipped: true,
+    sampleCount: 10,
     samples: null,
   };
-
-  return new Layers([layer, exampleLayer, exampleLayer2]);
 }
+
+function loadSavedRealLayers(): RealLayer[] {
+  const json = localStorage.getItem(SaveStorageKey);
+  if (!json) {
+    return [createDefaultLayer()];
+  }
+
+  try {
+    return JSON.parse(json);
+  } catch (e) {
+    console.warn("Error loading saved data. Using defaults. " + e);
+    return [createDefaultLayer()];
+  }
+}
+
+export function loadSavedLayers(activeIndex: number = 0) {
+  const layers = new Layers(loadSavedRealLayers());
+  layers.setActiveLayer(activeIndex);
+  return layers;
+}
+
+// const defaultDots: UserDot[] = [
+//   createSquare(0, 0),
+//   { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
+//   createRound(50, 10),
+//   createSquare(75, 50),
+//   createSquare(100, 0),
+// ];
 
 /**
  * Holds all data for the different layers of the timeline. Each layer is a separate CSS property
@@ -79,6 +74,15 @@ export class Layers {
     console.assert(layers.length > 0);
     this.layers = layers;
     this.active = 0;
+  }
+
+  save() {
+    const slimLayers = this.layers.map((l) => {
+      const slim = { ...l };
+      slim.samples = null;
+      return slim;
+    });
+    localStorage.setItem(SaveStorageKey, JSON.stringify(slimLayers));
   }
 
   getActiveLayer() {
@@ -126,6 +130,10 @@ export class Layers {
     this.purgeActiveSamples();
   }
 
+  getSampleCount() {
+    return this.getActiveLayer().sampleCount;
+  }
+
   getColor() {
     const layer = this.getActiveLayer();
     return CssInfos[layer.cssProp].color || Colors.Gray400;
@@ -143,8 +151,16 @@ export class Layers {
     return this.layers[index].cssProp;
   }
 
+  getCssProp() {
+    return this.getActiveLayer().cssProp;
+  }
+
   setIsFlipped(value: boolean) {
     this.getActiveLayer().isFlipped = value;
+  }
+
+  getIsFlipped() {
+    return this.getActiveLayer().isFlipped;
   }
 
   get activeIndex() {

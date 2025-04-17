@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { unreachable } from "@util";
-import { CssProp } from "@timeline/CssInfo";
+import { useState } from "react";
 
 const TimeUnits = ["ms", "s"] as const;
 export type TimeUnit = (typeof TimeUnits)[number];
@@ -14,9 +13,7 @@ export interface Duration {
  * Types of all global settings.
  */
 interface Settings {
-  cssProp: CssProp;
-  sampleCount: number;
-  isFlipped: boolean;
+  activeLayer: number;
   isSnapToGrid: boolean;
   isPreviewAutoPlay: boolean;
   isLabelYAxis: boolean;
@@ -34,25 +31,19 @@ interface Settings {
  */
 function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
   switch (name) {
-    case "sampleCount":
-      return typeof value === "number" && value > 3;
-
     case "previewDurationTime":
       return typeof value === "number" && value > 0;
 
     case "previewDurationUnit":
       return TimeUnits.findIndex((unit) => unit === value) !== -1;
 
-    // case "isPreviewRepeat":
-    case "isFlipped":
     case "isSnapToGrid":
     case "isLabelYAxis":
     case "isPreviewAutoPlay":
       return typeof value === "boolean";
 
-    case "cssProp":
-      // maybe check actual output functions?
-      return typeof value === "string";
+    case "activeLayer":
+      return typeof value === "number" && value > -1;
 
     default: {
       // XXX: this should never happen unless we change setting names. This this will throw cause

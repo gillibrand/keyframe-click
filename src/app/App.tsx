@@ -2,7 +2,7 @@ import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
-import { Point, UserDot, createRound, createSquare } from "@timeline/point";
+import { Point, UserDot } from "@timeline/point";
 import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, round2dp, throttle } from "@util";
@@ -13,16 +13,8 @@ import { useSetting } from "./useSettings";
 import { MenuProvider } from "@components/menu/MenuContext";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import Gear from "@images/gear.svg?react";
-import { Layers, layersFromUserData } from "@timeline/Layers";
-import { useForceRender, useInitedRef } from "@util/hooks";
-
-const defaultDots: UserDot[] = [
-  createSquare(0, 0),
-  { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
-  createRound(50, 10),
-  createSquare(75, 50),
-  createSquare(100, 0),
-];
+import { loadSavedLayers } from "@timeline/Layers";
+import { useForceRender } from "@util/hooks";
 
 function genCssKeyframeText(samples: Point[], cssProp: CssProp, isFlipped: boolean): string {
   const frames = [];
@@ -38,63 +30,47 @@ function genCssKeyframeText(samples: Point[], cssProp: CssProp, isFlipped: boole
   return frames.join("\n");
 }
 
-const StorageDots = "kc.dots";
-
-function loadSaveLayersXXX(cssProp: CssProp): Layers {
-  const json = localStorage.getItem(StorageDots);
-  if (!json) {
-    console.info("No saved dots. Using default.");
-    return layersFromUserData(defaultDots, cssProp, 10);
-  }
-
-  try {
-    return layersFromUserData(JSON.parse(json) as UserDot[], cssProp, 10);
-  } catch (e) {
-    console.warn("Error loading saved data. Using defaults. " + e);
-    return layersFromUserData(defaultDots, cssProp, 10);
-  }
-}
-
 function App() {
-  const timelineRef = useRef<Timeline | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  // The current active layer, which is needed early to select which inspector info to show
+  const [activeLayer, setActiveLayer] = useSetting("activeLayer", 0);
 
-  // transient state
+  // `layers` is not real state since it's never set again. This is just an easy way to init it once
+  // on mount with the saved active layer
+  const [layers] = useState(() => {
+    return loadSavedLayers(activeLayer);
+  });
+
+  // Visible inspector values for active layer. These are inited from the saved layers data the first time
+  // through. After that, they will push their changes into the active layer and saved. (To do it all again on reload.)
+  const [inspectorCssProp, setInspectorCssProp] = useState(layers.getCssProp());
+  const [inspectorSampleCount, setInspectorSampleCount] = useState(layers.getSampleCount());
+  const [inspectorIsFlipped, setInspectorIsFlipped] = useState(layers.getIsFlipped());
+
+  // Transient state
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
   const [isDataDirty, isDotsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
 
-  // inspector values for active layer
-  const [inspectorCssProp, setInspectorCssProp] = useSetting("cssProp", "translateX");
-  const [inspectorSampleCount, setInspectorSampleCount] = useSetting("sampleCount", 10);
-  const [inspectorIsFlipped, setInspectorIsFlipped] = useSetting("isFlipped", false);
-
-  // timeline global settings
+  // Timeline global settings
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
-
-  const [activeLayer, setActiveLayer] = useState(0);
 
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
   // React, we instead listen to its callback and manually call this to force a render if needed.
   const [keyframeTextNeedsRender, forceKeyframeTextChange] = useForceRender();
   const [tabsNeedRender, forceRenderTabs] = useForceRender();
 
-  const layersRef = useInitedRef(() => {
-    return loadSaveLayersXXX(inspectorCssProp);
-  });
+  const timelineRef = useRef<Timeline | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   /**
    * Save dot and settings data to localStorage.
    */
-  const saveDots = useCallback(() => {
+  const saveLayers = useCallback(() => {
+    layers.save();
     isDotsDirty(false);
-    if (!timelineRef.current) return;
-
-    const dots = timelineRef.current.getUserDots();
-    localStorage.setItem(StorageDots, JSON.stringify(dots));
-  }, []);
+  }, [layers]);
 
   /**
    * Callback when canvas element is created. Wraps it with a timeline.
@@ -107,9 +83,9 @@ function App() {
         return;
       }
 
-      const timeline = createTimeline({ canvas, layers: layersRef.current });
+      const timeline = createTimeline({ canvas, layers: layers });
 
-      const saveDotsDebounced = debounce(saveDots, 2000);
+      const saveLayersDebounced = debounce(saveLayers, 2000);
 
       const didDrawThrottled = throttle(() => {
         setSelectedDot(timeline.getSelectedDot());
@@ -121,7 +97,7 @@ function App() {
       timeline.onDraw = () => {
         isDotsDirty(true);
         didDrawThrottled();
-        saveDotsDebounced();
+        saveLayersDebounced();
       };
 
       timeline.onAdding = (adding: boolean) => {
@@ -136,32 +112,32 @@ function App() {
         timelineRef.current = null;
       };
     },
-    [layersRef, saveDots, forceKeyframeTextChange]
+    [layers, saveLayers, forceKeyframeTextChange]
   );
 
   useEffect(
     function pushPropsToLayerAndRenderTabs() {
-      layersRef.current.setCssProp(inspectorCssProp);
-      // Fire explicit change to get the tabs to rerender the new CSS prop name
+      layers.setCssProp(inspectorCssProp);
+      // Fire explicit change to get the tabs to rerender the new CSS prop name based on current
+      // layers
       forceRenderTabs();
     },
-    [inspectorCssProp, layersRef, forceRenderTabs]
+    [layers, inspectorCssProp, forceRenderTabs]
   );
 
   useEffect(
     function pushPropsToLayerAndDrawTimeline() {
-      layersRef.current.setSampleCount(inspectorSampleCount);
+      layers.setSampleCount(inspectorSampleCount);
       timelineRef.current?.draw();
     },
-    [inspectorSampleCount, layersRef]
+    [layers, inspectorSampleCount]
   );
 
   useEffect(
     function pushPropsToLayersQuiet() {
-      const layers = layersRef.current;
       layers.setIsFlipped(inspectorIsFlipped);
     },
-    [inspectorIsFlipped, inspectorSampleCount, layersRef]
+    [layers, inspectorIsFlipped, inspectorSampleCount]
   );
 
   useEffect(
@@ -180,7 +156,7 @@ function App() {
       timeline.setLabelYAxis(labelYAxis);
       timeline.draw();
     },
-    [inspectorCssProp, labelYAxis, layersRef, activeLayer]
+    [inspectorCssProp, labelYAxis]
   );
 
   useEffect(
@@ -193,12 +169,12 @@ function App() {
     function addSaveBeforePageHide() {
       if (!isDataDirty) return;
 
-      window.addEventListener("pagehide", saveDots);
+      window.addEventListener("pagehide", saveLayers);
       return () => {
-        window.removeEventListener("pagehide", saveDots);
+        window.removeEventListener("pagehide", saveLayers);
       };
     },
-    [isDataDirty, saveDots]
+    [isDataDirty, saveLayers]
   );
 
   const handleClickAdd = useCallback(() => {
@@ -313,9 +289,6 @@ function App() {
   const tabs = useMemo<TabData<number>[]>(() => {
     void tabsNeedRender;
 
-    const layers = layersRef.current;
-    if (!layers) return [];
-
     return layers.getAll().map((layer, i) => {
       const cssInfo = CssInfos[layer.cssProp];
       return {
@@ -324,7 +297,7 @@ function App() {
         value: i,
       };
     });
-  }, [layersRef, tabsNeedRender]);
+  }, [layers, tabsNeedRender]);
 
   function handleDeleteTab(value: number) {
     console.info(">>> todo: delete tab", value);
@@ -379,7 +352,7 @@ function App() {
     // return confirm(`Delete "${label}"?`);
 
     // Before we can delete, change the checked value to the next value
-    const index = layersRef.current.activeIndex;
+    const index = layers.activeIndex;
     let next = tabs[index + 1];
     if (!next) next = tabs[index - 1];
 
@@ -387,13 +360,13 @@ function App() {
     if (!next) return false;
 
     return false;
-    // setActiveCssProp(layersRef.current.getCssPropForLayer(next.value));
+    // setActiveCssProp(layers.getCssPropForLayer(next.value));
     // return true;
   }
 
   function handleTabChange(i: number) {
     setActiveLayer(i);
-    const activeLayer = layersRef.current.setActiveLayer(i);
+    const activeLayer = layers.setActiveLayer(i);
 
     // Update all visible React value for the layer to  match. XXX: should we return less layer data
     // here? Feels like RealLayer might be better private
