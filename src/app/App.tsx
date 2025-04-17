@@ -78,8 +78,8 @@ function App() {
 
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
   // React, we instead listen to its callback and manually call this to force a render if needed.
-  const [timelineDidChange, fireTimelineChange] = useForceRender();
-  const [layersDidChange, fireLayerChange] = useForceRender();
+  const [keyframeTextNeedsRender, forceKeyframeTextChange] = useForceRender();
+  const [tabsNeedRender, forceRenderTabs] = useForceRender();
 
   const layersRef = useInitedRef(() => {
     return loadSaveLayersXXX(inspectorCssProp);
@@ -113,7 +113,9 @@ function App() {
 
       const didDrawThrottled = throttle(() => {
         setSelectedDot(timeline.getSelectedDot());
-        fireTimelineChange();
+        // After a draw the samples are usually different, so we need to force keyframe text to
+        // update.
+        forceKeyframeTextChange();
       }, 100);
 
       timeline.onDraw = () => {
@@ -134,29 +136,36 @@ function App() {
         timelineRef.current = null;
       };
     },
-    [layersRef, saveDots, fireTimelineChange]
+    [layersRef, saveDots, forceKeyframeTextChange]
   );
 
   useEffect(
-    function pushPropsToLayers() {
+    function pushPropsToLayerAndRenderTabs() {
       layersRef.current.setCssProp(inspectorCssProp);
       // Fire explicit change to get the tabs to rerender the new CSS prop name
-      fireLayerChange();
+      forceRenderTabs();
     },
-    [inspectorCssProp, layersRef, fireLayerChange]
+    [inspectorCssProp, layersRef, forceRenderTabs]
+  );
+
+  useEffect(
+    function pushPropsToLayerAndDrawTimeline() {
+      layersRef.current.setSampleCount(inspectorSampleCount);
+      timelineRef.current?.draw();
+    },
+    [inspectorSampleCount, layersRef]
   );
 
   useEffect(
     function pushPropsToLayersQuiet() {
       const layers = layersRef.current;
-      layers.setSampleCount(inspectorSampleCount);
       layers.setIsInvertValues(inspectorIsInvert);
     },
     [inspectorIsInvert, inspectorSampleCount, layersRef]
   );
 
   useEffect(
-    function pushPropsToTimelineQuiet() {
+    function pushSettingsToTimelineQuiet() {
       if (!timelineRef.current) return;
       timelineRef.current.setSnapToGrid(snapToGrid);
     },
@@ -164,15 +173,14 @@ function App() {
   );
 
   useEffect(
-    function pushPropsToTimeline() {
+    function pushSettingsToTimeline() {
       const timeline = timelineRef.current;
       if (!timeline) return;
 
       timeline.setLabelYAxis(labelYAxis);
-      timeline.setSampleCount(inspectorSampleCount);
       timeline.draw();
     },
-    [inspectorSampleCount, inspectorCssProp, labelYAxis, layersRef, activeLayer]
+    [inspectorCssProp, labelYAxis, layersRef, activeLayer]
   );
 
   useEffect(
@@ -264,11 +272,11 @@ function App() {
   }, []);
 
   const keyframeText = useMemo(() => {
-    void timelineDidChange;
+    void keyframeTextNeedsRender;
     if (!timelineRef.current) return "";
 
     return genCssKeyframeText(timelineRef.current.getUserSamples(), inspectorCssProp, inspectorIsInvert);
-  }, [inspectorCssProp, inspectorIsInvert, timelineDidChange]);
+  }, [inspectorCssProp, inspectorIsInvert, keyframeTextNeedsRender]);
 
   useEffect(() => {
     document.body.classList.toggle("is-adding", isAdding);
@@ -303,7 +311,7 @@ function App() {
   ];
 
   const tabs = useMemo<TabData<number>[]>(() => {
-    void layersDidChange;
+    void tabsNeedRender;
 
     const layers = layersRef.current;
     if (!layers) return [];
@@ -316,9 +324,7 @@ function App() {
         value: i,
       };
     });
-  }, [layersRef, layersDidChange]);
-
-  useEffect(() => {}, []);
+  }, [layersRef, tabsNeedRender]);
 
   function handleDeleteTab(value: number) {
     console.info(">>> todo: delete tab", value);

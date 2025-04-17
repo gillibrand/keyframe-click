@@ -57,7 +57,6 @@ export interface Timeline {
   setLabelYAxis: (setLabelYAxis: boolean) => void;
   getUserDots(): UserDot[];
   getUserSamples(): Point[];
-  setSampleCount(count: number): void;
 
   set onDraw(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
@@ -119,7 +118,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   let _snapToGrid = true;
   let _labelYAxis = true;
-  let _sampleCount = 10;
+
   let _addingAtPoint: Point | null = null;
   let _selectedIndex: number | null = null;
   let _dragging: Dragging | null = null;
@@ -385,7 +384,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     let da = dots[dotIndex - 1];
     let db = dots[dotIndex];
 
-    const inc = 100 / (_sampleCount - 1);
+    const samples = _layers.getSamples();
+    const inc = 100 / (samples.length - 1);
 
     _cx.lineWidth = 1;
     _cx.setLineDash([]);
@@ -414,12 +414,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       const py = findYForX(rx, x0, y0, x1, y1, x2, y2, x3, y3);
 
       if (py !== null) {
-        const sample = { x: rx, y: py };
+        const samplePoint = { x: rx, y: py };
 
         // draw the guide lines
         willDraw(_cx, () => {
           _cx.strokeStyle = Colors[color];
-          dash(sample, _cx);
+          dash(samplePoint, _cx);
           _cx.setLineDash([5, 5]);
           _cx.beginPath();
           _cx.moveTo(rx, OffsetY);
@@ -432,14 +432,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     // Fill the sample area
     _cx.beginPath();
     _cx.moveTo(OffsetX, OffsetY);
-    const samples = _layers.getSamples();
     for (let i = 0; i < samples.length; i++) {
       const s = samples[i];
       _cx.lineTo(s.x, s.y);
     }
     _cx.lineTo(Width - OffsetX, OffsetY);
     _cx.lineTo(OffsetX, OffsetY);
-    // _cx.fillStyle = "rgba(255 0 0 / .075)";
     _cx.fillStyle = Colors[color];
     _cx.globalAlpha = 0.1;
     _cx.fill();
@@ -822,11 +820,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     endAddingDot();
   }
 
-  function setSampleCount(count: number) {
-    _sampleCount = Math.min(50, Math.max(3, count));
-    draw();
-  }
-
   // initial render
   draw();
 
@@ -834,7 +827,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   return {
     destroy,
     updateSelectedDot,
-    setSnapToGrid,
     getUserSamples,
     getSelectedDot,
     set onDraw(onDrawCallback: (() => void) | undefined) {
@@ -849,8 +841,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     beginAddingDot,
     deleteSelectedDot,
     cancel,
-    setSampleCount,
+
+    setSnapToGrid,
     setLabelYAxis,
+
     draw,
   };
 }
