@@ -101,3 +101,19 @@ export function getFirstFocusableElement(parent: HTMLElement, andFocus: boolean 
   if (firstVisible && andFocus) firstVisible.focus();
   return firstVisible;
 }
+
+/**
+ * Gets a value from the map, or sets and return an initial value if the key is not already set.
+ *
+ * @param map Map to get value from.
+ * @param key Key to get.
+ * @param dflt Default value to add to map and return if the key is not present.
+ * @returns The existing value at key or the default value.
+ */
+export function getOrInit<K, V>(map: Map<K, V>, key: K, dflt: V) {
+  const value = map.get(key);
+  if (value !== undefined) return value;
+
+  map.set(key, dflt);
+  return dflt;
+}

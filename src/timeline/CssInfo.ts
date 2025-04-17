@@ -1,3 +1,4 @@
+import { round2dp } from "@util";
 import { ColorName } from "@util/Colors";
 
 export interface CssInfo {
@@ -12,7 +13,7 @@ const CssInfos = typedKeys({
   scale: {
     label: "Scale",
     fn: (s) => {
-      return `scale: ${Math.round(s) / 100}`;
+      return `scale: ${round2dp(s) / 100}`;
     },
     color: "green",
   },
@@ -20,7 +21,7 @@ const CssInfos = typedKeys({
   scaleX: {
     label: "Scale X",
     fn: (s) => {
-      return `scale: ${Math.round(s) / 100} 1`;
+      return `scale: ${round2dp(s) / 100} 1`;
     },
     color: "fuchsia",
   },
@@ -28,7 +29,7 @@ const CssInfos = typedKeys({
   scaleY: {
     label: "Scale Y",
     fn: (s) => {
-      return `scale: 1 ${Math.round(s) / 100}`;
+      return `scale: 1 ${round2dp(s) / 100}`;
     },
     color: "blue",
   },
@@ -36,7 +37,7 @@ const CssInfos = typedKeys({
   translateX: {
     label: "Translate X",
     fn: (x) => {
-      return `translate: ${x}% 0;`;
+      return `translate: ${round2dp(x)}% 0;`;
     },
     color: "orange",
   },
@@ -44,7 +45,7 @@ const CssInfos = typedKeys({
   translateY: {
     label: "Translate Y",
     fn: (y) => {
-      return `translate: 0 ${y}%;`;
+      return `translate: 0 ${round2dp(y)}%;`;
     },
     color: "cyan",
   },
@@ -52,7 +53,7 @@ const CssInfos = typedKeys({
   opacity: {
     label: "Opacity",
     fn: (n) => {
-      return `opacity: ${n / 100};`;
+      return `opacity: ${round2dp(n / 100)};`;
     },
     color: "emerald",
   },
@@ -60,7 +61,7 @@ const CssInfos = typedKeys({
   rotate: {
     label: "Rotate",
     fn: (n) => {
-      return `rotate: ${n / 100}turn;`;
+      return `rotate: ${round2dp(n / 100)}turn;`;
     },
     color: "yellow",
   },

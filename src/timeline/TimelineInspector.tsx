@@ -36,8 +36,6 @@ const GlobalSettings = memo(function GlobalSettings({
 }: GlobalProps) {
   const samplesId = useId();
 
-  console.info(">>> disabledCssProps", disabledCssProps);
-
   function isCssPropDisabled(name: CssProp) {
     if (disabledCssProps.has(name)) return true;
 

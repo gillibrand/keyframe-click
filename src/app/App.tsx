@@ -1,11 +1,11 @@
 import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
-import { CssInfos, CssProp } from "@timeline/CssInfo";
+import { CssInfos } from "@timeline/CssInfo";
 import { Point, UserDot } from "@timeline/point";
 import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
-import { debounce, round2dp, throttle } from "@util";
+import { debounce, throttle } from "@util";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { useSetting } from "./useSettings";
@@ -15,20 +15,7 @@ import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
-
-function genCssKeyframeText(samples: Point[], cssProp: CssProp, isFlipped: boolean): string {
-  const frames = [];
-
-  const fn = CssInfos[cssProp].fn;
-
-  for (const sample of samples) {
-    const timePercent = round2dp(sample.x);
-    const value = round2dp(sample.y);
-    frames.push(`${timePercent}% { ${fn(isFlipped ? -value : value)} }`);
-  }
-
-  return frames.join("\n");
-}
+import { genCssKeyframeText } from "./output";
 
 function App() {
   // The current active layer, which is needed early to select which inspector info to show
@@ -124,16 +111,10 @@ function App() {
   useEffect(
     function pushPropsToLayerAndDrawTimeline() {
       layers.setSampleCount(inspectorSampleCount);
+      layers.setIsFlipped(inspectorIsFlipped);
       timelineRef.current?.draw();
     },
-    [layers, inspectorSampleCount]
-  );
-
-  useEffect(
-    function pushPropsToLayersQuiet() {
-      layers.setIsFlipped(inspectorIsFlipped);
-    },
-    [layers, inspectorIsFlipped, inspectorSampleCount]
+    [layers, inspectorSampleCount, inspectorIsFlipped]
   );
 
   useEffect(
@@ -244,10 +225,8 @@ function App() {
 
   const keyframeText = useMemo(() => {
     void keyframeTextNeedsRender;
-    if (!timelineRef.current) return "";
-
-    return genCssKeyframeText(timelineRef.current.getUserSamples(), inspectorCssProp, inspectorIsFlipped);
-  }, [inspectorCssProp, inspectorIsFlipped, keyframeTextNeedsRender]);
+    return genCssKeyframeText(layers);
+  }, [layers, keyframeTextNeedsRender]);
 
   useEffect(() => {
     document.body.classList.toggle("is-adding", isAdding);

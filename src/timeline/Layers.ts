@@ -1,5 +1,5 @@
 import { Colors } from "@util/Colors";
-import { asRealX } from "./convert";
+import { asRealX, asUserPoint } from "./convert";
 import { CssInfos, CssProp } from "./CssInfo";
 import { findYForX, Point, RealDot } from "./point";
 
@@ -19,6 +19,7 @@ interface RealLayer {
 }
 
 export type BackgroundLayer = Pick<RealLayer, "cssProp" | "dots">;
+export type SampleLayer = Pick<RealLayer, "cssProp" | "isFlipped"> & { userSamples: Point[] };
 
 const SaveStorageKey = "kc.layers";
 
@@ -100,6 +101,40 @@ export class Layers {
   getSamples(): Point[] {
     const layer = this.getActiveLayer();
     return layer.samples ? layer.samples : cacheSamples(layer);
+  }
+
+  /**
+   * Return samples for all layers mapped into user space, which is needed for outputting to keyframes. In user space, x
+   * goes from 0 to 100 like a percentage.
+   *
+   * While this can used cached samples, to does need to convert to user space coordinates on each call so has some
+   * performance cost. (TODO: it might be worth caching the user space samples too since they never change in background
+   * layers.)
+   *
+   * @returns The samples for all layers in user space.
+   */
+  getAllUserSamples(): SampleLayer[] {
+    const sampleLayers: SampleLayer[] = [];
+
+    for (let i = 0; i < this.layers.length; i++) {
+      const layer = this.layers[i];
+
+      const userSamples: Point[] = [];
+      const samples = layer.samples || cacheSamples(layer);
+
+      for (let j = 0; j < samples.length; j++) {
+        const sample = samples[j];
+        userSamples.push(asUserPoint(sample));
+      }
+
+      sampleLayers.push({
+        cssProp: layer.cssProp,
+        isFlipped: layer.isFlipped,
+        userSamples,
+      });
+    }
+
+    return sampleLayers;
   }
 
   purgeActiveSamples() {
