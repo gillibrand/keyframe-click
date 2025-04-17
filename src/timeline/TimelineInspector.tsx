@@ -8,10 +8,10 @@ import cx from "classnames";
 import { memo, useId } from "react";
 
 interface GlobalProps {
-  invertValues: boolean;
+  isFlipped: boolean;
   sampleCount: number;
   cssProp: string;
-  onInvertValues: (value: boolean) => void;
+  onIsFlippedChange: (value: boolean) => void;
   onSampleCount: (count: number) => void;
   onCssProp: (property: CssProp) => void;
 }
@@ -25,10 +25,10 @@ interface Props extends GlobalProps {
 }
 
 const GlobalSettings = memo(function GlobalSettings({
-  invertValues,
+  isFlipped,
   sampleCount,
   cssProp,
-  onInvertValues,
+  onIsFlippedChange,
   onSampleCount,
   onCssProp,
 }: GlobalProps) {
@@ -66,7 +66,7 @@ const GlobalSettings = memo(function GlobalSettings({
       </label>
 
       <label className="block-label">
-        <input type="checkbox" checked={invertValues} onChange={(e) => onInvertValues(e.target.checked)} />{" "}
+        <input type="checkbox" checked={isFlipped} onChange={(e) => onIsFlippedChange(e.target.checked)} />{" "}
         <span>Flip values</span>
       </label>
     </>

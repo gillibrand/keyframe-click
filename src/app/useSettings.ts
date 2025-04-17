@@ -16,7 +16,7 @@ export interface Duration {
 interface Settings {
   cssProp: CssProp;
   sampleCount: number;
-  isInvertValues: boolean;
+  isFlipped: boolean;
   isSnapToGrid: boolean;
   isPreviewAutoPlay: boolean;
   isLabelYAxis: boolean;
@@ -44,7 +44,7 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
       return TimeUnits.findIndex((unit) => unit === value) !== -1;
 
     // case "isPreviewRepeat":
-    case "isInvertValues":
+    case "isFlipped":
     case "isSnapToGrid":
     case "isLabelYAxis":
     case "isPreviewAutoPlay":

@@ -24,7 +24,7 @@ const defaultDots: UserDot[] = [
   createSquare(100, 0),
 ];
 
-function genCssKeyframeText(samples: Point[], cssProp: CssProp, invertValues: boolean): string {
+function genCssKeyframeText(samples: Point[], cssProp: CssProp, isFlipped: boolean): string {
   const frames = [];
 
   const fn = CssInfos[cssProp].fn;
@@ -32,7 +32,7 @@ function genCssKeyframeText(samples: Point[], cssProp: CssProp, invertValues: bo
   for (const sample of samples) {
     const timePercent = round2dp(sample.x);
     const value = round2dp(sample.y);
-    frames.push(`${timePercent}% { ${fn(invertValues ? -value : value)} }`);
+    frames.push(`${timePercent}% { ${fn(isFlipped ? -value : value)} }`);
   }
 
   return frames.join("\n");
@@ -68,7 +68,7 @@ function App() {
   // inspector values for active layer
   const [inspectorCssProp, setInspectorCssProp] = useSetting("cssProp", "translateX");
   const [inspectorSampleCount, setInspectorSampleCount] = useSetting("sampleCount", 10);
-  const [inspectorIsInvert, setInspectorIsInvert] = useSetting("isInvertValues", false);
+  const [inspectorIsFlipped, setInspectorIsFlipped] = useSetting("isFlipped", false);
 
   // timeline global settings
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
@@ -159,9 +159,9 @@ function App() {
   useEffect(
     function pushPropsToLayersQuiet() {
       const layers = layersRef.current;
-      layers.setIsInvertValues(inspectorIsInvert);
+      layers.setIsFlipped(inspectorIsFlipped);
     },
-    [inspectorIsInvert, inspectorSampleCount, layersRef]
+    [inspectorIsFlipped, inspectorSampleCount, layersRef]
   );
 
   useEffect(
@@ -275,8 +275,8 @@ function App() {
     void keyframeTextNeedsRender;
     if (!timelineRef.current) return "";
 
-    return genCssKeyframeText(timelineRef.current.getUserSamples(), inspectorCssProp, inspectorIsInvert);
-  }, [inspectorCssProp, inspectorIsInvert, keyframeTextNeedsRender]);
+    return genCssKeyframeText(timelineRef.current.getUserSamples(), inspectorCssProp, inspectorIsFlipped);
+  }, [inspectorCssProp, inspectorIsFlipped, keyframeTextNeedsRender]);
 
   useEffect(() => {
     document.body.classList.toggle("is-adding", isAdding);
@@ -398,7 +398,7 @@ function App() {
     // Update all visible React value for the layer to  match. XXX: should we return less layer data
     // here? Feels like RealLayer might be better private
     setInspectorCssProp(activeLayer.cssProp);
-    setInspectorIsInvert(activeLayer.isInvertValues);
+    setInspectorIsFlipped(activeLayer.isFlipped);
     setInspectorSampleCount(activeLayer.sampleCount);
   }
 
@@ -445,8 +445,8 @@ function App() {
               onCssProp={setInspectorCssProp}
               sampleCount={inspectorSampleCount}
               onSampleCount={setInspectorSampleCount}
-              invertValues={inspectorIsInvert}
-              onInvertValues={setInspectorIsInvert}
+              isFlipped={inspectorIsFlipped}
+              onIsFlippedChange={setInspectorIsFlipped}
               selected={selectedDot}
               onChangeSelectedProps={handleInspectorSelectedChange}
               onClickAdd={handleClickAdd}

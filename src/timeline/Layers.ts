@@ -9,7 +9,7 @@ import { createRound, createSquare, findYForX, Point, RealDot, UserDot } from ".
  */
 interface RealLayer {
   cssProp: CssProp;
-  isInvertValues: boolean;
+  isFlipped: boolean;
   dots: RealDot[];
 
   sampleCount: number;
@@ -26,7 +26,7 @@ export function layersFromUserData(userDots: UserDot[], cssProp: CssProp, sample
   const layer: RealLayer = {
     dots,
     sampleCount,
-    isInvertValues: false,
+    isFlipped: false,
     cssProp: cssProp,
     samples: null,
   };
@@ -50,7 +50,7 @@ export function layersFromUserData(userDots: UserDot[], cssProp: CssProp, sample
   const exampleLayer: RealLayer = {
     dots: exampleDots.map((d) => asRealDot(d)),
     sampleCount,
-    isInvertValues: false,
+    isFlipped: false,
     cssProp: "scaleX",
     samples: null,
   };
@@ -58,7 +58,7 @@ export function layersFromUserData(userDots: UserDot[], cssProp: CssProp, sample
   const exampleLayer2: RealLayer = {
     dots: exampleDots2.map((d) => asRealDot(d)),
     sampleCount,
-    isInvertValues: false,
+    isFlipped: false,
     cssProp: "translateY",
     samples: null,
   };
@@ -143,8 +143,8 @@ export class Layers {
     return this.layers[index].cssProp;
   }
 
-  setIsInvertValues(value: boolean) {
-    this.getActiveLayer().isInvertValues = value;
+  setIsFlipped(value: boolean) {
+    this.getActiveLayer().isFlipped = value;
   }
 
   get activeIndex() {
