@@ -1,6 +1,6 @@
 import { ColorName } from "@util/Colors";
 
-interface CssInfo {
+export interface CssInfo {
   label: string;
   fn: (n: number) => string;
   color: ColorName;

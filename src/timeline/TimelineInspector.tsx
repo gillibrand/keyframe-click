@@ -10,10 +10,11 @@ import { memo, useId } from "react";
 interface GlobalProps {
   isFlipped: boolean;
   sampleCount: number;
-  cssProp: string;
-  onIsFlippedChange: (value: boolean) => void;
-  onSampleCount: (count: number) => void;
-  onCssProp: (property: CssProp) => void;
+  cssProp: CssProp;
+  onChangeIsFlipped: (value: boolean) => void;
+  onChangeSampleCount: (count: number) => void;
+  onChangeCssProp: (property: CssProp) => void;
+  disabledCssProps: Set<CssProp>;
 }
 
 interface Props extends GlobalProps {
@@ -28,11 +29,24 @@ const GlobalSettings = memo(function GlobalSettings({
   isFlipped,
   sampleCount,
   cssProp,
-  onIsFlippedChange,
-  onSampleCount,
-  onCssProp,
+  onChangeIsFlipped,
+  onChangeSampleCount,
+  onChangeCssProp,
+  disabledCssProps,
 }: GlobalProps) {
   const samplesId = useId();
+
+  console.info(">>> disabledCssProps", disabledCssProps);
+
+  function isCssPropDisabled(name: CssProp) {
+    if (disabledCssProps.has(name)) return true;
+
+    if (name === "scale") {
+      return disabledCssProps.has("scaleX") || disabledCssProps.has("scaleY");
+    } else if (name === "scaleX" || name === "scaleY") {
+      return disabledCssProps.has("scale");
+    }
+  }
 
   return (
     <>
@@ -40,9 +54,9 @@ const GlobalSettings = memo(function GlobalSettings({
 
       <label className="stacked-label">
         <span>Property</span>
-        <select value={cssProp} onChange={(e) => onCssProp(e.target.value as CssProp)}>
-          {Object.entries(CssInfos).map(([key, namedFn]) => (
-            <option key={key} value={key}>
+        <select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
+          {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
+            <option key={otherCssProp} value={otherCssProp} disabled={isCssPropDisabled(otherCssProp as CssProp)}>
               {namedFn.label}
             </option>
           ))}
@@ -58,7 +72,7 @@ const GlobalSettings = memo(function GlobalSettings({
             max={50}
             className="flex-auto"
             value={sampleCount}
-            onChange={(e) => onSampleCount(parseInt(e.target.value))}
+            onChange={(e) => onChangeSampleCount(parseInt(e.target.value))}
             id={samplesId}
           />
           <output htmlFor={samplesId}>{sampleCount}</output>
@@ -66,7 +80,7 @@ const GlobalSettings = memo(function GlobalSettings({
       </label>
 
       <label className="block-label">
-        <input type="checkbox" checked={isFlipped} onChange={(e) => onIsFlippedChange(e.target.checked)} />{" "}
+        <input type="checkbox" checked={isFlipped} onChange={(e) => onChangeIsFlipped(e.target.checked)} />{" "}
         <span>Flip values</span>
       </label>
     </>

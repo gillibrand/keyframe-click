@@ -370,6 +370,12 @@ function App() {
     setInspectorSampleCount(activeLayer.sampleCount);
   }
 
+  /** The inspector should disable the CSS props used on other layers. They can only be active on one layer at a time. */
+  const disabledCssProps = useMemo(() => {
+    void activeLayer;
+    return new Set(layers.getBackgroundLayers().map((l) => l.cssProp));
+  }, [layers, activeLayer]);
+
   return (
     <>
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
@@ -416,16 +422,17 @@ function App() {
 
             <TimelineInspector
               cssProp={inspectorCssProp}
-              onCssProp={setInspectorCssProp}
+              onChangeCssProp={setInspectorCssProp}
               sampleCount={inspectorSampleCount}
-              onSampleCount={setInspectorSampleCount}
+              onChangeSampleCount={setInspectorSampleCount}
               isFlipped={inspectorIsFlipped}
-              onIsFlippedChange={setInspectorIsFlipped}
+              onChangeIsFlipped={setInspectorIsFlipped}
               selected={selectedDot}
               onChangeSelectedProps={handleInspectorSelectedChange}
               onClickAdd={handleClickAdd}
               onClickDelete={handleClickDelete}
               isAdding={isAdding}
+              disabledCssProps={disabledCssProps}
             />
           </div>
         </div>
