@@ -153,7 +153,7 @@ export class Layers {
     return this.getActiveLayer();
   }
 
-  newLayer(cssProp: CssProp) {
+  addNewLayer(cssProp: CssProp) {
     this.layers.push({
       dots: [],
       cssProp,

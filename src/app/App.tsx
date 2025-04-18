@@ -312,10 +312,9 @@ function App() {
     [layers, setActiveLayer]
   );
 
-  const newTab = useCallback(() => {
+  const addNewTab = useCallback(() => {
     const cssProp = remainingCssProps.values().next().value as CssProp;
-    layers.newLayer(cssProp);
-    // Change top new tab
+    layers.addNewLayer(cssProp);
     changeTab(layers.size - 1);
   }, [layers, remainingCssProps, changeTab]);
 
@@ -362,7 +361,7 @@ function App() {
             tabs={tabs}
             name="property"
             canNew={remainingCssProps.size > 0}
-            onNew={newTab}
+            onNew={addNewTab}
             onDelete={deleteTab}
             canDelete={canDeleteTab}
             checkedValue={activeLayer}
