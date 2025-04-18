@@ -18,20 +18,20 @@ import { useForceRender } from "@util/hooks";
 import { genCssKeyframeText } from "./output";
 
 function App() {
-  // The current active layer, which is needed early to select which inspector info to show
-  const [activeLayer, setActiveLayer] = useSetting("activeLayer", 0);
+  const timelineRef = useRef<Timeline | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const [layersDidChange, forceLayerChange] = useForceRender();
+  const [savedActiveLayer, setSavedActiveLayer] = useSetting("activeLayer", 0);
 
   // `layers` is not real state since it's never set again. This is just an easy way to init it once
   // on mount with the saved active layer
   const [layers] = useState(() => {
-    return loadSavedLayers(activeLayer);
+    return loadSavedLayers(savedActiveLayer, function onChange() {
+      forceLayerChange();
+      timelineRef.current?.draw();
+    });
   });
-
-  // Visible inspector values for active layer. These are inited from the saved layers data the first time
-  // through. After that, they will push their changes into the active layer and saved. (To do it all again on reload.)
-  const [inspectorCssProp, setInspectorCssProp] = useState(layers.getCssProp());
-  const [inspectorSampleCount, setInspectorSampleCount] = useState(layers.getSampleCount());
-  const [inspectorIsFlipped, setInspectorIsFlipped] = useState(layers.getIsFlipped());
 
   // Transient state
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
@@ -43,13 +43,20 @@ function App() {
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
+  useEffect(
+    /**
+     * This just mirrors the active layer to the saved one. This is used to restore the active layer when the app is
+     * reloaded.
+     */
+    function saveActiveLayerSetting() {
+      setSavedActiveLayer(layers.activeIndex);
+    },
+    [layers.activeIndex, setSavedActiveLayer]
+  );
+
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
   // React, we instead listen to its callback and manually call this to force a render if needed.
-  const [keyframeTextNeedsRender, forceKeyframeTextChange] = useForceRender();
-  const [tabsNeedRender, forceRenderTabs] = useForceRender();
-
-  const timelineRef = useRef<Timeline | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [keyframeTextNeedsRender, fireKeyframeTextChange] = useForceRender();
 
   /** Save dot and settings data to localStorage. */
   const saveLayers = useCallback(() => {
@@ -74,7 +81,7 @@ function App() {
         setSelectedDot(timeline.getSelectedDot());
         // After a draw the samples are usually different, so we need to force keyframe text to
         // update.
-        forceKeyframeTextChange();
+        fireKeyframeTextChange();
       }, 100);
 
       timeline.onDraw = () => {
@@ -95,34 +102,7 @@ function App() {
         timelineRef.current = null;
       };
     },
-    [layers, saveLayers, forceKeyframeTextChange]
-  );
-
-  useEffect(
-    function pushPropsToLayerAndRenderTabs() {
-      // layers.setCssProp(inspectorCssProp);
-      // Fire explicit change to get the tabs to rerender the new CSS prop name based on current
-      // layers
-      // forceRenderTabs();
-    },
-    [layers, inspectorCssProp, forceRenderTabs]
-  );
-
-  useEffect(
-    function pushPropsToLayerAndDrawTimeline() {
-      layers.setSampleCount(inspectorSampleCount);
-      layers.setIsFlipped(inspectorIsFlipped);
-      timelineRef.current?.draw();
-    },
-    [layers, inspectorSampleCount, inspectorIsFlipped]
-  );
-
-  useEffect(
-    function pushSettingsToTimelineQuiet() {
-      if (!timelineRef.current) return;
-      timelineRef.current.setSnapToGrid(snapToGrid);
-    },
-    [snapToGrid]
+    [layers, saveLayers, fireKeyframeTextChange]
   );
 
   useEffect(
@@ -130,10 +110,10 @@ function App() {
       const timeline = timelineRef.current;
       if (!timeline) return;
 
+      timeline.setSnapToGrid(snapToGrid);
       timeline.setLabelYAxis(labelYAxis);
-      timeline.draw();
     },
-    [inspectorCssProp, labelYAxis]
+    [labelYAxis, snapToGrid]
   );
 
   useEffect(
@@ -260,10 +240,27 @@ function App() {
     },
   ];
 
-  const tabs = useMemo<TabData<number>[]>(() => {
-    void tabsNeedRender;
+  /**
+   * A checksum of the current visible tab state. This reflects the number of tabs, what CSS props they are for, and the
+   * active tab. This can then be used to trigger updates to the visible tabs and related data when they change.
+   *
+   * This avoid rendering them each time unrelated state like `sampleCount` changes. Performance is probably not a big
+   * deal here, so maybe this is overkill. Tabs weren't rendering so often before, so I want to keep that, but maybe
+   * this is more complicated than necessary.
+   */
+  const tabsChecksum = useMemo(() => {
+    void layersDidChange;
 
-    console.info(">>> renderAllTAbs", layers.getAll());
+    const hash = [];
+    for (const layer of layers.getAll()) {
+      hash.push(layer.cssProp);
+    }
+    hash.push(layers.activeIndex);
+    return hash.join(",");
+  }, [layers, layersDidChange]);
+
+  const tabs = useMemo<TabData<number>[]>(() => {
+    void tabsChecksum;
 
     return layers.getAll().map((layer, i) => {
       const cssInfo = CssInfos[layer.cssProp];
@@ -273,15 +270,15 @@ function App() {
         value: i,
       };
     });
-  }, [layers, tabsNeedRender]);
+  }, [layers, tabsChecksum]);
 
   /**
    * This has to be below effects that push changes to Layers. This is also used to know what prop to default to on new
    * tabs.
    */
   const remainingCssProps = useMemo(() => {
-    void inspectorCssProp;
-    void tabs;
+    console.info(">>> remainingCssProps");
+    void tabsChecksum;
 
     const remaining = new Set(Object.keys(CssInfos) as CssProp[]);
 
@@ -298,20 +295,13 @@ function App() {
     }
 
     return remaining;
-  }, [layers, tabs, inspectorCssProp]);
+  }, [layers, tabsChecksum]);
 
   const changeTab = useCallback(
     (i: number) => {
-      setActiveLayer(i);
-      const activeLayer = layers.setActiveLayer(i);
-
-      // Update all visible React value for the layer to  match. XXX: should we return less layer data
-      // here? Feels like RealLayer might be better private
-      setInspectorCssProp(activeLayer.cssProp);
-      setInspectorIsFlipped(activeLayer.isFlipped);
-      setInspectorSampleCount(activeLayer.sampleCount);
+      layers.setActiveLayer(i);
     },
-    [layers, setActiveLayer]
+    [layers]
   );
 
   const addNewTab = useCallback(() => {
@@ -320,33 +310,14 @@ function App() {
     changeTab(layers.size - 1);
   }, [layers, remainingCssProps, changeTab]);
 
-  const getNextTabAfterDelete = useCallback(
-    (value: number) => {
-      // Require 1 tab at least
-      if (tabs.length <= 1) return null;
-
-      // Before we can delete, change the checked value to the next value
-      // const index = layers.activeIndex;
-      let next = tabs[value + 1];
-      if (!next) next = tabs[value - 1] || null;
-
-      return next;
-    },
-    [tabs]
-  );
-
   const canDeleteTab = useCallback(
     async (value: number): Promise<boolean> => {
-      const next = getNextTabAfterDelete(value);
-      if (!next) return false;
+      const next = layers.getNextLayerIndexAfterDelete(value);
+      return next !== null;
 
       // return confirm(`Delete "${label}"?`);
-
-      // setActiveLayer(next.value);
-
-      return true;
     },
-    [getNextTabAfterDelete]
+    [layers]
   );
 
   const deleteTab = useCallback((value: number) => {
@@ -355,9 +326,30 @@ function App() {
 
   /** The inspector should disable the CSS props used on other layers. They can only be active on one layer at a time. */
   const disabledCssProps = useMemo(() => {
-    void activeLayer;
+    void layersDidChange;
     return new Set(layers.getBackgroundLayers().map((l) => l.cssProp));
-  }, [layers, activeLayer]);
+  }, [layers, layersDidChange]);
+
+  const setSampleCount = useCallback(
+    (count: number) => {
+      layers.setSampleCount(count);
+    },
+    [layers]
+  );
+
+  const setIsFlipped = useCallback(
+    (isFlipped: boolean) => {
+      layers.setIsFlipped(isFlipped);
+    },
+    [layers]
+  );
+
+  const setCssProp = useCallback(
+    (prop: CssProp) => {
+      layers.setCssProp(prop);
+    },
+    [layers]
+  );
 
   return (
     <>
@@ -372,7 +364,7 @@ function App() {
             onNew={addNewTab}
             onDelete={deleteTab}
             canDelete={canDeleteTab}
-            checkedValue={activeLayer}
+            checkedValue={layers.activeIndex}
             onChange={changeTab}
           />
 
@@ -406,12 +398,12 @@ function App() {
             </div>
 
             <TimelineInspector
-              cssProp={inspectorCssProp}
-              onChangeCssProp={setInspectorCssProp}
-              sampleCount={inspectorSampleCount}
-              onChangeSampleCount={setInspectorSampleCount}
-              isFlipped={inspectorIsFlipped}
-              onChangeIsFlipped={setInspectorIsFlipped}
+              cssProp={layers.getCssProp()}
+              onChangeCssProp={setCssProp}
+              sampleCount={layers.getSampleCount()}
+              onChangeSampleCount={setSampleCount}
+              isFlipped={layers.getIsFlipped()}
+              onChangeIsFlipped={setIsFlipped}
               selected={selectedDot}
               onChangeSelectedProps={handleInspectorSelectedChange}
               onClickAdd={handleClickAdd}

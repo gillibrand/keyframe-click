@@ -49,8 +49,8 @@ function loadSavedRealLayers(): RealLayer[] {
   }
 }
 
-export function loadSavedLayers(activeIndex: number = 0) {
-  const layers = new Layers(loadSavedRealLayers());
+export function loadSavedLayers(activeIndex: number = 0, onChange: () => void) {
+  const layers = new Layers(loadSavedRealLayers(), onChange);
   layers.setActiveLayer(activeIndex);
   return layers;
 }
@@ -69,12 +69,12 @@ export function loadSavedLayers(activeIndex: number = 0) {
  */
 export class Layers {
   private active = 0;
-  private layers: RealLayer[];
 
-  constructor(layers: RealLayer[]) {
+  constructor(
+    private layers: RealLayer[],
+    private onChange: () => void
+  ) {
     console.assert(layers.length > 0);
-    this.layers = layers;
-    this.active = 0;
   }
 
   save() {
@@ -151,6 +151,7 @@ export class Layers {
   setActiveLayer(n: number) {
     this.active = Math.max(0, Math.min(n, this.layers.length - 1));
     this.purgeActiveSamples();
+    this.onChange();
     return this.getActiveLayer();
   }
 
@@ -162,31 +163,51 @@ export class Layers {
       sampleCount: 10,
       samples: null,
     });
+    this.onChange();
+  }
+
+  getNextLayerIndexAfterDelete(deleteLayerIndex: number) {
+    const all = this.layers;
+    // Require 1 tab at least
+    if (all.length <= 1) return null;
+
+    // Before we can delete, change the checked value to the next value
+    // const index = layers.activeIndex;
+    let next = all[deleteLayerIndex + 1];
+    if (!next) next = all[deleteLayerIndex - 1] || null;
+
+    return next;
   }
 
   deleteLayer(index: number) {
-    console.info(
-      ">>> old layers",
-      index,
-      this.layers.map((l) => l.cssProp)
-    );
+    // console.info(
+    //   ">>> old layers",
+    //   index,
+    //   this.layers.map((l) => l.cssProp)
+    // );
 
     this.layers.splice(index, 1);
-    console.info(
-      ">>> new layers",
-      this.layers.map((l) => l.cssProp)
-    );
+    // console.info(
+    //   ">>> new layers",
+    //   this.layers.map((l) => l.cssProp)
+    // );
+
+    this.onChange();
   }
 
   setCssProp(prop: CssProp) {
     console.info(">>> SET CSS PROP", prop);
     this.getActiveLayer().cssProp = prop;
+
+    this.onChange();
   }
 
   setSampleCount(count: number) {
     count = Math.max(2, Math.min(count, 100));
     this.getActiveLayer().sampleCount = count;
     this.purgeActiveSamples();
+
+    this.onChange();
   }
 
   getSampleCount() {
@@ -216,6 +237,7 @@ export class Layers {
 
   setIsFlipped(value: boolean) {
     this.getActiveLayer().isFlipped = value;
+    this.onChange();
   }
 
   getIsFlipped() {
