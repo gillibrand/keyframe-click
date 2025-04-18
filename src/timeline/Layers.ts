@@ -8,10 +8,11 @@ import { findYForX, Point, RealDot } from "./point";
  * final animation.
  */
 interface RealLayer {
-  cssProp: CssProp;
-  isFlipped: boolean;
   dots: RealDot[];
 
+  // Inspector
+  cssProp: CssProp;
+  isFlipped: boolean;
   sampleCount: number;
 
   // transient
@@ -164,10 +165,21 @@ export class Layers {
   }
 
   deleteLayer(index: number) {
+    console.info(
+      ">>> old layers",
+      index,
+      this.layers.map((l) => l.cssProp)
+    );
+
     this.layers.splice(index, 1);
+    console.info(
+      ">>> new layers",
+      this.layers.map((l) => l.cssProp)
+    );
   }
 
   setCssProp(prop: CssProp) {
+    console.info(">>> SET CSS PROP", prop);
     this.getActiveLayer().cssProp = prop;
   }
 

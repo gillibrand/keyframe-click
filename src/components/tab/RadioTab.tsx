@@ -10,7 +10,7 @@ interface Props<T> {
   checked?: boolean;
   color: ColorName;
   onCheck: (value: T) => void;
-  canDelete?: (label: string) => Promise<boolean>;
+  canDelete?: (value: T) => Promise<boolean>;
   onDelete: (value: T) => void;
 }
 
@@ -40,7 +40,7 @@ export const RadioTab = genericMemo(function RadioTab<T>({
 
     if (!canDelete) return;
 
-    if (!(await canDelete(label))) return;
+    if (!(await canDelete(value))) return;
 
     onDelete(value);
   }

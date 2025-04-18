@@ -19,7 +19,7 @@ interface Props<T> {
   canNew: boolean;
   onNew: () => void;
   onChange: (value: T) => void;
-  canDelete?: (label: string) => Promise<boolean>;
+  canDelete?: (value: T) => Promise<boolean>;
 }
 
 export function RadioTabGroup<T>({ tabs, name, onDelete, canNew, onNew, checkedValue, canDelete, onChange }: Props<T>) {

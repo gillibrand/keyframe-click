@@ -100,10 +100,10 @@ function App() {
 
   useEffect(
     function pushPropsToLayerAndRenderTabs() {
-      layers.setCssProp(inspectorCssProp);
+      // layers.setCssProp(inspectorCssProp);
       // Fire explicit change to get the tabs to rerender the new CSS prop name based on current
       // layers
-      forceRenderTabs();
+      // forceRenderTabs();
     },
     [layers, inspectorCssProp, forceRenderTabs]
   );
@@ -263,6 +263,8 @@ function App() {
   const tabs = useMemo<TabData<number>[]>(() => {
     void tabsNeedRender;
 
+    console.info(">>> renderAllTAbs", layers.getAll());
+
     return layers.getAll().map((layer, i) => {
       const cssInfo = CssInfos[layer.cssProp];
       return {
@@ -318,31 +320,37 @@ function App() {
     changeTab(layers.size - 1);
   }, [layers, remainingCssProps, changeTab]);
 
-  const canDeleteTab = useCallback(
-    async (label: string): Promise<boolean> => {
-      void label;
-
+  const getNextTabAfterDelete = useCallback(
+    (value: number) => {
       // Require 1 tab at least
-      if (tabs.length <= 1) return false;
-
-      // TODO: Prompt to delete? Better with Undo later
-      // return confirm(`Delete "${label}"?`);
+      if (tabs.length <= 1) return null;
 
       // Before we can delete, change the checked value to the next value
-      const index = layers.activeIndex;
-      let next = tabs[index + 1];
-      if (!next) next = tabs[index - 1];
+      // const index = layers.activeIndex;
+      let next = tabs[value + 1];
+      if (!next) next = tabs[value - 1] || null;
 
-      // Should not happen since we checked that there is >1 already
+      return next;
+    },
+    [tabs]
+  );
+
+  const canDeleteTab = useCallback(
+    async (value: number): Promise<boolean> => {
+      const next = getNextTabAfterDelete(value);
       if (!next) return false;
 
-      return false;
+      // return confirm(`Delete "${label}"?`);
+
+      // setActiveLayer(next.value);
+
+      return true;
     },
-    [tabs, layers.activeIndex]
+    [getNextTabAfterDelete]
   );
 
   const deleteTab = useCallback((value: number) => {
-    console.info(">>> delete", value);
+    console.info(">>> TODO: delete", value);
   }, []);
 
   /** The inspector should disable the CSS props used on other layers. They can only be active on one layer at a time. */
