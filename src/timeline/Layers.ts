@@ -259,13 +259,12 @@ function cacheSamples(layer: RealLayer) {
     const [x2, y2] = b.type === "square" ? [b.x, b.y] : [b.h1.x, b.h1.y];
     const [x3, y3] = [b.x, b.y];
 
-    const py = findYForX(x, x0, y0, x1, y1, x2, y2, x3, y3);
+    const y = findYForX(x, x0, y0, x1, y1, x2, y2, x3, y3);
 
-    if (py !== null) {
-      const sample = { x: x, y: py };
+    if (y !== null) {
+      const sample = { x, y };
       samples.push(sample);
     }
   }
-
   return samples;
 }

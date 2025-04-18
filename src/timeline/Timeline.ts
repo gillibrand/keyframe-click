@@ -5,7 +5,6 @@ import {
   asRealX,
   asRealY,
   asUserDot,
-  asUserPoint,
   asUserX,
   asUserY,
   InsetX,
@@ -18,7 +17,7 @@ import {
 import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, dash, diamond, willDraw } from "./drawing";
 import { Layers } from "./Layers";
-import { diffPt, findYForX, findYForXInCurve, nearPt, Point, RealDot, togglePt, UserDot } from "./point";
+import { diffPt, findYForXInCurve, nearPt, Point, RealDot, togglePt, UserDot } from "./point";
 
 type DraggingPoint = {
   point: RealDot;
@@ -55,7 +54,6 @@ export interface Timeline {
 
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
-  getUserSamples(): Point[];
 
   set onDraw(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
@@ -130,7 +128,11 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   function cloneSelectedDot(): RealDot | null {
     // XXX: shallow clone. Good enough for React to notice a diff
     const dots = _layers.getDots();
-    if (dots.length === 0 || _selectedIndex === null) return null;
+    if (_selectedIndex === null || _selectedIndex >= dots.length) {
+      // This happens if there is a selected index and we change to a layer with fewer dot. Just clear the selection
+      _selectedIndex = null;
+      return null;
+    }
     return { ..._layers.getDots()[_selectedIndex] };
   }
 
@@ -381,54 +383,24 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     const dots = _layers.getDots();
     if (dots.length < 2) return;
 
-    let dotIndex = 1;
-
-    let da = dots[dotIndex - 1];
-    let db = dots[dotIndex];
-
-    const samples = _layers.getSamples();
-    const inc = 100 / (samples.length - 1);
-
     _cx.lineWidth = 1;
     _cx.setLineDash([]);
 
-    for (let x = 0; x < 101; x += inc) {
-      if (x > 100) x = 100;
-      const rx = asRealX(x);
+    const samples = _layers.getSamples();
 
-      if (rx < da.x) {
-        // Haven't hit a curve yet, so skip this dot
-        continue;
-      }
+    for (let i = 0; i < samples.length; i++) {
+      const s = samples[i];
 
-      while (rx > db.x) {
-        // Keep moving to next curve segment until contains the point
-        if (dotIndex++ >= dots.length - 1) break;
-        da = dots[dotIndex - 1];
-        db = dots[dotIndex];
-      }
-
-      const [x0, y0] = [da.x, da.y];
-      const [x1, y1] = da.type === "square" ? [da.x, da.y] : [da.h2.x, da.h2.y];
-      const [x2, y2] = db.type === "square" ? [db.x, db.y] : [db.h1.x, db.h1.y];
-      const [x3, y3] = [db.x, db.y];
-
-      const py = findYForX(rx, x0, y0, x1, y1, x2, y2, x3, y3);
-
-      if (py !== null) {
-        const samplePoint = { x: rx, y: py };
-
-        // draw the guide lines
-        willDraw(_cx, () => {
-          _cx.strokeStyle = Colors[color];
-          dash(samplePoint, _cx);
-          _cx.setLineDash([5, 5]);
-          _cx.beginPath();
-          _cx.moveTo(rx, OffsetY);
-          _cx.lineTo(rx, py);
-          _cx.stroke();
-        });
-      }
+      // draw the guide lines
+      willDraw(_cx, () => {
+        _cx.strokeStyle = Colors[color];
+        dash(s, _cx);
+        _cx.setLineDash([5, 5]);
+        _cx.beginPath();
+        _cx.moveTo(s.x, OffsetY);
+        _cx.lineTo(s.x, s.y);
+        _cx.stroke();
+      });
     }
 
     // Fill the sample area
@@ -438,8 +410,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       const s = samples[i];
       _cx.lineTo(s.x, s.y);
     }
+
     _cx.lineTo(Width - OffsetX, OffsetY);
-    _cx.lineTo(OffsetX, OffsetY);
+    // _cx.lineTo(OffsetX, OffsetY);
     _cx.fillStyle = Colors[color];
     _cx.globalAlpha = 0.1;
     _cx.fill();
@@ -538,9 +511,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       clipTimeline();
 
       // Draw background layer curves in thinner lines
-      _cx.globalAlpha = 0.4;
+      _cx.globalAlpha = 0.25;
+      _cx.setLineDash([1, 2]);
       _layers.getBackgroundLayers().forEach((l) => {
-        drawCurveForDots(l.dots, 1, CssInfos[l.cssProp].color);
+        drawCurveForDots(l.dots, 2, CssInfos[l.cssProp].color);
       });
       _cx.globalAlpha = 1;
 
@@ -700,10 +674,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     draw();
   }
 
-  function getUserSamples() {
-    return _layers.getSamples().map((s) => asUserPoint(s));
-  }
-
   function endAddingDot() {
     const oldState = _state;
     _addingAtPoint = null;
@@ -830,7 +800,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   return {
     destroy,
     updateSelectedDot,
-    getUserSamples,
     getSelectedDot,
     set onDraw(onDrawCallback: (() => void) | undefined) {
       _onDidDraw = onDrawCallback;
