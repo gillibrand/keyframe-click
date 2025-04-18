@@ -16,12 +16,13 @@ interface Props<T> {
   checkedValue: T;
   tabs: TabData<T>[];
   onDelete: (value: T) => void;
+  canNew: boolean;
   onNew: () => void;
   onChange: (value: T) => void;
   canDelete?: (label: string) => Promise<boolean>;
 }
 
-export function RadioTabGroup<T>({ tabs, name, onDelete, onNew, checkedValue, canDelete, onChange }: Props<T>) {
+export function RadioTabGroup<T>({ tabs, name, onDelete, canNew, onNew, checkedValue, canDelete, onChange }: Props<T>) {
   const { parentRef } = useChildAnimator<HTMLDivElement>("both");
 
   /**
@@ -47,7 +48,7 @@ export function RadioTabGroup<T>({ tabs, name, onDelete, onNew, checkedValue, ca
   );
 
   return (
-    <div className="RadioTabGroup flex" ref={parentRef} tabIndex={-1}>
+    <div className="RadioTabGroup flex" ref={parentRef}>
       {tabs.map((t) => (
         // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
         // so can shrink to 0 width
@@ -59,12 +60,17 @@ export function RadioTabGroup<T>({ tabs, name, onDelete, onNew, checkedValue, ca
             color={t.color}
             checked={checkedValue === t.value}
             onCheck={onChange}
-            canDelete={tabs.length > 1 ? canDelete : undefined}
+            canDelete={canDelete}
             onDelete={handleDelete}
           />
         </div>
       ))}
-      <button className="round-btn" onClick={onNew}>
+      <button
+        className="round-btn"
+        onClick={onNew}
+        disabled={!canNew}
+        title={!canNew ? "All properties are already being used" : undefined}
+      >
         <Plus />
       </button>
     </div>

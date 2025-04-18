@@ -1,7 +1,7 @@
 import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
-import { CssInfos } from "@timeline/CssInfo";
+import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot } from "@timeline/point";
 import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
@@ -273,81 +273,78 @@ function App() {
     });
   }, [layers, tabsNeedRender]);
 
-  function handleDeleteTab(value: number) {
-    console.info(">>> todo: delete tab", value);
-    // setTabs((prev) => {
-    //   const i = prev.findIndex((t) => t.value === value);
-    //   if (i === -1) return prev;
-    //   const tabs = [...prev];
-    //   tabs.splice(i, 1);
-    //   return tabs;
-    // });
-  }
+  /**
+   * This has to be below effects that push changes to Layers. This is also used to know what prop to default to on new
+   * tabs.
+   */
+  const remainingCssProps = useMemo(() => {
+    void inspectorCssProp;
+    void tabs;
 
-  // const count = useRef(0);
+    const remaining = new Set(Object.keys(CssInfos) as CssProp[]);
 
-  function handleNewTab() {
-    console.info(">>> todo: new tab");
-    // setTabs((prev) => {
-    //   const value = count.current++;
-    //   const newTabs: TabData<number>[] = [
-    //     ...prev,
-    //     {
-    //       label: "New " + value,
-    //       value: tabs.length,
-    //       color: "rose",
-    //     },
-    //   ];
-    //   return newTabs;
-    // });
-  }
+    for (const layer of layers.getAll()) {
+      const prop = layer.cssProp;
+      remaining.delete(prop);
 
-  // function setActiveTabName(cssProp: CssProp) {
-  //   setTabs((prev) => {
-  //     const newTabs = [...prev];
-  //     const css = CssInfos[cssProp];
-  //     const oldTab = newTabs[activeLayer];
-  //     const newTab: TabData<number> = { value: oldTab.value, label: css.label, color: css.color };
-  //     newTabs[activeLayer] = newTab;
-  //     return newTabs;
-  //   });
-  // }
+      if (prop === "scale") {
+        remaining.delete("scaleX");
+        remaining.delete("scaleY");
+      } else if (prop === "scaleX" || prop === "scaleY") {
+        remaining.delete("scale");
+      }
+    }
 
-  // const [checkedValue, setCheckedValue] = useState(tabs[0].value);
+    return remaining;
+  }, [layers, tabs, inspectorCssProp]);
 
-  async function handleCanDeleteTab(label: string): Promise<boolean> {
-    console.info(">>> todo: can delete tab");
-    void label;
+  const changeTab = useCallback(
+    (i: number) => {
+      setActiveLayer(i);
+      const activeLayer = layers.setActiveLayer(i);
 
-    // Require 1 tab at least
-    if (tabs.length <= 1) return false;
+      // Update all visible React value for the layer to  match. XXX: should we return less layer data
+      // here? Feels like RealLayer might be better private
+      setInspectorCssProp(activeLayer.cssProp);
+      setInspectorIsFlipped(activeLayer.isFlipped);
+      setInspectorSampleCount(activeLayer.sampleCount);
+    },
+    [layers, setActiveLayer]
+  );
 
-    // TODO: Prompt to delete? Better with Undo later
-    // return confirm(`Delete "${label}"?`);
+  const newTab = useCallback(() => {
+    const cssProp = remainingCssProps.values().next().value as CssProp;
+    layers.newLayer(cssProp);
+    // Change top new tab
+    changeTab(layers.size - 1);
+  }, [layers, remainingCssProps, changeTab]);
 
-    // Before we can delete, change the checked value to the next value
-    const index = layers.activeIndex;
-    let next = tabs[index + 1];
-    if (!next) next = tabs[index - 1];
+  const canDeleteTab = useCallback(
+    async (label: string): Promise<boolean> => {
+      void label;
 
-    // Should not happen since we checked that there is >1 already
-    if (!next) return false;
+      // Require 1 tab at least
+      if (tabs.length <= 1) return false;
 
-    return false;
-    // setActiveCssProp(layers.getCssPropForLayer(next.value));
-    // return true;
-  }
+      // TODO: Prompt to delete? Better with Undo later
+      // return confirm(`Delete "${label}"?`);
 
-  function handleTabChange(i: number) {
-    setActiveLayer(i);
-    const activeLayer = layers.setActiveLayer(i);
+      // Before we can delete, change the checked value to the next value
+      const index = layers.activeIndex;
+      let next = tabs[index + 1];
+      if (!next) next = tabs[index - 1];
 
-    // Update all visible React value for the layer to  match. XXX: should we return less layer data
-    // here? Feels like RealLayer might be better private
-    setInspectorCssProp(activeLayer.cssProp);
-    setInspectorIsFlipped(activeLayer.isFlipped);
-    setInspectorSampleCount(activeLayer.sampleCount);
-  }
+      // Should not happen since we checked that there is >1 already
+      if (!next) return false;
+
+      return false;
+    },
+    [tabs, layers.activeIndex]
+  );
+
+  const deleteTab = useCallback((value: number) => {
+    console.info(">>> delete", value);
+  }, []);
 
   /** The inspector should disable the CSS props used on other layers. They can only be active on one layer at a time. */
   const disabledCssProps = useMemo(() => {
@@ -364,13 +361,15 @@ function App() {
           <RadioTabGroup
             tabs={tabs}
             name="property"
-            onDelete={handleDeleteTab}
-            onNew={handleNewTab}
-            canDelete={handleCanDeleteTab}
+            canNew={remainingCssProps.size > 0}
+            onNew={newTab}
+            onDelete={deleteTab}
+            canDelete={canDeleteTab}
             checkedValue={activeLayer}
-            onChange={handleTabChange}
+            onChange={changeTab}
           />
 
+          {/* Setting menu. Probably should move this somewhere else later. */}
           <MenuProvider items={items}>
             <MenuButton
               style={{

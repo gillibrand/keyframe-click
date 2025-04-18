@@ -1,7 +1,7 @@
 import Close from "@images/close.svg?react";
 import { ColorName, Colors } from "@util/Colors";
 import cx from "classnames";
-import { CSSProperties, useId, useMemo, useRef } from "react";
+import { CSSProperties, memo, useId, useMemo, useRef } from "react";
 
 interface Props<T> {
   label: string;
@@ -14,7 +14,18 @@ interface Props<T> {
   onDelete: (value: T) => void;
 }
 
-export function RadioTab<T>({ label, radioName, checked, color, onCheck, value, canDelete, onDelete }: Props<T>) {
+const genericMemo: <T>(component: T) => T = memo;
+
+export const RadioTab = genericMemo(function RadioTab<T>({
+  label,
+  radioName,
+  checked,
+  color,
+  onCheck,
+  value,
+  canDelete,
+  onDelete,
+}: Props<T>) {
   const style = useMemo(
     () =>
       ({
@@ -86,4 +97,4 @@ export function RadioTab<T>({ label, radioName, checked, color, onCheck, value, 
       </button>
     </div>
   );
-}
+});

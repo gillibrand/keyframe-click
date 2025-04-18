@@ -129,7 +129,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   function cloneSelectedDot(): RealDot | null {
     // XXX: shallow clone. Good enough for React to notice a diff
-    return _selectedIndex === null ? null : { ..._layers.getActiveDots()[_selectedIndex] };
+    const dots = _layers.getDots();
+    if (dots.length === 0 || _selectedIndex === null) return null;
+    return { ..._layers.getDots()[_selectedIndex] };
   }
 
   function getSelectedDot(): UserDot | null {
@@ -158,7 +160,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     const isConvertClick = e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey;
     let newSelected: number | null = null;
 
-    const dots = _layers.getActiveDots();
+    const dots = _layers.getDots();
 
     try {
       if (isConvertClick) {
@@ -376,7 +378,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function drawSamples(color: ColorName) {
-    const dots = _layers.getActiveDots();
+    const dots = _layers.getDots();
     if (dots.length < 2) return;
 
     let dotIndex = 1;
@@ -448,7 +450,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     _cx.strokeStyle = Colors.Blue;
 
-    const dots = _layers.getActiveDots();
+    const dots = _layers.getDots();
     let y = findYForXInCurve(_addingAtPoint.x, dots);
     if (y === null) y = _addingAtPoint.y;
 
@@ -490,6 +492,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function drawCurveForDots(dots: RealDot[], lineWidth: number, color: ColorName) {
+    if (dots.length === 0) return;
+
     _cx.strokeStyle = Colors[color];
 
     const origin = dots[0];
@@ -527,61 +531,60 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     });
 
     _layers.purgeActiveSamples();
-    const dots = _layers.getActiveDots();
+    const dots = _layers.getDots();
 
-    // draw curve
-    if (dots.length > 0) {
-      willDraw(_cx, () => {
-        clipTimeline();
+    // draw curves
+    willDraw(_cx, () => {
+      clipTimeline();
 
-        _cx.globalAlpha = 0.4;
-        _layers.getBackgroundLayers().forEach((l) => {
-          drawCurveForDots(l.dots, 1, CssInfos[l.cssProp].color);
-        });
-        _cx.globalAlpha = 1;
-
-        const color = _layers.getColor();
-        drawCurveForDots(dots, 3, color);
-
-        drawSamples(color);
+      // Draw background layer curves in thinner lines
+      _cx.globalAlpha = 0.4;
+      _layers.getBackgroundLayers().forEach((l) => {
+        drawCurveForDots(l.dots, 1, CssInfos[l.cssProp].color);
       });
+      _cx.globalAlpha = 1;
 
-      // draw the key points and their handles
-      for (let i = 0; i < dots.length; i++) {
-        const p = dots[i];
+      const color = _layers.getColor();
+      drawCurveForDots(dots, 3, color);
 
-        if (p.type === "round" && i === _selectedIndex) {
-          const h1 = p.h1;
-          const h2 = p.h2;
+      drawSamples(color);
+    });
 
-          willDraw(_cx, () => {
-            clipTimeline();
+    // draw the key points and their handles
+    for (let i = 0; i < dots.length; i++) {
+      const p = dots[i];
 
-            _cx.strokeStyle = Colors.Blue;
-            _cx.setLineDash([5, 2]);
+      if (p.type === "round" && i === _selectedIndex) {
+        const h1 = p.h1;
+        const h2 = p.h2;
 
-            for (const h of [h1, h2]) {
-              _cx.beginPath();
-              _cx.moveTo(p.x, p.y);
-              _cx.lineTo(h.x, h.y);
-              _cx.stroke();
-            }
+        willDraw(_cx, () => {
+          clipTimeline();
 
-            if (p.type === "round") {
-              _cx.fillStyle = Colors.Blue;
-              diamond(p.h1, _cx);
-              diamond(p.h2, _cx);
-            }
-          });
-        }
+          _cx.strokeStyle = Colors.Blue;
+          _cx.setLineDash([5, 2]);
 
-        _cx.fillStyle = Colors.White;
-        _cx.strokeStyle = Colors.Black;
-        if (_selectedIndex === i && _addingAtPoint === null) {
-          bullsEye(p, _cx);
-        } else {
-          circle(p, _cx);
-        }
+          for (const h of [h1, h2]) {
+            _cx.beginPath();
+            _cx.moveTo(p.x, p.y);
+            _cx.lineTo(h.x, h.y);
+            _cx.stroke();
+          }
+
+          if (p.type === "round") {
+            _cx.fillStyle = Colors.Blue;
+            diamond(p.h1, _cx);
+            diamond(p.h2, _cx);
+          }
+        });
+      }
+
+      _cx.fillStyle = Colors.White;
+      _cx.strokeStyle = Colors.Black;
+      if (_selectedIndex === i && _addingAtPoint === null) {
+        bullsEye(p, _cx);
+      } else {
+        circle(p, _cx);
       }
     }
 
@@ -594,7 +597,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     // const amount = e.shiftKey ? 10 : 1;
 
-    const dots = _layers.getActiveDots();
+    const dots = _layers.getDots();
 
     const d = _selectedIndex === null ? null : dots[_selectedIndex];
 
@@ -684,7 +687,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   function updateSelectedDot(d: UserDot) {
     if (_selectedIndex === null) return;
-    _layers.getActiveDots()[_selectedIndex] = asRealDot(d);
+    _layers.getDots()[_selectedIndex] = asRealDot(d);
     draw();
   }
 
@@ -728,7 +731,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   function onClickAdding() {
     if (_addingAtPoint !== null) {
-      const dots = _layers.getActiveDots();
+      const dots = _layers.getDots();
 
       let x = _addingAtPoint.x;
       let y = findYForXInCurve(x, dots);
@@ -804,7 +807,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   function deleteSelectedDot() {
     if (_selectedIndex === null) return;
 
-    const dots = _layers.getActiveDots();
+    const dots = _layers.getDots();
     dots.splice(_selectedIndex, 1);
 
     if (dots.length === 0) {

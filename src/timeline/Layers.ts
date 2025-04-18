@@ -94,7 +94,7 @@ export class Layers {
     return this.layers[this.active];
   }
 
-  getActiveDots() {
+  getDots() {
     return this.getActiveLayer().dots;
   }
 
@@ -153,6 +153,20 @@ export class Layers {
     return this.getActiveLayer();
   }
 
+  newLayer(cssProp: CssProp) {
+    this.layers.push({
+      dots: [],
+      cssProp,
+      isFlipped: false,
+      sampleCount: 10,
+      samples: null,
+    });
+  }
+
+  deleteLayer(index: number) {
+    this.layers.splice(index, 1);
+  }
+
   setCssProp(prop: CssProp) {
     this.getActiveLayer().cssProp = prop;
   }
@@ -198,6 +212,10 @@ export class Layers {
 
   get activeIndex() {
     return this.active;
+  }
+
+  get size() {
+    return this.layers.length;
   }
 }
 
