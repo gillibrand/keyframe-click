@@ -22,12 +22,12 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [layersDidChange, forceLayerChange] = useForceRender();
-  const [savedActiveLayer, setSavedActiveLayer] = useSetting("activeLayer", 0);
+  const [savedActiveLayerId, setSavedActiveLayerId] = useSetting("activeLayerId", 0);
 
   // `layers` is not real state since it's never set again. This is just an easy way to init it once
   // on mount with the saved active layer
   const [layers] = useState(() => {
-    return loadSavedLayers(savedActiveLayer, function onChange() {
+    return loadSavedLayers(savedActiveLayerId, function onChange() {
       forceLayerChange();
       timelineRef.current?.draw();
     });
@@ -49,9 +49,9 @@ function App() {
      * reloaded.
      */
     function saveActiveLayerSetting() {
-      setSavedActiveLayer(layers.activeIndex);
+      setSavedActiveLayerId(layers.activeLayerId);
     },
-    [layers.activeIndex, setSavedActiveLayer]
+    [layers.activeLayerId, setSavedActiveLayerId]
   );
 
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
@@ -255,19 +255,17 @@ function App() {
     for (const layer of layers.getAll()) {
       hash.push(layer.cssProp);
     }
-    hash.push(layers.activeIndex);
+    hash.push(layers.activeLayerId);
     return hash.join(",");
   }, [layers, layersDidChange]);
 
-  const tabs = useMemo<TabData<number>[]>(() => {
+  const tabs = useMemo<TabData[]>(() => {
     void tabsChecksum;
 
-    return layers.getAll().map((layer, i) => {
-      const cssInfo = CssInfos[layer.cssProp];
+    return layers.getAll().map((layer) => {
       return {
-        label: cssInfo.label,
-        color: cssInfo.color,
-        value: i,
+        cssProp: layer.cssProp,
+        id: layer.id,
       };
     });
   }, [layers, tabsChecksum]);
@@ -277,7 +275,6 @@ function App() {
    * tabs.
    */
   const remainingCssProps = useMemo(() => {
-    console.info(">>> remainingCssProps");
     void tabsChecksum;
 
     const remaining = new Set(Object.keys(CssInfos) as CssProp[]);
@@ -298,8 +295,8 @@ function App() {
   }, [layers, tabsChecksum]);
 
   const changeTab = useCallback(
-    (i: number) => {
-      layers.setActiveLayer(i);
+    (id: string) => {
+      layers.setActiveLayer(id);
     },
     [layers]
   );
@@ -307,22 +304,20 @@ function App() {
   const addNewTab = useCallback(() => {
     const cssProp = remainingCssProps.values().next().value as CssProp;
     layers.addNewLayer(cssProp);
-    changeTab(layers.size - 1);
-  }, [layers, remainingCssProps, changeTab]);
+  }, [layers, remainingCssProps]);
 
-  const canDeleteTab = useCallback(
-    async (value: number): Promise<boolean> => {
-      const next = layers.getNextLayerIndexAfterDelete(value);
-      return next !== null;
+  const canDeleteTab = useCallback(async (): Promise<boolean> => {
+    return layers.size > 1;
 
-      // return confirm(`Delete "${label}"?`);
+    // return confirm(`Delete "${label}"?`);
+  }, [layers]);
+
+  const deleteTab = useCallback(
+    (id: string) => {
+      layers.deleteLayer(id);
     },
     [layers]
   );
-
-  const deleteTab = useCallback((value: number) => {
-    console.info(">>> TODO: delete", value);
-  }, []);
 
   /** The inspector should disable the CSS props used on other layers. They can only be active on one layer at a time. */
   const disabledCssProps = useMemo(() => {
@@ -350,7 +345,6 @@ function App() {
     },
     [layers]
   );
-
   return (
     <>
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
@@ -359,12 +353,12 @@ function App() {
         <div className="container relative stack">
           <RadioTabGroup
             tabs={tabs}
-            name="property"
-            canNew={remainingCssProps.size > 0}
-            onNew={addNewTab}
+            radioGroupName="property"
+            canAddNew={remainingCssProps.size > 0}
+            onAddNew={addNewTab}
             onDelete={deleteTab}
-            canDelete={canDeleteTab}
-            checkedValue={layers.activeIndex}
+            canDelete={layers.size > 1 ? canDeleteTab : undefined}
+            checkedId={layers.getActiveLayer().id}
             onChange={changeTab}
           />
 

@@ -11,7 +11,7 @@ export interface Duration {
 
 /** Types of all global settings. */
 interface Settings {
-  activeLayer: number;
+  activeLayerId: string;
   isSnapToGrid: boolean;
   isPreviewAutoPlay: boolean;
   isLabelYAxis: boolean;
@@ -40,8 +40,8 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
     case "isPreviewAutoPlay":
       return typeof value === "boolean";
 
-    case "activeLayer":
-      return typeof value === "number" && value > -1;
+    case "activeLayerId":
+      return typeof value === "string";
 
     default: {
       // XXX: this should never happen unless we change setting names. This this will throw cause

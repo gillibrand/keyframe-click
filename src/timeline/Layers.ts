@@ -8,6 +8,7 @@ import { findYForX, Point, RealDot } from "./point";
  * final animation.
  */
 interface RealLayer {
+  id: string;
   dots: RealDot[];
 
   // Inspector
@@ -32,26 +33,39 @@ function createDefaultLayer(): RealLayer {
     isFlipped: true,
     sampleCount: 10,
     samples: null,
+    id: newId(),
   };
 }
 
 function loadSavedRealLayers(): RealLayer[] {
   const json = localStorage.getItem(SaveStorageKey);
+
   if (!json) {
     return [createDefaultLayer()];
   }
 
   try {
-    return JSON.parse(json);
+    const layers = JSON.parse(json) as RealLayer[];
+    return layers;
   } catch (e) {
     console.warn("Error loading saved data. Using defaults. " + e);
     return [createDefaultLayer()];
   }
 }
 
-export function loadSavedLayers(activeIndex: number = 0, onChange: () => void) {
+/**
+ * @returns A new ID for a layer. This is a UUID. We need a unique ID to use as their React keys when rendered as tabs
+ *   since the CSS prop can change over time. The ID is what is used to track the active layer/tab so that it's stable
+ *   during a delete (unlike the index).
+ */
+function newId() {
+  return crypto.randomUUID();
+}
+
+export function loadSavedLayers(activeLayerId: string, onChange: () => void) {
   const layers = new Layers(loadSavedRealLayers(), onChange);
-  layers.setActiveLayer(activeIndex);
+  // todo
+  layers.setActiveLayer(activeLayerId);
   return layers;
 }
 
@@ -68,7 +82,7 @@ export function loadSavedLayers(activeIndex: number = 0, onChange: () => void) {
  * There is one active layer at a time which is what the user can drag around. All layers are used for output.
  */
 export class Layers {
-  private active = 0;
+  private activeId = "";
 
   constructor(
     private layers: RealLayer[],
@@ -87,12 +101,14 @@ export class Layers {
   }
 
   getActiveLayer() {
-    if (this.active >= this.layers.length) {
-      console.warn("active layer out of bound", this.active);
-      return this.layers[0];
+    if (this.activeId) {
+      const i = this.layers.findIndex((layer) => layer.id === this.activeId);
+      if (i !== -1) {
+        return this.layers[i];
+      }
     }
 
-    return this.layers[this.active];
+    return this.layers[0];
   }
 
   getDots() {
@@ -148,55 +164,64 @@ export class Layers {
    * @param n Index of layer to activate.
    * @returns The new active layer (whether is changed or not).
    */
-  setActiveLayer(n: number) {
-    this.active = Math.max(0, Math.min(n, this.layers.length - 1));
+  setActiveLayer(id: string) {
+    this.activeId = id;
     this.purgeActiveSamples();
     this.onChange();
     return this.getActiveLayer();
   }
 
   addNewLayer(cssProp: CssProp) {
+    const id = newId();
     this.layers.push({
       dots: [],
       cssProp,
       isFlipped: false,
       sampleCount: 10,
       samples: null,
+      id: id,
     });
+    this.activeId = id;
     this.onChange();
   }
 
-  getNextLayerIndexAfterDelete(deleteLayerIndex: number) {
+  private findLayerIndex(id: string) {
+    const index = this.layers.findIndex((layer) => layer.id === id);
+    if (index === -1) {
+      console.info("Layer not found", id);
+      return null;
+    }
+    return index;
+  }
+
+  getNextLayerAfterDelete(deleteId: string) {
     const all = this.layers;
     // Require 1 tab at least
     if (all.length <= 1) return null;
 
-    // Before we can delete, change the checked value to the next value
-    // const index = layers.activeIndex;
-    let next = all[deleteLayerIndex + 1];
-    if (!next) next = all[deleteLayerIndex - 1] || null;
+    const i = this.findLayerIndex(deleteId);
 
-    return next;
+    if (i === null) {
+      return null;
+    } else {
+      let next = this.layers[i + 1];
+      if (!next) next = this.layers[i - 1];
+      return next;
+    }
   }
 
-  deleteLayer(index: number) {
-    // console.info(
-    //   ">>> old layers",
-    //   index,
-    //   this.layers.map((l) => l.cssProp)
-    // );
+  deleteLayer(id: string) {
+    const next = this.getNextLayerAfterDelete(id);
+    if (next !== null) this.setActiveLayer(next.id);
 
-    this.layers.splice(index, 1);
-    // console.info(
-    //   ">>> new layers",
-    //   this.layers.map((l) => l.cssProp)
-    // );
+    const i = this.findLayerIndex(id);
+    if (i === null) return;
 
+    this.layers.splice(i, 1);
     this.onChange();
   }
 
   setCssProp(prop: CssProp) {
-    console.info(">>> SET CSS PROP", prop);
     this.getActiveLayer().cssProp = prop;
 
     this.onChange();
@@ -220,7 +245,7 @@ export class Layers {
   }
 
   getBackgroundLayers(): BackgroundLayer[] {
-    return this.layers.filter((_, i) => i !== this.active);
+    return this.layers.filter((layer) => layer.id !== this.activeId);
   }
 
   getAll(): RealLayer[] {
@@ -244,8 +269,8 @@ export class Layers {
     return this.getActiveLayer().isFlipped;
   }
 
-  get activeIndex() {
-    return this.active;
+  get activeLayerId() {
+    return this.activeId;
   }
 
   get size() {

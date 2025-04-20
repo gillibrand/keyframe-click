@@ -1,28 +1,36 @@
 import Plus from "@images/plus.svg?react";
-import { ColorName } from "@util/Colors";
+import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { useChildAnimator } from "@util/useChildAnimator";
 import { useCallback } from "react";
 import { RadioTab } from "./RadioTab";
 import "./tab.css";
 
-export interface TabData<T> {
-  label: string;
-  color: ColorName;
-  value: T;
+export interface TabData {
+  cssProp: CssProp;
+  id: string;
 }
 
-interface Props<T> {
-  name: string;
-  checkedValue: T;
-  tabs: TabData<T>[];
-  onDelete: (value: T) => void;
-  canNew: boolean;
-  onNew: () => void;
-  onChange: (value: T) => void;
-  canDelete?: (value: T) => Promise<boolean>;
+interface Props {
+  radioGroupName: string;
+  tabs: TabData[];
+  checkedId: string;
+  onDelete: (id: string) => void;
+  canAddNew: boolean;
+  onAddNew: () => void;
+  onChange: (id: string) => void;
+  canDelete?: (id: string) => Promise<boolean>;
 }
 
-export function RadioTabGroup<T>({ tabs, name, onDelete, canNew, onNew, checkedValue, canDelete, onChange }: Props<T>) {
+export function RadioTabGroup({
+  tabs,
+  radioGroupName,
+  onDelete,
+  canAddNew,
+  onAddNew,
+  checkedId,
+  canDelete,
+  onChange,
+}: Props) {
   const { parentRef } = useChildAnimator<HTMLDivElement>("both");
 
   /**
@@ -35,14 +43,14 @@ export function RadioTabGroup<T>({ tabs, name, onDelete, canNew, onNew, checkedV
   }, [parentRef]);
 
   const handleDelete = useCallback(
-    (value: T) => {
-      onDelete(value);
-      // Note that this WILL have an updated checked radio since canDelete is async and this tab
-      // will already be rendered again before the real delete. If that was not async, we'd need to
-      // setTimeout this call to be sure it's up to date.
-      //
-      // We expect the parent to change the checked tab before allowing it to be deleted.
-      focusOnCheckedTab();
+    (id: string) => {
+      onDelete(id);
+
+      // The delete will trigger a re-render of the tabs. We need to wait for that to happen before
+      // we can find and focus on the new checked tab
+      setTimeout(() => {
+        focusOnCheckedTab();
+      });
     },
     [onDelete, focusOnCheckedTab]
   );
@@ -52,13 +60,13 @@ export function RadioTabGroup<T>({ tabs, name, onDelete, canNew, onNew, checkedV
       {tabs.map((t) => (
         // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
         // so can shrink to 0 width
-        <div key={String(t.value)}>
+        <div key={t.id}>
           <RadioTab
-            value={t.value}
-            label={t.label}
-            radioName={name}
-            color={t.color}
-            checked={checkedValue === t.value}
+            id={t.id}
+            label={CssInfos[t.cssProp].label}
+            radioName={radioGroupName}
+            color={CssInfos[t.cssProp].color}
+            checked={checkedId === t.id}
             onCheck={onChange}
             canDelete={canDelete}
             onDelete={handleDelete}
@@ -67,9 +75,9 @@ export function RadioTabGroup<T>({ tabs, name, onDelete, canNew, onNew, checkedV
       ))}
       <button
         className="round-btn"
-        onClick={onNew}
-        disabled={!canNew}
-        title={!canNew ? "All properties are already being used" : undefined}
+        onClick={onAddNew}
+        disabled={!canAddNew}
+        title={!canAddNew ? "All properties are already being used" : undefined}
       >
         <Plus />
       </button>

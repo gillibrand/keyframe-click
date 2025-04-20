@@ -3,29 +3,27 @@ import { ColorName, Colors } from "@util/Colors";
 import cx from "classnames";
 import { CSSProperties, memo, useId, useMemo, useRef } from "react";
 
-interface Props<T> {
+interface Props {
   label: string;
   radioName: string;
-  value: T;
+  id: string;
   checked?: boolean;
   color: ColorName;
-  onCheck: (value: T) => void;
-  canDelete?: (value: T) => Promise<boolean>;
-  onDelete: (value: T) => void;
+  onCheck: (id: string) => void;
+  canDelete?: (id: string) => Promise<boolean>;
+  onDelete: (id: string) => void;
 }
 
-const genericMemo: <T>(component: T) => T = memo;
-
-export const RadioTab = genericMemo(function RadioTab<T>({
+export const RadioTab = memo(function RadioTab({
+  id,
   label,
   radioName,
   checked,
   color,
   onCheck,
-  value,
   canDelete,
   onDelete,
-}: Props<T>) {
+}: Props) {
   const style = useMemo(
     () =>
       ({
@@ -40,9 +38,9 @@ export const RadioTab = genericMemo(function RadioTab<T>({
 
     if (!canDelete) return;
 
-    if (!(await canDelete(value))) return;
+    if (!(await canDelete(id))) return;
 
-    onDelete(value);
+    onDelete(id);
   }
 
   function handleDelKey(e: React.KeyboardEvent) {
@@ -70,7 +68,7 @@ export const RadioTab = genericMemo(function RadioTab<T>({
       style={style}
       onKeyDown={handleDelKey}
       onClick={moveFocusToInputOnClick}
-      data-value={value}
+      data-id={id}
     >
       <label htmlFor={inputId}>{label}</label>
 
@@ -81,8 +79,9 @@ export const RadioTab = genericMemo(function RadioTab<T>({
         name={radioName}
         value={label}
         checked={checked}
+        data-checked={checked ? "true" : "false"}
         onChange={(e) => {
-          if (e.target.checked) onCheck(value);
+          if (e.target.checked) onCheck(id);
         }}
       />
 

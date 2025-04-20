@@ -10,7 +10,6 @@ export function wipeInWidth(node: HTMLElement) {
     {
       duration: 200,
       easing: "ease-in-out",
-      fill: "forwards",
     }
   ).finished;
 }
@@ -59,6 +58,14 @@ async function animateChanges(
       for (let j = 0; j < change.removedNodes.length; j++) {
         const node = change.removedNodes[j];
         if (!isEl(node) || node.dataset["noAnimate"]) continue;
+
+        node.querySelectorAll("input").forEach((input) => {
+          // Adding this in when checked can steal the "checked" value from something else.
+          input.checked = false;
+          // avoid ID collisions. It's possible this can break CSS that's targeting an ID, but
+          // that's not likely.
+          input.removeAttribute("id");
+        });
 
         // Exclude this from animating when adding back in before removing. Feels a little hacky,
         // but it's really just marking something as "seen" to avoid working with it again.
