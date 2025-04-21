@@ -269,3 +269,12 @@ code {
     margin: 0;
   }
 }
+
+.sr-only {
+  clip-path: inset(50%);
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+  height: 1px;
+}

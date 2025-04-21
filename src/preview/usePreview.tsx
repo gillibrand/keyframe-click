@@ -4,6 +4,8 @@ import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 
 import "./Preview.css";
 import { AutoProgressBar } from "./AutoProgressBar";
 
+export type Speed = 1 | 0.5 | 0.25 | 0.1;
+
 interface UsePreview {
   preview: ReactElement;
   isPlaying: boolean;
@@ -15,6 +17,8 @@ interface UsePreview {
   setIsRepeat(repeat: boolean): void;
   isAutoPlay: boolean;
   setIsAutoPlay(autoPlay: boolean): void;
+  speed: Speed;
+  setSpeed(percent: Speed): void;
 }
 
 interface Props {
@@ -29,6 +33,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   const [isAutoPlay, setIsAutoPlay] = useSetting("isPreviewAutoPlay", true);
   const [durationUnit, setDurationUnit] = useSetting("previewDurationUnit", "ms");
   const [durationTime, setDurationTime] = useSetting("previewDurationTime", 1000);
+  const [speed, setSpeed] = useSetting("previewSpeed", 1);
 
   function setDuration(duration: Duration) {
     // TODO: validate time and unit
@@ -146,9 +151,9 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     () =>
       ({
         "--repeat": isRepeat ? "infinite" : "1",
-        "--duration": `${durationMs}ms`,
+        "--duration": `${durationMs / speed}ms`,
       }) as React.CSSProperties,
-    [isRepeat, durationMs]
+    [isRepeat, durationMs, speed]
   );
 
   const namedKeyframes = useMemo(() => {
@@ -176,7 +181,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       </div>
 
       <AutoProgressBar
-        durationMs={durationMs}
+        durationMs={durationMs / speed}
         isPlaying={isPlaying}
         style={progressBarPosition}
         key={progressPlayerKey}
@@ -195,5 +200,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     setIsRepeat,
     isAutoPlay,
     setIsAutoPlay,
+    speed,
+    setSpeed,
   };
 }

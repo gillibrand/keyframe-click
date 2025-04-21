@@ -213,7 +213,18 @@ function App() {
     return () => document.body.classList.remove("is-adding");
   }, [isAdding]);
 
-  const { preview, isPlaying, playPreview, stopPreview, duration, setDuration, setIsRepeat, isRepeat } = usePreview({
+  const {
+    preview,
+    isPlaying,
+    playPreview,
+    stopPreview,
+    duration,
+    setDuration,
+    setIsRepeat,
+    isRepeat,
+    speed,
+    setSpeed,
+  } = usePreview({
     keyframeText,
   });
 
@@ -427,6 +438,8 @@ function App() {
               onChangeIsRepeat={setIsRepeat}
               onClickPlay={playPreview}
               onClickStop={stopPreview}
+              speed={speed}
+              onChangeSpeed={setSpeed}
             />
           </aside>
         </div>

@@ -38,7 +38,9 @@ export function AutoProgressBar({ isPlaying, durationMs, style }: Props) {
 
       intervalTimer.current = setInterval(() => {
         setProgress((prev) => {
-          return prev + 1;
+          const next = prev + 1;
+          if (next >= 100) clearInterval(intervalTimer.current);
+          return next;
         });
       }, frequencyMs);
 

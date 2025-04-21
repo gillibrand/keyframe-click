@@ -64,3 +64,17 @@ export function useForceRender() {
     return old + 1;
   }, 0) as [unknown, () => void];
 }
+
+/**
+ * A hook that returns a globally identifier. This can be useful for IDs or radio group names that need to be unique,
+ * but aren't shown to the user.
+ *
+ * @returns A unique identifier as a string.
+ */
+export function useUuid() {
+  const uuid = useRef<string>();
+  if (!uuid.current) {
+    uuid.current = crypto.randomUUID();
+  }
+  return uuid.current;
+}

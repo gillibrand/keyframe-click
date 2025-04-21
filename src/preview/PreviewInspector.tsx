@@ -1,5 +1,7 @@
 import { Duration, TimeUnit } from "@app/useSettings";
 import "@style/inspector.css";
+import { Segmented, SegmentedButton } from "../components/Segmented";
+import { Speed } from "./usePreview";
 
 interface Props {
   duration: Duration;
@@ -12,8 +14,8 @@ interface Props {
   onClickPlay: () => void;
   onClickStop: () => void;
 
-  // isAutoPlay: boolean;
-  // onChangeAutoPlay: (autoPlay: boolean) => void;
+  speed: Speed;
+  onChangeSpeed: (speed: Speed) => void;
 }
 
 export function PreviewInspector({
@@ -24,9 +26,9 @@ export function PreviewInspector({
   isRepeat,
   duration,
   onChangeDuration,
-}: // isAutoPlay,
-// onChangeAutoPlay,
-Props) {
+  speed,
+  onChangeSpeed,
+}: Props) {
   function handleDurationTimChange(timeString: string) {
     const time = parseInt(timeString);
     if (isNaN(time) || time < 0) return;
@@ -97,6 +99,21 @@ Props) {
           </select>
         </div>
       </label>
+
+      <Segmented label="Speed" onChange={onChangeSpeed} checkedValue={speed}>
+        <SegmentedButton value={1}>
+          100<span className="text-small">%</span>
+        </SegmentedButton>
+        <SegmentedButton value={0.5}>
+          50<span className="text-small">%</span>
+        </SegmentedButton>
+        <SegmentedButton value={0.25}>
+          25<span className="text-small">%</span>
+        </SegmentedButton>
+        <SegmentedButton value={0.1}>
+          10<span className="text-small">%</span>
+        </SegmentedButton>
+      </Segmented>
     </aside>
   );
 }

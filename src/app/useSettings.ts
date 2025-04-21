@@ -9,14 +9,19 @@ export interface Duration {
   unit: TimeUnit;
 }
 
+const Speeds = [1, 0.5, 0.25, 0.1] as const;
+export type Speed = (typeof Speeds)[number];
+
 /** Types of all global settings. */
 interface Settings {
   activeLayerId: string;
   isSnapToGrid: boolean;
   isPreviewAutoPlay: boolean;
   isLabelYAxis: boolean;
+
   previewDurationTime: number;
   previewDurationUnit: TimeUnit;
+  previewSpeed: Speed;
 }
 
 /**
@@ -42,6 +47,9 @@ function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
 
     case "activeLayerId":
       return typeof value === "string";
+
+    case "previewSpeed":
+      return typeof value === "number" && Speeds.includes(value as Speed);
 
     default: {
       // XXX: this should never happen unless we change setting names. This this will throw cause

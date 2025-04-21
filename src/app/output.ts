@@ -213,7 +213,6 @@ function interpolateValue(slice: TimeSlice, cssProp: CssProp): SamplePlus {
   if (!prev && !next) {
     // This is the case if ONLY a translateX or translateY is set, but not both. In that case we
     // really don't care about the other one, so return return 0;
-    console.warn(`Interpolating a value for ${cssProp} no samples. This is probably an error. Returning 0.`);
     return {
       cssProp,
       isFlipped: false,
