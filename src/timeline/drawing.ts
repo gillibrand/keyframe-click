@@ -20,7 +20,7 @@ export function dot(p: Point, ctx: CanvasRenderingContext2D) {
 
 export function ex(p: Point, c: CanvasRenderingContext2D) {
   c.beginPath();
-  const l = 4;
+  const l = 5;
   c.moveTo(p.x - l, p.y - l);
   c.lineTo(p.x + l, p.y + l);
   c.moveTo(p.x - l, p.y + l);

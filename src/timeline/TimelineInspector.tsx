@@ -66,7 +66,7 @@ const GlobalSettings = memo(function GlobalSettings({
         <div className="flex gap-4">
           <input
             type="range"
-            min={3}
+            min={2}
             max={50}
             className="flex-auto"
             value={sampleCount}
