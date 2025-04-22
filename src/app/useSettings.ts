@@ -79,7 +79,6 @@ function storageKey(name: string) {
  * @returns Stored setting value. Default value if missing in storage.
  */
 function readSetting<K extends SettingName>(name: K, defaultValue: Settings[K]): Settings[K] {
-  console.info(">>> read", name);
   const jsonValue = localStorage.getItem(storageKey(name));
 
   if (!jsonValue) return defaultValue;
