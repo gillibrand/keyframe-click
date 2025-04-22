@@ -2,7 +2,7 @@ import { Duration, useSetting } from "@app/useSettings";
 import { debounce, nullFn, unreachable } from "@util";
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
-import { AutoProgressBar } from "./AutoProgressBar";
+import { ProgressBar } from "./ProgressBar";
 
 export type Speed = 1 | 0.5 | 0.25 | 0.1;
 
@@ -180,7 +180,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
         <div className="Preview__ball" ref={ballRef}></div>
       </div>
 
-      <AutoProgressBar
+      <ProgressBar
         durationMs={durationMs / speed}
         isPlaying={isPlaying}
         style={progressBarPosition}
