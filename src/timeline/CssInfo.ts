@@ -1,8 +1,26 @@
+import { isDevMode } from "@util";
 import { ColorName } from "@util/Colors";
+
+type OutputFn = (n: number) => string;
+
+/**
+ * Originally all props were written out on their on, but that doesn't work for paired props like translate-x and
+ * translate-y. Those pairs are handled separately now, so we just stub out a warning if they are used on their own.
+ * It's a bug if we hit this.
+ */
+const NullPairFn: OutputFn = () => {
+  const error = "Outputting a paired property (like translate-x, translate-y) on its own. It must done as a pair.";
+  if (isDevMode()) {
+    throw error;
+  } else {
+    console.error(error);
+  }
+  return "";
+};
 
 export interface CssInfo {
   label: string;
-  fn: (n: number) => string;
+  fn: OutputFn;
   color: ColorName;
 }
 
@@ -19,33 +37,25 @@ const CssInfos = typedKeys({
 
   scaleX: {
     label: "Scale X",
-    fn: (s) => {
-      return `scale: ${Math.round(s) / 100} 1`;
-    },
+    fn: NullPairFn,
     color: "fuchsia",
   },
 
   scaleY: {
     label: "Scale Y",
-    fn: (s) => {
-      return `scale: 1 ${Math.round(s) / 100}`;
-    },
+    fn: NullPairFn,
     color: "blue",
   },
 
   translateX: {
     label: "Translate X",
-    fn: (x) => {
-      return `translate: ${x}% 0;`;
-    },
+    fn: NullPairFn,
     color: "orange",
   },
 
   translateY: {
     label: "Translate Y",
-    fn: (y) => {
-      return `translate: 0 ${y}%;`;
-    },
+    fn: NullPairFn,
     color: "cyan",
   },
 

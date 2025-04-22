@@ -4,6 +4,55 @@ import { Point } from "@timeline/point";
 import { round2dp } from "@util";
 
 /**
+ * Details about a CSS property that can be used on its own, but usually needs to be combined with a pair prop in a
+ * shorthand form.
+ */
+interface PairPropInfo {
+  /** The shorthand property name that combines the two properties, like `translate` or `scale`. */
+  shorthandProp: string;
+
+  /** The x property name, like `translateX` or `scaleX`. */
+  xProp: CssProp;
+
+  /** The y property name, like `translateY` or `scaleY`. */
+  yProp: CssProp;
+
+  /**
+   * The default value for the property. This is used when interpolating the value and the pair value cannot be
+   * determined.
+   */
+  defaultValue: number;
+}
+
+const TranslateInfo: PairPropInfo = {
+  shorthandProp: "translate",
+  xProp: "translateX",
+  yProp: "translateY",
+  defaultValue: 0,
+} as const;
+
+const ScaleInfo: PairPropInfo = {
+  shorthandProp: "scale",
+  xProp: "scaleX",
+  yProp: "scaleY",
+  defaultValue: 100,
+} as const;
+
+/**
+ * A map of CSS properties that are paired together. This is used to check if a property is a pair and needs special
+ * handling to combing it into a shorthand property. The "other" value will be interpolated if it is not sampled at the
+ * same x value.
+ */
+const PairProps = {
+  translateX: TranslateInfo,
+  translateY: TranslateInfo,
+  scaleX: ScaleInfo,
+  scaleY: ScaleInfo,
+} as const;
+
+type PairProp = keyof typeof PairProps;
+
+/**
  * An x, y sample point with extra info about the layer it came from. This is just a little more convenient than
  * tracking the layer directly even though it duplicates some data.
  */
@@ -46,23 +95,20 @@ export function genCssKeyframeText(layers: Layers): string {
     parts.push(`${timePercent}% {`);
 
     const slice = timeSlices.get(x)!;
-    let didTranslate = false;
+
+    const handledPairs = new Set<CssProp>();
 
     for (const cssProp of slice.props.keys()) {
       const sample = slice.props.get(cssProp)!;
 
-      if (cssProp === "translateX" || cssProp === "translateY") {
-        if (didTranslate) continue;
-        didTranslate = true;
+      const pairInfo = PairProps[cssProp as PairProp] ?? null;
+      if (pairInfo) {
+        if (handledPairs.has(cssProp)) continue;
+        const { shorthandProp, xProp, yProp } = pairInfo;
+        handledPairs.add(xProp).add(yProp);
 
-        // TODO: scale-x and scale-y, more?
-        // Handle translateX and translateY together
-        const xSample = slice.props.get("translateX") ?? interpolateValue(slice, "translateX");
-        const ySample = slice.props.get("translateY") ?? interpolateValue(slice, "translateY");
-
-        const xValue = xSample.isFlipped ? -xSample.y : xSample.y;
-        const yValue = ySample.isFlipped ? -ySample.y : ySample.y;
-        parts.push(`  translate: ${xValue}% ${yValue}%;`);
+        const [xValue, yValue] = getXyForPair(slice, xProp, yProp);
+        parts.push(`  ${shorthandProp}: ${xValue}% ${yValue}%;`);
       } else {
         const fn = CssInfos[sample.cssProp].fn;
         const value = sample.isFlipped ? -sample.y : sample.y;
@@ -74,6 +120,13 @@ export function genCssKeyframeText(layers: Layers): string {
   }
 
   return parts.join("\n");
+}
+
+function getXyForPair(slice: TimeSlice, xProp: CssProp, yProp: CssProp) {
+  const xSample = slice.props.get(xProp) ?? interpolateValue(slice, xProp);
+  const ySample = slice.props.get(yProp) ?? interpolateValue(slice, yProp);
+
+  return [xSample.isFlipped ? -xSample.y : xSample.y, ySample.isFlipped ? -ySample.y : ySample.y] as const;
 }
 
 /**
@@ -211,13 +264,13 @@ function interpolateValue(slice: TimeSlice, cssProp: CssProp): SamplePlus {
   const next = nextSample(slice, cssProp);
 
   if (!prev && !next) {
-    // This is the case if ONLY a translateX or translateY is set, but not both. In that case we
-    // really don't care about the other one, so return return 0;
+    // This is the case if ONLY a propX or propY is set.
+    const defaultValue = PairProps[cssProp as PairProp]?.defaultValue ?? 0;
     return {
       cssProp,
       isFlipped: false,
       x: slice.x,
-      y: 0,
+      y: defaultValue,
     };
   }
 

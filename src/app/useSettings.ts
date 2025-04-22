@@ -24,6 +24,8 @@ interface Settings {
   previewSpeed: Speed;
 }
 
+type SettingName = keyof Settings;
+
 /**
  * Validates that a setting is the right type and is a legal value. Used when loading from local storage to be sure the
  * value exists and has not been modified illegally.
@@ -32,7 +34,7 @@ interface Settings {
  * @param value Saved value to validate.
  * @returns True if the value exists and is valid.
  */
-function validate<K extends keyof Settings>(name: K, value: Settings[K]) {
+function validate<K extends SettingName>(name: K, value: Settings[K]) {
   switch (name) {
     case "previewDurationTime":
       return typeof value === "number" && value > 0;
@@ -76,7 +78,8 @@ function storageKey(name: string) {
  * @param name Base name of the setting.
  * @returns Stored setting value. Default value if missing in storage.
  */
-function readSetting<K extends keyof Settings>(name: K, defaultValue: Settings[K]): Settings[K] {
+function readSetting<K extends SettingName>(name: K, defaultValue: Settings[K]): Settings[K] {
+  console.info(">>> read", name);
   const jsonValue = localStorage.getItem(storageKey(name));
 
   if (!jsonValue) return defaultValue;
@@ -93,7 +96,7 @@ function readSetting<K extends keyof Settings>(name: K, defaultValue: Settings[K
  * @param name Name of setting.
  * @param value Value to save.
  */
-function writeSetting<K extends keyof Settings>(name: K, value: Settings[K]) {
+function writeSetting<K extends SettingName>(name: K, value: Settings[K]) {
   localStorage.setItem(storageKey(name), JSON.stringify(value));
 }
 
@@ -106,8 +109,8 @@ function writeSetting<K extends keyof Settings>(name: K, value: Settings[K]) {
  * @param name Setting name.
  * @returns Save as `useState`, but the setting persists values to local storage.
  */
-function useSetting<K extends keyof Settings>(name: K, defaultValue: Settings[K]) {
-  const [value, setValue] = useState<Settings[K]>(readSetting(name, defaultValue));
+function useSetting<K extends SettingName>(name: K, defaultValue: Settings[K]) {
+  const [value, setValue] = useState<Settings[K]>(() => readSetting(name, defaultValue));
 
   function setValueAndSetting(value: Settings[K]) {
     writeSetting(name, value);

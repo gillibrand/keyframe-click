@@ -117,3 +117,9 @@ export function getOrInit<K, V>(map: Map<K, V>, key: K, dflt: V) {
   map.set(key, dflt);
   return dflt;
 }
+
+/** @returns True if the app is running in development mode. Otherwise this is production. */
+export function isDevMode() {
+  // This is specific to Vite.
+  return import.meta.env.MODE === "development";
+}
