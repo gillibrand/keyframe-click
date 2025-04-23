@@ -1,4 +1,4 @@
-import { Duration, useSetting } from "@app/useSettings";
+import { Duration, TimeUnit, useSetting } from "@app/useSettings";
 import { debounce, nullFn, unreachable } from "@util";
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
@@ -24,6 +24,13 @@ interface UsePreview {
 
 interface Props {
   keyframeText: string;
+}
+
+interface PreviousState {
+  keyframeText: string;
+  durationTime: number;
+  durationUnit: TimeUnit;
+  speed: Speed;
 }
 
 export function usePreview({ keyframeText }: Props): UsePreview {
@@ -73,6 +80,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     ballRef.current.classList.remove("is-animate");
     void ballRef.current.offsetHeight;
     ballRef.current.classList.add("is-animate");
+    setIterationCount((prev) => prev + 1);
   }, []);
 
   const stopPreview = useCallback(function stopAnimation() {
@@ -95,33 +103,60 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     [playPreview, setIsRepeatRaw]
   );
 
-  const playAnimationSoon = useMemo(() => {
+  const playPreviewSoon = useMemo(() => {
     if (playSoonCancellerRef.current) playSoonCancellerRef.current();
     return debounce(playPreview, 500);
   }, [playPreview]);
 
-  const prevKeyframeTextRef = useRef("");
+  const previousState = useRef<PreviousState>({
+    keyframeText: "",
+    durationTime: -1,
+    durationUnit: "s",
+    speed: -1 as Speed,
+  });
+  // const prevKeyframeTextRef = useRef("");
 
   useEffect(
     function playAutomatically() {
+      const prev = previousState.current;
       // Must always store the last keyframe even if off. Otherwise, when setting repeat to false we
       // will come in here, thinks it's a changed and fire the animation an extra time since we
       // won't know if it's a response to a change or not.
-      if (keyframeText === prevKeyframeTextRef.current) return;
-      prevKeyframeTextRef.current = keyframeText;
+      if (
+        keyframeText === prev.keyframeText &&
+        duration.time === prev.durationTime &&
+        duration.unit === prev.durationUnit &&
+        speed === prev.speed
+      ) {
+        return;
+      }
 
-      // only fire if autoPlay is set
-      if (!isAutoPlay) return;
+      try {
+        // if we're repeating anyway, we can ignore this.
+        if (isRepeat) return;
 
-      // if we're repeating anyway, we can ignore this.
-      if (isRepeat) return;
+        if (playSoonCancellerRef.current) playSoonCancellerRef.current();
 
-      if (playSoonCancellerRef.current) playSoonCancellerRef.current();
-      const cancel = playAnimationSoon();
-      playSoonCancellerRef.current = cancel;
-      return cancel;
+        if (keyframeText === prev.keyframeText) {
+          // This is a change to something besides they keyframes, so just start it right away.
+          playPreview();
+          return;
+        }
+
+        // This was a keyframe change from interacting with the timeline, so delay it a bit so we
+        // aren't constantly starting previews as they drag around.
+        stopPreview();
+        const cancel = playPreviewSoon();
+        playSoonCancellerRef.current = cancel;
+        return cancel;
+      } finally {
+        prev.keyframeText = keyframeText;
+        prev.durationTime = duration.time;
+        prev.durationUnit = duration.unit;
+        prev.speed = speed;
+      }
     },
-    [keyframeText, playAnimationSoon, isAutoPlay, isRepeat]
+    [keyframeText, playPreviewSoon, isRepeat, duration, speed, playPreview, stopPreview]
   );
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -170,8 +205,11 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     return `@keyframes preview-anim1 {\n${keyframeText}\n}`;
   }, [keyframeText]);
 
-  // This key is used to force a remount of the ProgressPlayer, effectively restarting it. React is weird.
+  // Count each unique play or iteration, since it's a way to easily know if the progress bar needs
+  // to restart without needing to toggle isPlaying off/on for a render.
   const [iterationCount, setIterationCount] = useState(0);
+
+  // This key is used to force a remount of the ProgressPlayer, effectively restarting it. React is weird.
   const progressPlayerKey = useMemo(() => String(iterationCount), [iterationCount]);
 
   const preview = (

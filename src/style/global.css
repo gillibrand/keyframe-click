@@ -82,12 +82,12 @@ button {
 
 body {
   margin: 0;
-  padding: 0;
+  padding: 0rem;
 }
 
 .big-row {
-  margin: 1rem 0;
-
+  padding-block-start: 1rem;
+  padding-inline: 1rem;
   & + & {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
