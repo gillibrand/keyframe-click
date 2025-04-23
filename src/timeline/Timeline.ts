@@ -720,11 +720,11 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
         x: x,
         y: y,
         h1: {
-          x: x - 50,
+          x: x - 10 * ScaleX,
           y: y,
         },
         h2: {
-          x: x + 50,
+          x: x + 10 * ScaleX,
           y: y,
         },
       };

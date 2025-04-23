@@ -1,5 +1,5 @@
 import { Colors } from "@util/Colors";
-import { asRealX, asUserPoint } from "./convert";
+import { asRealX, asRealY, asUserPoint } from "./convert";
 import { CssInfos, CssProp } from "./CssInfo";
 import { findYForX, Point, RealDot } from "./point";
 
@@ -26,12 +26,11 @@ export type SampleLayer = Pick<RealLayer, "cssProp" | "isFlipped"> & { userSampl
 const SaveStorageKey = "kc.layers";
 
 function createDefaultLayer(): RealLayer {
-  // TODO: default dots
   return {
     cssProp: "translateY",
-    dots: [],
+    dots: createDefaultDots(),
     isFlipped: true,
-    sampleCount: 10,
+    sampleCount: 0,
     samples: null,
     id: newId(),
   };
@@ -62,20 +61,33 @@ function newId() {
   return crypto.randomUUID();
 }
 
+function createDefaultDots(): RealDot[] {
+  return [
+    {
+      space: "real",
+      x: asRealX(0),
+      y: asRealY(0),
+      h1: { x: asRealX(-10), y: asRealY(0) },
+      h2: { x: asRealX(10), y: asRealY(0) },
+      type: "square",
+    },
+    {
+      space: "real",
+      x: asRealX(100),
+      y: asRealY(100),
+      h1: { x: asRealX(90), y: asRealY(100) },
+      h2: { x: asRealX(110), y: asRealY(100) },
+      type: "square",
+    },
+  ];
+}
+
 export function loadSavedLayers(activeLayerId: string, onChange: () => void) {
   const layers = new Layers(loadSavedRealLayers(), onChange);
   // todo
   layers.setActiveLayer(activeLayerId);
   return layers;
 }
-
-// const defaultDots: UserDot[] = [
-//   createSquare(0, 0),
-//   { x: 25, y: 50, h1: { x: 15, y: 50 }, h2: { x: 35, y: 50 }, type: "round", space: "user" },
-//   createRound(50, 10),
-//   createSquare(75, 50),
-//   createSquare(100, 0),
-// ];
 
 /**
  * Holds all data for the different layers of the timeline. Each layer is a separate CSS property with its own dots.
@@ -174,7 +186,7 @@ export class Layers {
   addNewLayer(cssProp: CssProp) {
     const id = newId();
     this.layers.push({
-      dots: [],
+      dots: createDefaultDots(),
       cssProp,
       isFlipped: false,
       sampleCount: 0,
