@@ -48,7 +48,7 @@ const GlobalSettings = memo(function GlobalSettings({
 
   return (
     <>
-      <h2>Animation</h2>
+      <h2>Layer</h2>
 
       <label className="stacked-label">
         <span>Property</span>
@@ -62,11 +62,11 @@ const GlobalSettings = memo(function GlobalSettings({
       </label>
 
       <label className="stacked-label">
-        <span>Steps</span>
+        <span>Extra Frames</span>
         <div className="flex gap-4">
           <input
             type="range"
-            min={2}
+            min={0}
             max={50}
             className="flex-auto"
             value={sampleCount}

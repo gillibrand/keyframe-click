@@ -177,7 +177,7 @@ export class Layers {
       dots: [],
       cssProp,
       isFlipped: false,
-      sampleCount: 10,
+      sampleCount: 0,
       samples: null,
       id: id,
     });
@@ -228,7 +228,7 @@ export class Layers {
   }
 
   setSampleCount(count: number) {
-    count = Math.max(2, Math.min(count, 100));
+    count = Math.max(0, Math.min(count, 100));
     this.getActiveLayer().sampleCount = count;
     this.purgeActiveSamples();
 
@@ -294,7 +294,13 @@ function cacheSamples(layer: RealLayer) {
   let a = dots[dotIndex - 1];
   let b = dots[dotIndex];
 
-  const inc = 100 / (layer.sampleCount - 1);
+  for (const dot of dots) {
+    samples.push({ x: dot.x, y: dot.y });
+  }
+
+  if (layer.sampleCount <= 0) return samples;
+
+  const inc = 100 / layer.sampleCount;
 
   // We walk left to right over the entire user space. (Maybe calc real width and walk that?)
   for (let userX = 0; userX < 101; userX += inc) {
@@ -325,5 +331,11 @@ function cacheSamples(layer: RealLayer) {
       samples.push(sample);
     }
   }
+
+  // sort these since the real samples are not in order with the dot positions. I thought this was
+  // needed so draw the samples in order right, but it doesn't seem to matter. Are we sorting these
+  // later? Maybe investigate, but not a big deal.
+  samples.sort((a, b) => a.x - b.x);
+
   return samples;
 }
