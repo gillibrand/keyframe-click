@@ -5,7 +5,7 @@ import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot } from "@timeline/point";
 import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
-import { debounce, throttle } from "@util";
+import { debounce, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { useSetting } from "./useSettings";
@@ -160,39 +160,6 @@ function App() {
     };
   }
 
-  useEffect(function addEventListenersOnMount() {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Shift") {
-        if (timelineRef.current && canvasRef.current) {
-          const rect = canvasRef.current.getBoundingClientRect();
-          const at = {
-            x: lastMouseRef.current.x - rect.x,
-            y: lastMouseRef.current.y - rect.y,
-          };
-
-          timelineRef.current.beginAddingDot(at);
-        }
-      }
-    }
-
-    function handleKeyUp(e: KeyboardEvent) {
-      if (e.key === "Shift") {
-        if (timelineRef.current) {
-          timelineRef.current.cancel();
-        }
-      }
-    }
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keyup", handleKeyUp);
-      window.removeEventListener("keydown", handleKeyDown);
-      window.addEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
-
   const handleInspectorSelectedChange = useCallback((dot: UserDot) => {
     if (!timelineRef.current) return;
 
@@ -218,6 +185,7 @@ function App() {
     isPlaying,
     playPreview,
     stopPreview,
+    togglePreview,
     duration,
     setDuration,
     setIsRepeat,
@@ -227,6 +195,52 @@ function App() {
   } = usePreview({
     keyframeText,
   });
+
+  useEffect(
+    function addEventListenersOnMount() {
+      function handleKeyDown(e: KeyboardEvent) {
+        switch (e.key) {
+          case "Shift": {
+            if (timelineRef.current && canvasRef.current) {
+              const rect = canvasRef.current.getBoundingClientRect();
+              const at = {
+                x: lastMouseRef.current.x - rect.x,
+                y: lastMouseRef.current.y - rect.y,
+              };
+
+              timelineRef.current.beginAddingDot(at);
+            }
+            break;
+          }
+
+          case " ": {
+            if (isSpaceBarHandler(e.target)) break;
+            e.preventDefault();
+            togglePreview();
+            break;
+          }
+        }
+      }
+
+      function handleKeyUp(e: KeyboardEvent) {
+        if (e.key === "Shift") {
+          if (timelineRef.current) {
+            timelineRef.current.cancel();
+          }
+        }
+      }
+
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyUp);
+      return () => {
+        window.removeEventListener("keyup", handleKeyUp);
+        window.removeEventListener("keydown", handleKeyDown);
+        window.addEventListener("mousemove", handleMouseMove);
+      };
+    },
+    [togglePreview]
+  );
 
   const items: MenuItem[] = [
     {

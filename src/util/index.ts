@@ -123,3 +123,13 @@ export function isDevMode() {
   // This is specific to Vite.
   return import.meta.env.MODE === "development";
 }
+
+export function isSpaceBarHandler(el: HTMLElement | EventTarget | null): boolean {
+  if (!isEl(el)) return false;
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.tagName === "BUTTON";
+}
+
+export function isKeyboardHandler(el: HTMLElement | EventTarget | null): boolean {
+  if (!isEl(el)) return false;
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA";
+}

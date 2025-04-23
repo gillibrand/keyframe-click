@@ -11,6 +11,7 @@ interface UsePreview {
   isPlaying: boolean;
   playPreview(): void;
   stopPreview(): void;
+  togglePreview(): void;
   setDuration(duration: Duration): void;
   duration: Duration;
   isRepeat: boolean;
@@ -65,7 +66,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const playSoonCancellerRef = useRef(nullFn);
 
-  const playAnimation = useCallback(function playAnimation() {
+  const playPreview = useCallback(function playAnimation() {
     if (!ballRef.current || !ref.current) return;
 
     // Must toggle animate class off and on to ensure it runs. Just changing the keyframes is not enough
@@ -74,7 +75,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     ballRef.current.classList.add("is-animate");
   }, []);
 
-  const stopAnimation = useCallback(function stopAnimation() {
+  const stopPreview = useCallback(function stopAnimation() {
     playSoonCancellerRef?.current();
     setIsPlaying(false);
 
@@ -88,16 +89,16 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       if (repeat) {
         // Play when repeat is set to true as a convenience since they probably want this. When
         // repeat is set to false, we just let the current animation continue, but it won't repeat.
-        playAnimation();
+        playPreview();
       }
     },
-    [playAnimation, setIsRepeatRaw]
+    [playPreview, setIsRepeatRaw]
   );
 
   const playAnimationSoon = useMemo(() => {
     if (playSoonCancellerRef.current) playSoonCancellerRef.current();
-    return debounce(playAnimation, 500);
-  }, [playAnimation]);
+    return debounce(playPreview, 500);
+  }, [playPreview]);
 
   const prevKeyframeTextRef = useRef("");
 
@@ -132,6 +133,14 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   const didEnd = useCallback(() => {
     setIsPlaying(false);
   }, []);
+
+  const togglePreview = useCallback(() => {
+    if (isPlaying) {
+      stopPreview();
+    } else {
+      playPreview();
+    }
+  }, [isPlaying, stopPreview, playPreview]);
 
   const didIteration = useCallback(() => {
     setIterationCount((prev) => prev + 1);
@@ -173,7 +182,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       onAnimationStart={didStart}
       onAnimationEnd={didEnd}
       onAnimationIteration={didIteration}
-      onClick={playAnimation}
+      onClick={playPreview}
     >
       <style>{namedKeyframes}</style>
       <div className="Preview__content">
@@ -192,8 +201,9 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   return {
     preview,
     isPlaying,
-    stopPreview: stopAnimation,
-    playPreview: playAnimation,
+    stopPreview,
+    playPreview,
+    togglePreview,
     duration,
     setDuration,
     isRepeat,
