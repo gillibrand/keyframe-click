@@ -77,8 +77,9 @@ export function RadioTabGroup({
         className="round-btn"
         onClick={onAddNew}
         disabled={!canAddNew}
-        title={!canAddNew ? "All properties are already being used" : undefined}
+        title={!canAddNew ? "All properties are already being used" : "Add property"}
       >
+        <span className="sr-only">Add Property</span>
         <Plus />
       </button>
     </div>
