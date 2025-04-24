@@ -1,7 +1,14 @@
 .timeline {
   display: block;
+  position: absolute;
+
+  /* Inset is used to overflow drawing of the dots and text near the edge. We offset the position so
+  we can have a large canvas that takes up the same physical size. The extra 20px of height is 10+10
+  for that.*/
+  inset: -10px;
+  height: 620px;
+
   width: 100%;
-  height: 600px;
 
   &:focus {
     outline: none;
@@ -12,13 +19,16 @@
   display: grid;
   gap: 1rem;
   grid-template-columns: 1fr 15rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .timeline-wrapper {
-  overflow: auto;
-  margin: -10px;
   position: relative;
+
+  /* This timeline visually overflow a bit (the text and focus outline)--10 on each edge */
+  min-height: 620px;
+  margin-inline-end: -20px;
+  margin-block-end: -20px;
 }
 
 .timeline-message {

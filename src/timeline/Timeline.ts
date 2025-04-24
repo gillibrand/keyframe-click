@@ -136,7 +136,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       const newWidth = entry.borderBoxSize[0].inlineSize * scale;
       if (canvas.width === newWidth) return;
 
-      setUserPxWidth(newWidth / (100 * scale));
+      setUserPxWidth((newWidth - InsetX * 2 * scale) / (100 * scale));
       canvas.width = newWidth;
       // Need to reset DPI scale after each width change
       cx.scale(scale, scale);
@@ -319,7 +319,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     const p200 = asRealY(200);
     const pNeg100 = asRealY(-100);
+    // console.info(">>> pNeg100", pNeg100);
     const fullDiff = pNeg100 - p200;
+    // console.info(">>> fullDiff", fullDiff);
 
     _cx.fillStyle = Colors.White;
     _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiff);
@@ -382,16 +384,18 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _cx.font = "14px sans-serif ";
     _cx.fillStyle = Colors.Gray500;
 
+    const x = 20;
+
     for (let y = -100; y <= 200; y += 100) {
       const ry = asRealY(y);
       const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
       const r = _cx.measureText(text);
 
       _cx.fillStyle = Colors.White;
-      _cx.fillRect(10, ry - 4, r.width, 8);
+      _cx.fillRect(x, ry - 4, r.width, 8);
 
       _cx.fillStyle = Colors.Gray400;
-      _cx.fillText(text, 10, ry);
+      _cx.fillText(text, x, ry);
     }
   }
 

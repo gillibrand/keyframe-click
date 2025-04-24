@@ -311,11 +311,11 @@ function cacheSamples(layer: RealLayer) {
 
   if (layer.sampleCount <= 0) return samples;
 
-  const inc = 100 / layer.sampleCount;
+  const inc = 100 / (layer.sampleCount + 1);
 
   // We walk left to right over the entire user space. (Maybe calc real width and walk that?)
-  for (let x = 0; x < 101; x += inc) {
-    if (x > 100) x = 100;
+  for (let i = 1; i < layer.sampleCount + 1; i++) {
+    const x = i * inc;
 
     if (x < a.x) {
       // Haven't hit a curve yet, so skip this dot

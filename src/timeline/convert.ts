@@ -19,8 +19,8 @@ export function setUserPxWidth(w: number) {
 
 // Edges in real px that we inset the visible canvas. Allows for dots to appear to overflow the
 // canvas a bit.
-export const InsetX = 0;
-export const InsetY = 0;
+export const InsetX = 10;
+export const InsetY = 10;
 
 // Offset in real px in order for the 0,0 origin to it in a logical place for user dots.
 export const OffsetX = 0 + InsetX;

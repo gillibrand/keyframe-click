@@ -404,17 +404,16 @@ function App() {
           </MenuProvider>
 
           <div className="inspector-sidebar ">
-            <div className="relative">
+            <div className="timeline-wrapper">
               {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
 
               <canvas
-                // TODO: add 20px or so insets back
+                className={"timeline " + (isAdding ? "is-adding" : "")}
                 width={900}
-                height={600}
+                height={620}
                 id="canvas"
                 ref={canvasRef}
                 tabIndex={0}
-                className={"timeline " + (isAdding ? "is-adding" : "")}
               />
             </div>
 
