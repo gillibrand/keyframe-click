@@ -115,7 +115,7 @@ export function findYForX(
   return null;
 }
 
-export function findYForXInCurve(x: number, curves: RealDot[], tolerance = 1e-6, maxIterations = 100) {
+export function findYForXInCurve(x: number, curves: UserDot[], tolerance = 1e-6, maxIterations = 100) {
   let i = 0;
   let j = 0;
   for (i = 1; i < curves.length; i++) {

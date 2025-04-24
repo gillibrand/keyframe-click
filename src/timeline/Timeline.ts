@@ -5,30 +5,27 @@ import {
   asRealPoint,
   asRealX,
   asRealY,
-  asUserDot,
   asUserX,
   asUserY,
   InsetX,
   InsetY,
   OffsetX,
   OffsetY,
-  getScaleX,
-  ScaleY,
-  setScaleX,
+  setUserPxWidth,
 } from "./convert";
 import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, diamond, ex, willDraw } from "./drawing";
 import { Layers } from "./Layers";
-import { diffPt, findYForXInCurve, nearPt, Point, RealDot, togglePt, UserDot } from "./point";
+import { diffPt, findYForXInCurve, nearPt, Point, togglePt, UserDot } from "./point";
 
 type DraggingPoint = {
-  point: RealDot;
+  point: UserDot;
   minX: number;
   maxX: number;
 };
 
 type DraggingHandle = {
-  point: RealDot;
+  point: UserDot;
   handle: Point;
   otherHandle: Point;
 };
@@ -40,7 +37,7 @@ function createThreshold(origin: Point, threshold: number) {
 
   return (e: MouseEvent) => {
     if (!passed) {
-      if (!nearPt(origin, e.offsetX, e.offsetY, threshold)) {
+      if (!nearPt(origin, asUserX(e.offsetX), asUserY(e.offsetY), threshold)) {
         passed = true;
       }
     }
@@ -101,7 +98,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   let _snapToGrid = true;
   let _labelYAxis = true;
 
-  let _addingAtPoint: Point | null = null;
+  let _addingAtUserPoint: Point | null = null;
   let _selectedIndex: number | null = null;
   let _dragging: Dragging | null = null;
 
@@ -139,7 +136,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       const newWidth = entry.borderBoxSize[0].inlineSize * scale;
       if (canvas.width === newWidth) return;
 
-      setScaleX(newWidth / (100 * scale));
+      setUserPxWidth(newWidth / (100 * scale));
       canvas.width = newWidth;
       // Need to reset DPI scale after each width change
       cx.scale(scale, scale);
@@ -149,7 +146,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     new ResizeObserver(onResize).observe(canvas);
   }
 
-  function cloneSelectedDot(): RealDot | null {
+  function cloneSelectedDot(): UserDot | null {
     // XXX: shallow clone. Good enough for React to notice a diff
     const dots = _layers.getDots();
     if (_selectedIndex === null || _selectedIndex >= dots.length) {
@@ -161,8 +158,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function getSelectedDot(): UserDot | null {
-    const clone = cloneSelectedDot();
-    return clone === null ? null : asUserDot(clone);
+    return cloneSelectedDot();
   }
 
   function didDraw() {
@@ -177,11 +173,11 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function onMouseDown(e: MouseEvent) {
-    if (_addingAtPoint !== null) return;
+    if (_addingAtUserPoint !== null) return;
 
     _dragging = null;
-    const x = e.offsetX;
-    const y = e.offsetY;
+    const x = asUserX(e.offsetX);
+    const y = asUserY(e.offsetY);
 
     const isConvertClick = e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey;
     let newSelected: number | null = null;
@@ -207,8 +203,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
           const p = dots[i];
           if (nearPt(p, x, y)) {
             newSelected = i;
-            const maxX = dots[i + 1] ? dots[i + 1].x - getScaleX() : width();
-            const minX = i > 0 ? dots[i - 1].x + getScaleX() : 0;
+            const maxX = dots[i + 1] ? dots[i + 1].x : width();
+            const minX = i > 0 ? dots[i - 1].x : 0;
             _dragging = { point: p, maxX, minX };
             break;
           }
@@ -249,9 +245,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     const rect = _canvas.getBoundingClientRect();
 
-    let x = Math.max(InsetX, Math.min(e.pageX - rect.x, width() - InsetX));
-    const y = Math.max(InsetY, Math.min(e.pageY - rect.y, height() - InsetY));
-
+    let x = asUserX(Math.max(InsetX, Math.min(e.pageX - rect.x, width() - InsetX)));
+    const y = asUserY(Math.max(InsetY, Math.min(e.pageY - rect.y, height() - InsetY)));
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
     } else {
@@ -273,25 +268,22 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     draw();
   }
 
-  function moveDot(d: RealDot, toX: number, toY: number) {
+  function moveDot(d: UserDot, toUserX: number, toUserY: number) {
     const origin = { ...d };
 
     if (_snapToGrid) {
-      const toUserX = Math.round(asUserX(toX));
-      const toUserY = Math.round(asUserY(toY));
+      toUserX = Math.round(toUserX);
+      toUserY = Math.round(toUserY);
 
-      const fromUserX = Math.round(asUserX(d.x));
-      const fromUserY = Math.round(asUserY(d.y));
+      const fromUserX = Math.round(d.x);
+      const fromUserY = Math.round(d.y);
 
-      // bail if no real change
       if (toUserX === fromUserX && toUserY === fromUserY) return;
-      toX = asRealX(toUserX);
-      toY = asRealY(toUserY);
     }
 
     // move point
-    d.x = toX;
-    d.y = toY;
+    d.x = toUserX;
+    d.y = toUserY;
 
     // move handles
     const diffPoint = diffPt(d, origin);
@@ -308,7 +300,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function startDrag(x: number, y: number) {
-    isPastThreshold = createThreshold({ x, y }, 2);
+    isPastThreshold = createThreshold({ x, y }, 1);
     document.addEventListener("mousemove", onMouseMoveDrag);
     document.addEventListener("mouseup", onMouseUpDrag);
   }
@@ -391,15 +383,15 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _cx.fillStyle = Colors.Gray500;
 
     for (let y = -100; y <= 200; y += 100) {
-      const tp = asRealPoint({ x: 1.5, y });
+      const ry = asRealY(y);
       const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
       const r = _cx.measureText(text);
 
       _cx.fillStyle = Colors.White;
-      _cx.fillRect(tp.x, tp.y - 4, r.width, 8);
+      _cx.fillRect(10, ry - 4, r.width, 8);
 
       _cx.fillStyle = Colors.Gray400;
-      _cx.fillText(text, tp.x, tp.y);
+      _cx.fillText(text, 10, ry);
     }
   }
 
@@ -410,7 +402,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _cx.lineWidth = 1;
     _cx.setLineDash([]);
 
-    const samples = _layers.getSamples();
+    const samples = _layers.getSamples().map((s) => asRealPoint(s));
 
     for (let i = 0; i < samples.length; i++) {
       const s = samples[i];
@@ -437,27 +429,27 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     }
 
     _cx.lineTo(width() - OffsetX, OffsetY);
-    // _cx.lineTo(OffsetX, OffsetY);
     _cx.fillStyle = Colors[color];
     _cx.globalAlpha = 0.1;
     _cx.fill();
   }
 
   function drawAddMarker() {
-    if (_addingAtPoint === null) return;
+    if (_addingAtUserPoint === null) return;
 
     _cx.strokeStyle = Colors.Blue;
 
     const dots = _layers.getDots();
-    let y = findYForXInCurve(_addingAtPoint.x, dots);
-    if (y === null) y = _addingAtPoint.y;
+    let y = findYForXInCurve(_addingAtUserPoint.x, dots);
+    if (y === null) y = _addingAtUserPoint.y;
 
     _cx.beginPath();
-    _cx.moveTo(_addingAtPoint.x, InsetX);
-    _cx.lineTo(_addingAtPoint.x, height() - InsetX);
+    const realX = asRealX(_addingAtUserPoint.x);
+    _cx.moveTo(realX, InsetX);
+    _cx.lineTo(realX, height() - InsetX);
     _cx.stroke();
 
-    bullsEye({ x: _addingAtPoint.x, y }, _cx);
+    bullsEye({ x: realX, y: asRealY(y) }, _cx);
   }
 
   /**
@@ -488,20 +480,20 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
    * dragged more easily near the edges.
    */
   function clipTimeline() {
-    return;
+    // return;
     _cx.beginPath();
     _cx.rect(InsetX, InsetY, width() - 2 * InsetX, height() - 2 * InsetY);
     _cx.clip();
   }
 
-  function drawCurveForDots(dots: RealDot[], lineWidth: number, color: ColorName) {
+  function drawCurveForDots(dots: UserDot[], lineWidth: number, color: ColorName) {
     if (dots.length === 0) return;
 
     _cx.strokeStyle = Colors[color];
 
     const origin = dots[0];
     _cx.beginPath();
-    _cx.moveTo(origin.x, origin.y);
+    _cx.moveTo(asRealX(origin.x), asRealY(origin.y));
 
     for (let i = 1; i < dots.length; i++) {
       const pp = dots[i - 1];
@@ -509,7 +501,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
       const cp1 = pp.type === "square" ? pp : pp.h2;
       const cp2 = p.type === "square" ? p : p.h1;
-      _cx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y);
+      _cx.bezierCurveTo(asRealX(cp1.x), asRealY(cp1.y), asRealX(cp2.x), asRealY(cp2.y), asRealX(p.x), asRealY(p.y));
     }
 
     _cx.setLineDash([]);
@@ -529,6 +521,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _cx.clearRect(0, 0, _canvas.width, _canvas.height);
 
     willDraw(_cx, () => {
+      // TODO: translate all drawing?
       _cx.translate(0.5, 0.5);
       drawGrid();
     });
@@ -556,7 +549,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     // draw the key points and their handles
     for (let i = 0; i < dots.length; i++) {
-      const p = dots[i];
+      const p = asRealDot(dots[i]);
 
       if (p.type === "round" && i === _selectedIndex) {
         const h1 = p.h1;
@@ -585,7 +578,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
       _cx.fillStyle = Colors.White;
       _cx.strokeStyle = Colors.Black;
-      if (_selectedIndex === i && _addingAtPoint === null) {
+      if (_selectedIndex === i && _addingAtUserPoint === null) {
         bullsEye(p, _cx);
       } else {
         circle(p, _cx);
@@ -597,13 +590,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function onKeyDown(e: KeyboardEvent) {
-    // if (selected === null) return;
-
-    // const amount = e.shiftKey ? 10 : 1;
-
     const dots = _layers.getDots();
-
-    const d = _selectedIndex === null ? null : dots[_selectedIndex];
+    const dot = _selectedIndex === null ? null : dots[_selectedIndex];
 
     switch (e.key) {
       case "Delete":
@@ -635,19 +623,19 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
         break;
 
       case "ArrowUp":
-        if (d) moveDot(d, d.x, d.y - ScaleY);
+        if (dot) moveDot(dot, dot.x, dot.y + 1);
         e.preventDefault();
         break;
       case "ArrowDown":
-        if (d) moveDot(d, d.x, d.y + ScaleY);
+        if (dot) moveDot(dot, dot.x, dot.y - 1);
         e.preventDefault();
         break;
       case "ArrowLeft":
-        if (d) moveDot(d, d.x - getScaleX(), d.y);
+        if (dot) moveDot(dot, dot.x - 1, dot.y);
         e.preventDefault();
         break;
       case "ArrowRight":
-        if (d) moveDot(d, d.x + getScaleX(), d.y);
+        if (dot) moveDot(dot, dot.x + 1, dot.y);
         e.preventDefault();
         break;
 
@@ -694,7 +682,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   function updateSelectedDot(d: UserDot) {
     if (_selectedIndex === null) return;
-    _layers.getDots()[_selectedIndex] = asRealDot(d);
+    _layers.getDots()[_selectedIndex] = d;
     draw();
   }
 
@@ -710,7 +698,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   function endAddingDot() {
     const oldState = _state;
-    _addingAtPoint = null;
+    _addingAtUserPoint = null;
     _state = "default";
 
     window.removeEventListener("keydown", onKeyDownCancel);
@@ -725,7 +713,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function onMouseMoveAdding(e: MouseEvent) {
-    _addingAtPoint = { x: e.offsetX, y: e.offsetY };
+    _addingAtUserPoint = { x: asUserX(e.offsetX), y: asUserY(e.offsetY) };
     draw(false);
   }
 
@@ -734,29 +722,29 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function onClickAdding() {
-    if (_addingAtPoint !== null) {
+    if (_addingAtUserPoint !== null) {
       const dots = _layers.getDots();
 
-      let x = _addingAtPoint.x;
+      let x = _addingAtUserPoint.x;
       let y = findYForXInCurve(x, dots);
-      if (y === null) y = _addingAtPoint.y;
+      if (y === null) y = _addingAtUserPoint.y;
 
       if (_snapToGrid) {
-        x = asRealX(Math.round(asUserX(x)));
-        y = asRealY(Math.round(asUserY(y)));
+        x = Math.round(x);
+        y = Math.round(y);
       }
 
-      const newDot: RealDot = {
+      const newDot: UserDot = {
         type: "square",
-        space: "real",
+        space: "user",
         x: x,
         y: y,
         h1: {
-          x: x - 10 * getScaleX(),
+          x: x - 10,
           y: y,
         },
         h2: {
-          x: x + 10 * getScaleX(),
+          x: x + 10,
           y: y,
         },
       };
@@ -796,7 +784,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     endAddingDot();
     _state = "adding";
 
-    _addingAtPoint = at ?? null;
+    _addingAtUserPoint = at ?? null;
 
     _canvas.addEventListener("mousemove", onMouseMoveAdding);
     _canvas.addEventListener("click", onClickAdding);

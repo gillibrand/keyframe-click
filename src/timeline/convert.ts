@@ -1,15 +1,20 @@
 import { Point, RealDot, UserDot } from "./point";
 
-// How many real px are required for a single user px
-let ScaleX = 9;
-export const ScaleY = 2;
+/** How many real px are required for a single user px. */
+let pxWidth = 9;
 
-export function setScaleX(x: number) {
-  ScaleX = x;
-}
+/** How many real px are required for a single user px. */
+export const PxHeight = 2;
 
-export function getScaleX() {
-  return ScaleX;
+/**
+ * Sets the width of a user px in real px. This is used to convert between user and real space. This must be set any
+ * time the canvas width changes. We essentially want 100 user px to be the same as the width of the canvas so that it
+ * stretches from 0 to 100 over time.
+ *
+ * @param w Width in real px of a single user px.
+ */
+export function setUserPxWidth(w: number) {
+  pxWidth = w;
 }
 
 // Edges in real px that we inset the visible canvas. Allows for dots to appear to overflow the
@@ -22,19 +27,19 @@ export const OffsetX = 0 + InsetX;
 export const OffsetY = 400 + InsetY;
 
 export function asRealPoint(user: Point): Point {
-  return { x: user.x * ScaleX + OffsetX, y: user.y * ScaleY * -1 + OffsetY };
+  return { x: user.x * pxWidth + OffsetX, y: user.y * PxHeight * -1 + OffsetY };
 }
 
 export function asUserPoint(real: Point) {
-  return { x: (real.x - OffsetX) / ScaleX, y: ((real.y - OffsetY) / ScaleY) * -1 };
+  return { x: (real.x - OffsetX) / pxWidth, y: ((real.y - OffsetY) / PxHeight) * -1 };
 }
 
 export function asRealDot(user: UserDot): RealDot {
   return {
     space: "real",
     type: user.type,
-    x: user.x * ScaleX + OffsetX,
-    y: user.y * ScaleY * -1 + OffsetY,
+    x: user.x * pxWidth + OffsetX,
+    y: user.y * PxHeight * -1 + OffsetY,
     h1: asRealPoint(user.h1),
     h2: asRealPoint(user.h2),
   };
@@ -43,8 +48,8 @@ export function asRealDot(user: UserDot): RealDot {
 export function asUserDot(rd: RealDot): UserDot {
   return {
     ...rd,
-    x: (rd.x - OffsetX) / ScaleX,
-    y: ((rd.y - OffsetY) / ScaleY) * -1,
+    x: (rd.x - OffsetX) / pxWidth,
+    y: ((rd.y - OffsetY) / PxHeight) * -1,
     space: "user",
     h1: asUserPoint(rd.h1),
     h2: asUserPoint(rd.h2),
@@ -52,17 +57,17 @@ export function asUserDot(rd: RealDot): UserDot {
 }
 
 export function asUserX(x: number): number {
-  return (x - OffsetX) / ScaleX;
+  return (x - OffsetX) / pxWidth;
 }
 
 export function asUserY(y: number): number {
-  return ((y - OffsetY) / ScaleY) * -1;
+  return ((y - OffsetY) / PxHeight) * -1;
 }
 
 export function asRealX(x: number): number {
-  return x * ScaleX + OffsetX;
+  return x * pxWidth + OffsetX;
 }
 
 export function asRealY(y: number): number {
-  return y * ScaleY * -1 + OffsetY;
+  return y * PxHeight * -1 + OffsetY;
 }

@@ -1,7 +1,6 @@
 import { Colors } from "@util/Colors";
-import { asRealX, asRealY, asUserPoint } from "./convert";
 import { CssInfos, CssProp } from "./CssInfo";
-import { findYForX, Point, RealDot } from "./point";
+import { findYForX, Point, UserDot } from "./point";
 
 /**
  * A single animatable property and it's complete state. A timeline is built of multiple property layers to produce the
@@ -9,7 +8,7 @@ import { findYForX, Point, RealDot } from "./point";
  */
 interface RealLayer {
   id: string;
-  dots: RealDot[];
+  dots: UserDot[];
 
   // Inspector
   cssProp: CssProp;
@@ -61,22 +60,22 @@ function newId() {
   return crypto.randomUUID();
 }
 
-function createDefaultDots(): RealDot[] {
+function createDefaultDots(): UserDot[] {
   return [
     {
-      space: "real",
-      x: asRealX(0),
-      y: asRealY(0),
-      h1: { x: asRealX(-10), y: asRealY(0) },
-      h2: { x: asRealX(10), y: asRealY(0) },
+      space: "user",
+      x: 0,
+      y: 0,
+      h1: { x: -10, y: 0 },
+      h2: { x: 10, y: 0 },
       type: "square",
     },
     {
-      space: "real",
-      x: asRealX(100),
-      y: asRealY(100),
-      h1: { x: asRealX(90), y: asRealY(100) },
-      h2: { x: asRealX(110), y: asRealY(100) },
+      space: "user",
+      x: 100,
+      y: 100,
+      h1: { x: 90, y: 100 },
+      h2: { x: 110, y: 100 },
       type: "square",
     },
   ];
@@ -153,7 +152,7 @@ export class Layers {
 
       for (let j = 0; j < samples.length; j++) {
         const sample = samples[j];
-        userSamples.push(asUserPoint(sample));
+        userSamples.push(sample);
       }
 
       sampleLayers.push({
@@ -315,9 +314,8 @@ function cacheSamples(layer: RealLayer) {
   const inc = 100 / layer.sampleCount;
 
   // We walk left to right over the entire user space. (Maybe calc real width and walk that?)
-  for (let userX = 0; userX < 101; userX += inc) {
-    if (userX > 100) userX = 100;
-    const x = asRealX(userX);
+  for (let x = 0; x < 101; x += inc) {
+    if (x > 100) x = 100;
 
     if (x < a.x) {
       // Haven't hit a curve yet, so skip this dot
