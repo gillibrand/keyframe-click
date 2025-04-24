@@ -1,5 +1,8 @@
 .timeline {
   display: block;
+  width: 100%;
+  height: 600px;
+
   &:focus {
     outline: none;
   }
@@ -8,7 +11,7 @@
 .inspector-sidebar {
   display: grid;
   gap: 1rem;
-  grid-template-columns: 920px 1fr;
+  grid-template-columns: 1fr 15rem;
   align-items: start;
 }
 

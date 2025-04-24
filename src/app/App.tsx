@@ -403,12 +403,14 @@ function App() {
             </MenuButton>
           </MenuProvider>
 
-          <div className="inspector-sidebar">
-            <div className="timeline-wrapper">
+          <div className="inspector-sidebar ">
+            <div className="relative">
               {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
+
               <canvas
-                width={920}
-                height={620}
+                // TODO: add 20px or so insets back
+                width={900}
+                height={600}
                 id="canvas"
                 ref={canvasRef}
                 tabIndex={0}
