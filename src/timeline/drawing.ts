@@ -47,7 +47,7 @@ export function circle(p: Point, ctx: CanvasRenderingContext2D) {
   ctx.stroke();
 }
 
-export function bullsEye(p: Point, ctx: CanvasRenderingContext2D) {
+export function bullsEye(p: Point, focused: boolean, ctx: CanvasRenderingContext2D) {
   willDraw(ctx, () => {
     const x = center(p.x);
     const y = center(p.y);
@@ -58,7 +58,7 @@ export function bullsEye(p: Point, ctx: CanvasRenderingContext2D) {
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = Colors.Blue;
+    ctx.fillStyle = focused ? Colors.Blue : Colors.Gray400;
     ctx.beginPath();
     ctx.arc(x, y, 4, 0, 2 * Math.PI);
     ctx.fill();

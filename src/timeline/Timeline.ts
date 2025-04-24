@@ -5,6 +5,7 @@ import {
   asRealPoint,
   asRealX,
   asRealY,
+  asUserPoint,
   asUserX,
   asUserY,
   InsetX,
@@ -311,6 +312,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _dragging = null;
   }
 
+  /**
+   * Draw the border and grid behind the graph. Includes the focus ring if the canvas is focused. The border is inset by
+   * the... inset in the `convert` module.
+   */
   function drawGrid() {
     _cx.lineWidth = 1;
 
@@ -319,19 +324,14 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     const p200 = asRealY(200);
     const pNeg100 = asRealY(-100);
-    // console.info(">>> pNeg100", pNeg100);
     const fullDiff = pNeg100 - p200;
-    // console.info(">>> fullDiff", fullDiff);
 
     _cx.fillStyle = Colors.White;
     _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiff);
 
-    // below 100% gray
-    // _cx.fillRect(InsetX, py0, Width - 2 * InsetX, ph100);
-
     // vertical lines
     for (let x = 0; x <= 100; x += 10) {
-      _cx.strokeStyle = x % 50 === 0 ? Colors.Gray300 : Colors.Gray200;
+      _cx.strokeStyle = x % 50 === 0 ? Colors.Gray200 : Colors.Gray100;
 
       const px = asRealX(x);
       _cx.beginPath();
@@ -348,11 +348,11 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
       if (y === 0) {
         // zero baseline
-        _cx.strokeStyle = Colors.Gray500;
-      } else if (y % 100 === 0) {
         _cx.strokeStyle = Colors.Gray400;
-      } else {
+      } else if (y % 100 === 0) {
         _cx.strokeStyle = Colors.Gray200;
+      } else {
+        _cx.strokeStyle = Colors.Gray100;
       }
 
       _cx.lineTo(width() - InsetX, py);
@@ -375,6 +375,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     drawAxisText();
   }
 
+  /**
+   * Draws the Y axis labels right on the grid to save space, plus it looks neat and they are not that important. There
+   * is a setting to toggle them off.
+   */
   function drawAxisText() {
     if (!_labelYAxis) return;
 
@@ -453,7 +457,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _cx.lineTo(realX, height() - InsetX);
     _cx.stroke();
 
-    bullsEye({ x: realX, y: asRealY(y) }, _cx);
+    bullsEye({ x: realX, y: asRealY(y) }, true, _cx);
   }
 
   /**
@@ -551,6 +555,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       drawSamples(color);
     });
 
+    const isFocused = document.activeElement === _canvas;
+
     // draw the key points and their handles
     for (let i = 0; i < dots.length; i++) {
       const p = asRealDot(dots[i]);
@@ -583,7 +589,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.fillStyle = Colors.White;
       _cx.strokeStyle = Colors.Black;
       if (_selectedIndex === i && _addingAtUserPoint === null) {
-        bullsEye(p, _cx);
+        bullsEye(p, isFocused, _cx);
       } else {
         circle(p, _cx);
       }
@@ -788,7 +794,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     endAddingDot();
     _state = "adding";
 
-    _addingAtUserPoint = at ?? null;
+    _addingAtUserPoint = at ? asUserPoint(at) : null;
 
     _canvas.addEventListener("mousemove", onMouseMoveAdding);
     _canvas.addEventListener("click", onClickAdding);
