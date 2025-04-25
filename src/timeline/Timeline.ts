@@ -11,8 +11,10 @@ import {
   InsetX,
   InsetY,
   OffsetX,
-  OffsetY,
+  offsetY,
   setUserPxWidth,
+  setMaxY as convertSetMaxY,
+  getMaxY,
 } from "./convert";
 import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, diamond, ex, willDraw } from "./drawing";
@@ -54,6 +56,7 @@ export interface Timeline {
 
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
+  setMaxY: (y: number) => void;
 
   set onDraw(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
@@ -135,10 +138,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       if (!entry) return;
 
       const newWidth = entry.borderBoxSize[0].inlineSize * scale;
+      // const newHeight = entry.borderBoxSize[0].blockSize * scale;
       if (canvas.width === newWidth) return;
 
       setUserPxWidth((newWidth - InsetX * 2 * scale) / (100 * scale));
       canvas.width = newWidth;
+      // canvas.height = newHeight;
       // Need to reset DPI scale after each width change
       cx.scale(scale, scale);
       drawNow(false);
@@ -322,9 +327,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     // above 100% gray
     _cx.fillStyle = Colors.Gray50;
 
-    const p200 = asRealY(200);
-    const pNeg100 = asRealY(-100);
-    const fullDiff = pNeg100 - p200;
+    const rMax = asRealY(getMaxY());
+    const rMin = asRealY(-100);
+    const fullDiff = rMin - rMax;
 
     _cx.fillStyle = Colors.White;
     _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiff);
@@ -341,7 +346,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     }
 
     // horizontal lines
-    for (let y = -100; y <= 200; y += 10) {
+    for (let y = -100; y <= getMaxY(); y += 10) {
       _cx.beginPath();
       const py = asRealY(y);
       _cx.moveTo(InsetX, py);
@@ -390,7 +395,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     const x = 20;
 
-    for (let y = -100; y <= 200; y += 100) {
+    for (let y = -100; y <= getMaxY(); y += 100) {
       const ry = asRealY(y);
       const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
       const r = _cx.measureText(text);
@@ -422,7 +427,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
         ex(s, _cx);
         _cx.setLineDash([5, 5]);
         _cx.beginPath();
-        _cx.moveTo(s.x, OffsetY);
+        _cx.moveTo(s.x, offsetY());
         _cx.lineTo(s.x, s.y);
         _cx.stroke();
       });
@@ -430,13 +435,13 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     // Fill the sample area
     _cx.beginPath();
-    _cx.moveTo(OffsetX, OffsetY);
+    _cx.moveTo(OffsetX, offsetY());
     for (let i = 0; i < samples.length; i++) {
       const s = samples[i];
       _cx.lineTo(s.x, s.y);
     }
 
-    _cx.lineTo(width() - OffsetX, OffsetY);
+    _cx.lineTo(width() - OffsetX, offsetY());
     _cx.fillStyle = Colors[color];
     _cx.globalAlpha = 0.1;
     _cx.fill();
@@ -705,6 +710,20 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     draw();
   }
 
+  function setMaxY(y: number) {
+    convertSetMaxY(y);
+
+    const diff = y - -100;
+    console.info(">>> diff", diff);
+    _canvas.style.height = `${diff * 2 + 20}px`;
+    const scale = window.devicePixelRatio || 1;
+
+    _canvas.height = (diff * 2 + 20) * scale;
+    _canvas.getContext("2d")?.scale(2, 2);
+
+    draw();
+  }
+
   function endAddingDot() {
     const oldState = _state;
     _addingAtUserPoint = null;
@@ -844,6 +863,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     setSnapToGrid,
     setLabelYAxis,
+    setMaxY,
 
     draw,
   };

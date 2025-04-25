@@ -16,6 +16,7 @@ import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
 import { genCssKeyframeText } from "./output";
+import { Segmented, SegmentedButton } from "@components/Segmented";
 
 function App() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -370,10 +371,20 @@ function App() {
     },
     [layers]
   );
+
+  const [maxY, setMaxY] = useState(200);
+  useEffect(() => {
+    timelineRef.current?.setMaxY(maxY);
+  }, [maxY]);
+
   return (
     <>
       {/* 100 x 300 logical | 100% x (200% over 100%) */}
 
+      <Segmented label="Max value" checkedValue={maxY} onChange={(val) => setMaxY(val)}>
+        <SegmentedButton value={200}>200%</SegmentedButton>
+        <SegmentedButton value={300}>300%</SegmentedButton>
+      </Segmented>
       <div className="big-row">
         <div className="container relative stack">
           <RadioTabGroup

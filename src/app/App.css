@@ -6,7 +6,9 @@
   we can have a large canvas that takes up the same physical size. The extra 20px of height is 10+10
   for that.*/
   inset: -10px;
-  height: 620px;
+
+  /* NEED THIS?  */
+  /* height: 620px; */
 
   width: 100%;
 

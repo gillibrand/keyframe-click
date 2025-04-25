@@ -22,16 +22,30 @@ export function setUserPxWidth(w: number) {
 export const InsetX = 10;
 export const InsetY = 10;
 
+let maxY = 200;
+
+export function setMaxY(y: number) {
+  maxY = y;
+}
+
+export function getMaxY() {
+  return maxY;
+}
+
+export function offsetY() {
+  return maxY * PxHeight + InsetY;
+}
+
 // Offset in real px in order for the 0,0 origin to it in a logical place for user dots.
 export const OffsetX = 0 + InsetX;
-export const OffsetY = 400 + InsetY;
+// export const OffsetY = 400 + InsetY;
 
 export function asRealPoint(user: Point): Point {
-  return { x: user.x * pxWidth + OffsetX, y: user.y * PxHeight * -1 + OffsetY };
+  return { x: user.x * pxWidth + OffsetX, y: user.y * PxHeight * -1 + offsetY() };
 }
 
 export function asUserPoint(real: Point) {
-  return { x: (real.x - OffsetX) / pxWidth, y: ((real.y - OffsetY) / PxHeight) * -1 };
+  return { x: (real.x - OffsetX) / pxWidth, y: ((real.y - offsetY()) / PxHeight) * -1 };
 }
 
 export function asRealDot(user: UserDot): RealDot {
@@ -39,7 +53,7 @@ export function asRealDot(user: UserDot): RealDot {
     space: "real",
     type: user.type,
     x: user.x * pxWidth + OffsetX,
-    y: user.y * PxHeight * -1 + OffsetY,
+    y: user.y * PxHeight * -1 + offsetY(),
     h1: asRealPoint(user.h1),
     h2: asRealPoint(user.h2),
   };
@@ -49,7 +63,7 @@ export function asUserDot(rd: RealDot): UserDot {
   return {
     ...rd,
     x: (rd.x - OffsetX) / pxWidth,
-    y: ((rd.y - OffsetY) / PxHeight) * -1,
+    y: ((rd.y - offsetY()) / PxHeight) * -1,
     space: "user",
     h1: asUserPoint(rd.h1),
     h2: asUserPoint(rd.h2),
@@ -61,7 +75,7 @@ export function asUserX(x: number): number {
 }
 
 export function asUserY(y: number): number {
-  return ((y - OffsetY) / PxHeight) * -1;
+  return ((y - offsetY()) / PxHeight) * -1;
 }
 
 export function asRealX(x: number): number {
@@ -69,5 +83,5 @@ export function asRealX(x: number): number {
 }
 
 export function asRealY(y: number): number {
-  return y * PxHeight * -1 + OffsetY;
+  return y * PxHeight * -1 + offsetY();
 }
