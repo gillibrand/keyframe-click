@@ -4,7 +4,7 @@ import { Point, RealDot, UserDot } from "./point";
 let pxWidth = 9;
 
 /** How many real px are required for a single user px. */
-export const PxHeight = 2;
+export const PxHeight = 1.5;
 
 /**
  * Sets the width of a user px in real px. This is used to convert between user and real space. This must be set any
@@ -22,9 +22,12 @@ export function setUserPxWidth(w: number) {
 export const InsetX = 10;
 export const InsetY = 10;
 
+export const MaxY = 210;
+export const MinY = -110;
+
 // Offset in real px in order for the 0,0 origin to it in a logical place for user dots.
 export const OffsetX = 0 + InsetX;
-export const OffsetY = 400 + InsetY;
+export const OffsetY = MaxY * PxHeight + InsetY;
 
 export function asRealPoint(user: Point): Point {
   return { x: user.x * pxWidth + OffsetX, y: user.y * PxHeight * -1 + OffsetY };

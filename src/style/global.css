@@ -5,6 +5,7 @@
 }
 
 :root {
+  font-size: 87.5%;
   --sz-base: 1rem; /* 16px */
   --sz-h1: 2rem; /* 32px */
   --sz-h2: 1.75rem; /* 28px */
@@ -55,12 +56,15 @@ body {
   background-color: #f9f9f9;
 }
 
-body,
-input,
-textarea,
-select {
+body {
   font-size: var(--sz-base);
   color: var(--c-body);
+}
+
+input,
+select,
+button {
+  font-size: var(--sz-small);
 }
 
 h1,
@@ -75,6 +79,7 @@ h2 {
 
 body,
 input,
+select,
 button {
   font-family:
     "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;

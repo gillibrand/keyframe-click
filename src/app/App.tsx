@@ -410,7 +410,7 @@ function App() {
               <canvas
                 className={"timeline " + (isAdding ? "is-adding" : "")}
                 width={900}
-                height={620}
+                height={500}
                 id="canvas"
                 ref={canvasRef}
                 tabIndex={0}

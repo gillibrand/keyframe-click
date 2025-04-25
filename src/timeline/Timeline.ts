@@ -12,6 +12,8 @@ import {
   InsetY,
   OffsetX,
   OffsetY,
+  MaxY,
+  MinY,
   setUserPxWidth,
 } from "./convert";
 import { CssInfos } from "./CssInfo";
@@ -322,12 +324,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     // above 100% gray
     _cx.fillStyle = Colors.Gray50;
 
-    const p200 = asRealY(200);
-    const pNeg100 = asRealY(-100);
-    const fullDiff = pNeg100 - p200;
+    const fullDiffReal = asRealY(MinY) - asRealY(MaxY);
 
     _cx.fillStyle = Colors.White;
-    _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiff);
+    _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiffReal);
 
     // vertical lines
     for (let x = 0; x <= 100; x += 10) {
@@ -340,17 +340,16 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.stroke();
     }
 
+    const minY100 = Math.floor(MinY / 100) * 100;
+
     // horizontal lines
-    for (let y = -100; y <= 200; y += 10) {
+    for (let y = minY100; y <= MaxY; y += 10) {
       _cx.beginPath();
       const py = asRealY(y);
       _cx.moveTo(InsetX, py);
 
-      if (y === 0) {
-        // zero baseline
-        _cx.strokeStyle = Colors.Gray400;
-      } else if (y % 100 === 0) {
-        _cx.strokeStyle = Colors.Gray200;
+      if (y % 100 === 0) {
+        _cx.strokeStyle = Colors.Gray300;
       } else {
         _cx.strokeStyle = Colors.Gray100;
       }
@@ -369,7 +368,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.strokeStyle = Colors.Gray900;
     }
 
-    _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX, fullDiff);
+    _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX, fullDiffReal);
     _cx.lineWidth = 1;
 
     drawAxisText();
@@ -390,7 +389,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     const x = 20;
 
-    for (let y = -100; y <= 200; y += 100) {
+    const minY100 = Math.floor(MinY / 100) * 100;
+    for (let y = minY100; y <= MaxY; y += 100) {
       const ry = asRealY(y);
       const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
       const r = _cx.measureText(text);
