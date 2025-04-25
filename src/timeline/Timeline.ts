@@ -665,7 +665,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     draw();
   }
 
-  // Always listen for mouse down
   _canvas.addEventListener("focus", onFocus);
   _canvas.addEventListener("blur", onBlur);
   _canvas.addEventListener("mousedown", onMouseDown);
@@ -676,8 +675,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     _canvas.removeEventListener("keydown", onKeyDown);
     _canvas.removeEventListener("mousedown", onMouseDown);
-    _canvas.addEventListener("focus", onFocus);
-    _canvas.addEventListener("blur", onBlur);
+    _canvas.removeEventListener("focus", onFocus);
+    _canvas.removeEventListener("blur", onBlur);
 
     _canvas.removeEventListener("mousemove", onMouseMoveDrag);
     _canvas.removeEventListener("mouseup", onMouseUpDrag);
