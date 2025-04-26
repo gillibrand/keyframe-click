@@ -100,20 +100,23 @@ export function PreviewInspector({
         </div>
       </label>
 
-      <Segmented label="Speed" onChange={onChangeSpeed} checkedValue={speed}>
-        <SegmentedButton value={1}>
-          100<span className="text-small">%</span>
-        </SegmentedButton>
-        <SegmentedButton value={0.5}>
-          50<span className="text-small">%</span>
-        </SegmentedButton>
-        <SegmentedButton value={0.25}>
-          25<span className="text-small">%</span>
-        </SegmentedButton>
-        <SegmentedButton value={0.1}>
-          10<span className="text-small">%</span>
-        </SegmentedButton>
-      </Segmented>
+      <label className="stacked-label">
+        <span>Speed</span>
+        <Segmented label="Speed" onChange={onChangeSpeed} checkedValue={speed}>
+          <SegmentedButton value={1}>
+            100<span className="text-small">%</span>
+          </SegmentedButton>
+          <SegmentedButton value={0.5}>
+            50<span className="text-small">%</span>
+          </SegmentedButton>
+          <SegmentedButton value={0.25}>
+            25<span className="text-small">%</span>
+          </SegmentedButton>
+          <SegmentedButton value={0.1}>
+            10<span className="text-small">%</span>
+          </SegmentedButton>
+        </Segmented>
+      </label>
     </aside>
   );
 }
