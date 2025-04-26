@@ -372,90 +372,92 @@ function App() {
   );
   return (
     <>
-      {/* 100 x 300 logical | 100% x (200% over 100%) */}
+      <div className="h-screen [ flex flex-col ] [ stack pb-4 ]">
+        {/* TABS and SETTINGS at top */}
+        <div className="row">
+          <div className="relative">
+            <RadioTabGroup
+              tabs={tabs}
+              radioGroupName="property"
+              canAddNew={remainingCssProps.size > 0}
+              onAddNew={addNewTab}
+              onDelete={deleteTab}
+              canDelete={layers.size > 1 ? canDeleteTab : undefined}
+              checkedId={layers.getActiveLayer().id}
+              onChange={changeTab}
+            />
 
-      <div className="big-row">
-        <div className="container relative stack">
-          <RadioTabGroup
-            tabs={tabs}
-            radioGroupName="property"
-            canAddNew={remainingCssProps.size > 0}
-            onAddNew={addNewTab}
-            onDelete={deleteTab}
-            canDelete={layers.size > 1 ? canDeleteTab : undefined}
-            checkedId={layers.getActiveLayer().id}
-            onChange={changeTab}
-          />
+            <MenuProvider items={items}>
+              <MenuButton
+                style={{
+                  position: "absolute",
+                  top: "-4px",
+                  right: "0",
+                  zIndex: 1,
+                  color: "var(--c-gray-600)",
+                }}
+                title="Settings"
+              >
+                <Gear />
+              </MenuButton>
+            </MenuProvider>
+          </div>
+        </div>
 
-          {/* Setting menu. Probably should move this somewhere else later. */}
-          <MenuProvider items={items}>
-            <MenuButton
-              style={{
-                position: "absolute",
-                top: "-4px",
-                right: "0",
-                zIndex: 1,
-                color: "var(--c-gray-600)",
-              }}
-              title="Settings"
-            >
-              <Gear />
-            </MenuButton>
-          </MenuProvider>
-
-          <div className="inspector-sidebar ">
-            <div className="timeline-wrapper">
+        {/* TIMELINE ROW */}
+        <div className="[ gradient-row ] [ grow ] [ flex flex-col ]">
+          <div className="inspector-sidebar grow">
+            <div className="timeline-wrapper ">
               {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
 
               <canvas
                 className={"timeline " + (isAdding ? "is-adding" : "")}
-                width={900}
-                height={500}
+                width={1}
+                height={1}
                 id="canvas"
                 ref={canvasRef}
                 tabIndex={0}
               />
             </div>
 
-            <TimelineInspector
-              cssProp={layers.getCssProp()}
-              onChangeCssProp={setCssProp}
-              sampleCount={layers.getSampleCount()}
-              onChangeSampleCount={setSampleCount}
-              isFlipped={layers.getIsFlipped()}
-              onChangeIsFlipped={setIsFlipped}
-              selected={selectedDot}
-              onChangeSelectedProps={handleInspectorSelectedChange}
-              onClickAdd={handleClickAdd}
-              onClickDelete={handleClickDelete}
-              isAdding={isAdding}
-              disabledCssProps={disabledCssProps}
-            />
+            {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
+            <div>
+              <TimelineInspector
+                cssProp={layers.getCssProp()}
+                onChangeCssProp={setCssProp}
+                sampleCount={layers.getSampleCount()}
+                onChangeSampleCount={setSampleCount}
+                isFlipped={layers.getIsFlipped()}
+                onChangeIsFlipped={setIsFlipped}
+                selected={selectedDot}
+                onChangeSelectedProps={handleInspectorSelectedChange}
+                onClickAdd={handleClickAdd}
+                onClickDelete={handleClickDelete}
+                isAdding={isAdding}
+                disabledCssProps={disabledCssProps}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="big-row big-row--alt">
-        <div className="container">
+        {/* PREVIEW ROW */}
+        <div className="gradient-row">
           <aside className="inspector-sidebar">
-            <div className="col-2 gap-4">
-              <code>
-                <pre>{keyframeText}</pre>
-              </code>
-              {preview}
-            </div>
+            {preview}
 
-            <PreviewInspector
-              isPlaying={isPlaying}
-              duration={duration}
-              onChangeDuration={setDuration}
-              isRepeat={isRepeat}
-              onChangeIsRepeat={setIsRepeat}
-              onClickPlay={playPreview}
-              onClickStop={stopPreview}
-              speed={speed}
-              onChangeSpeed={setSpeed}
-            />
+            <div>
+              <PreviewInspector
+                isPlaying={isPlaying}
+                duration={duration}
+                onChangeDuration={setDuration}
+                isRepeat={isRepeat}
+                onChangeIsRepeat={setIsRepeat}
+                onClickPlay={playPreview}
+                onClickStop={stopPreview}
+                speed={speed}
+                onChangeSpeed={setSpeed}
+              />
+            </div>
           </aside>
         </div>
       </div>

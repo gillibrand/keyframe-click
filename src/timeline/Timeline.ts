@@ -11,10 +11,11 @@ import {
   InsetX,
   InsetY,
   OffsetX,
-  OffsetY,
+  offsetY,
   MaxY,
   MinY,
   setUserPxWidth,
+  setUserPxHeight,
 } from "./convert";
 import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, diamond, ex, willDraw } from "./drawing";
@@ -137,14 +138,18 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       if (!entry) return;
 
       const newWidth = entry.borderBoxSize[0].inlineSize * scale;
-      if (canvas.width === newWidth) return;
+      const newHeight = entry.borderBoxSize[0].blockSize * scale;
+      // if (canvas.width === newWidth) return;
 
       setUserPxWidth((newWidth - InsetX * 2 * scale) / (100 * scale));
+      setUserPxHeight((newHeight - InsetY * 2 * scale) / (320 * scale));
+
       canvas.width = newWidth;
+      canvas.height = newHeight;
       // Need to reset DPI scale after each width change
       cx.scale(scale, scale);
       drawNow(false);
-    }, 32);
+    }, 50);
 
     new ResizeObserver(onResize).observe(canvas);
   }
@@ -324,7 +329,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     // above 100% gray
     _cx.fillStyle = Colors.Gray50;
 
-    const fullDiffReal = asRealY(MinY) - asRealY(MaxY);
+    const fullDiffReal = asRealY(MinY) - asRealY(MaxY) - 1;
 
     _cx.fillStyle = Colors.White;
     _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiffReal);
@@ -368,7 +373,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.strokeStyle = Colors.Gray900;
     }
 
-    _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX, fullDiffReal);
+    _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX - 1, fullDiffReal);
     _cx.lineWidth = 1;
 
     drawAxisText();
@@ -422,7 +427,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
         ex(s, _cx);
         _cx.setLineDash([5, 5]);
         _cx.beginPath();
-        _cx.moveTo(s.x, OffsetY);
+        _cx.moveTo(s.x, offsetY());
         _cx.lineTo(s.x, s.y);
         _cx.stroke();
       });
@@ -430,13 +435,13 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     // Fill the sample area
     _cx.beginPath();
-    _cx.moveTo(OffsetX, OffsetY);
+    _cx.moveTo(OffsetX, offsetY());
     for (let i = 0; i < samples.length; i++) {
       const s = samples[i];
       _cx.lineTo(s.x, s.y);
     }
 
-    _cx.lineTo(width() - OffsetX, OffsetY);
+    _cx.lineTo(width() - OffsetX, offsetY());
     _cx.fillStyle = Colors[color];
     _cx.globalAlpha = 0.1;
     _cx.fill();
