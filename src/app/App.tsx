@@ -372,7 +372,7 @@ function App() {
   );
   return (
     <>
-      <div className="[ h-screen ] [ flex flex-col ] [ stack ]">
+      <div className="[ h-screen ] [ flex flex-col ] [ mt-4 stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
         <div className="row">
           <div className="relative">
