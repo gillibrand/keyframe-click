@@ -13,9 +13,11 @@ import { useSetting } from "./useSettings";
 import { MenuProvider } from "@components/menu/MenuContext";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import Gear from "@images/gear.svg?react";
+import Copy from "@images/copy.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
 import { genCssKeyframeText } from "./output";
+import { SplitButtons } from "@components/SplitButtons";
 
 function App() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -375,7 +377,7 @@ function App() {
       <div className="[ h-screen ] [ flex flex-col ] [ mt-4 stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
         <div className="row">
-          <div className="relative">
+          <div className="flex gap-4 items-center">
             <RadioTabGroup
               tabs={tabs}
               radioGroupName="property"
@@ -385,15 +387,13 @@ function App() {
               canDelete={layers.size > 1 ? canDeleteTab : undefined}
               checkedId={layers.getActiveLayer().id}
               onChange={changeTab}
+              className="grow"
             />
 
             <MenuProvider items={items}>
               <MenuButton
                 style={{
-                  position: "absolute",
-                  top: "-4px",
-                  right: "0",
-                  zIndex: 1,
+                  // TODO: standard icon colors
                   color: "var(--c-gray-600)",
                 }}
                 title="Settings"
@@ -401,6 +401,14 @@ function App() {
                 <Gear />
               </MenuButton>
             </MenuProvider>
+
+            <SplitButtons>
+              <button title="Set export options and copy">Export</button>
+              <button title="Copy with current export settings">
+                <Copy />
+                <span className="sr-only">Copy to clipboard with current settings</span>
+              </button>
+            </SplitButtons>
           </div>
         </div>
 

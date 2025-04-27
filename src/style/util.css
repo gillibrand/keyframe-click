@@ -82,6 +82,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   align-items: center;
 }
 
+.items-stretch {
+  align-items: stretch;
+}
+
 .content-end {
   justify-content: end;
 }

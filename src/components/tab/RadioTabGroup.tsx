@@ -4,6 +4,7 @@ import { useChildAnimator } from "@util/useChildAnimator";
 import { useCallback } from "react";
 import { RadioTab } from "./RadioTab";
 import "./tab.css";
+import cx from "classnames";
 
 export interface TabData {
   cssProp: CssProp;
@@ -19,6 +20,7 @@ interface Props {
   onAddNew: () => void;
   onChange: (id: string) => void;
   canDelete?: (id: string) => Promise<boolean>;
+  className?: string;
 }
 
 export function RadioTabGroup({
@@ -30,6 +32,7 @@ export function RadioTabGroup({
   checkedId,
   canDelete,
   onChange,
+  className,
 }: Props) {
   const { parentRef } = useChildAnimator<HTMLDivElement>("both");
 
@@ -56,7 +59,7 @@ export function RadioTabGroup({
   );
 
   return (
-    <div className="RadioTabGroup flex" ref={parentRef}>
+    <div className={cx("RadioTabGroup", "flex", className)} ref={parentRef}>
       {tabs.map((t) => (
         // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
         // so can shrink to 0 width
