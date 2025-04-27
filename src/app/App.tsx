@@ -372,7 +372,7 @@ function App() {
   );
   return (
     <>
-      <div className="h-screen [ flex flex-col ] [ stack mb-4 ]">
+      <div className="[ h-screen ] [ flex flex-col ] [ stack ]">
         {/* TABS and SETTINGS at top */}
         <div className="row">
           <div className="relative">
