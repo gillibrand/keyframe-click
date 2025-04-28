@@ -12,6 +12,8 @@
   position: relative;
 
   background-color: var(--c-green-700);
+  border: solid 1px var(--c-green-700);
+
   &:hover {
     background-color: var(--c-green-800);
   }
@@ -38,6 +40,7 @@
   &:focus-visible {
     z-index: 1;
     outline-offset: 2px;
+    border-color: white;
   }
 
   /* Button vertical separator */
