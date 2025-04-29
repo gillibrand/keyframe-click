@@ -29,7 +29,8 @@
       "@util/*": ["./src/util/*"],
       "@style/*": ["./src/style/*"],
       "@components/*": ["./src/components/*"],
-      "@images/*": ["./src/images/*"]
+      "@images/*": ["./src/images/*"],
+      "@export/*": ["./src/export/*"]
     }
   },
   "include": ["src"]

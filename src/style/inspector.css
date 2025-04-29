@@ -10,7 +10,7 @@
   }
 
   h2 {
-    color: gray;
+    color: var(--c-gray-700);
     font-size: var(--sz-base);
 
     &:not(:first-child) {

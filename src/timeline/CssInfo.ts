@@ -30,7 +30,7 @@ const CssInfos = typedKeys({
   scale: {
     label: "Scale",
     fn: (s) => {
-      return `scale: ${Math.round(s) / 100}`;
+      return `scale: ${Math.round(s) / 100};`;
     },
     color: "green",
   },

@@ -7,18 +7,31 @@
   appearance: none;
   color: var(--color);
 
-  border: none;
   padding: 0.375rem 1rem;
   position: relative;
 
-  background-color: var(--c-green-700);
-  border: solid 1px var(--c-green-700);
+  border: solid 1px transparent;
 
-  &:hover {
-    background-color: var(--c-green-800);
+  background-color: var(--c-green-700);
+
+  .is-dialog-open & {
+    transition: background-color 1000ms;
+    background-color: var(--c-neutral-500);
   }
+
+  &:hover,
+  &.is-pressed {
+    background-color: var(--c-green-800);
+
+    .is-dialog-open & {
+      transition: background-color 1000ms;
+      background-color: var(--c-neutral-600);
+    }
+  }
+
   &:active {
     background-color: var(--c-green-900);
+    box-shadow: px px 0 0px rgba(0 0 0 / 0.5);
   }
 
   &:enabled {
@@ -54,15 +67,12 @@
     left: -0px;
     top: 50%;
     transform: translateY(-50%);
-    transition: opacity 100ms;
     opacity: 0.75;
   }
 
-  &:is(:hover, :focus-visible)::before {
-    opacity: 0;
-  }
-
-  &:is(:hover, :focus-visible) + &::before {
+  &:is(:hover, :focus-visible, .is-pressed)::before,
+  &:is(:hover, :focus-visible, .is-pressed) + &::before {
+    transition: opacity 100ms;
     opacity: 0;
   }
 }

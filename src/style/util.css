@@ -10,6 +10,10 @@
   flex-grow: 1;
 }
 
+.shrink {
+  flex-shrink: 1;
+}
+
 .stack > * + * {
   margin-block-start: 1.125rem;
 }
@@ -105,4 +109,20 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .mt-4 {
   padding-block-start: 1rem;
+}
+
+.origin-top-right {
+  transform-origin: top right;
+}
+
+.min-h-px {
+  min-height: 1px;
+}
+
+.text-end {
+  text-align: end;
+}
+
+.justify-end {
+  justify-content: end;
 }

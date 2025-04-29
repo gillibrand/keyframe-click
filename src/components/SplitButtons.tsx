@@ -1,5 +1,5 @@
-import "./SplitButtons.css";
 import { PropsWithChildren } from "react";
+import "./SplitButtons.css";
 
 /**
  * Buttons that are closely related to appear attached visually. To use, just add normal HTML `button` as children. This

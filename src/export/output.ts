@@ -24,14 +24,14 @@ interface PairPropInfo {
   defaultValue: number;
 }
 
-const TranslateInfo: PairPropInfo = {
+const TranslatePair: PairPropInfo = {
   shorthandProp: "translate",
   xProp: "translateX",
   yProp: "translateY",
   defaultValue: 0,
 } as const;
 
-const ScaleInfo: PairPropInfo = {
+const ScalePair: PairPropInfo = {
   shorthandProp: "scale",
   xProp: "scaleX",
   yProp: "scaleY",
@@ -44,10 +44,10 @@ const ScaleInfo: PairPropInfo = {
  * same x value.
  */
 const PairProps = {
-  translateX: TranslateInfo,
-  translateY: TranslateInfo,
-  scaleX: ScaleInfo,
-  scaleY: ScaleInfo,
+  translateX: TranslatePair,
+  translateY: TranslatePair,
+  scaleX: ScalePair,
+  scaleY: ScalePair,
 } as const;
 
 type PairProp = keyof typeof PairProps;
@@ -83,7 +83,7 @@ interface TimeSlice {
  * all samples. If multiple layers have samples at the same time, they are merged into a single entry. Entries that are
  * missing a CSS prop are interpolated by the browser automatically.
  */
-export function genCssKeyframeText(layers: Layers): string {
+export function genCssKeyframesText(layers: Layers): string {
   const timeSlices = createTimeSlices(layers);
 
   // Collect all keyframe text in an array of lines we'll join later
@@ -120,6 +120,17 @@ export function genCssKeyframeText(layers: Layers): string {
   }
 
   return parts.join("\n");
+}
+
+/**
+ * Generates a named keyframe animation declaration for the given property layers.
+ *
+ * @param name A valid CSS keyframe animation name. If it's invalid, the results might be invalid.
+ * @param layers Layers to generate from.
+ * @returns A full named `@keyframes` entry.
+ */
+export function getCssKeyframeAnimation(name: string, layers: Layers) {
+  return `@keyframes ${name} {\n` + genCssKeyframesText(layers) + "}";
 }
 
 function getXyForPair(slice: TimeSlice, xProp: CssProp, yProp: CssProp) {
@@ -292,4 +303,22 @@ function interpolateValue(slice: TimeSlice, cssProp: CssProp): SamplePlus {
     x: slice.x,
     y: round2dp(y),
   };
+}
+
+const BadNameChars = /((^\d)|([^-_a-zA-Z0-9]))/g;
+const LeadDoubleDash = /^--+/;
+
+const IllegalNames = new Set(["none", "inherit", "initial", "unset"]);
+
+/**
+ * Normalizes a CSS animation name to ensure it's valid.
+ *
+ * @param proposed Any name inputted by the user. May be valid or not.
+ * @returns A normalized, legal CSS animation name.
+ */
+export function normalizeAtRuleName(proposed: string) {
+  const firstPass = proposed.replace(BadNameChars, "-");
+  const secondsPass = firstPass.replace(LeadDoubleDash, "-");
+
+  return IllegalNames.has(secondsPass) ? secondsPass + "-" : secondsPass;
 }

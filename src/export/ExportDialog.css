@@ -1,0 +1,53 @@
+.ExportDialog {
+  --export-bg-color: var(--c-neutral-50);
+  --export-border-color: var(--c-slate-600);
+  position: fixed;
+  margin: 0;
+  inset-block-start: 5rem;
+  inset-inline-start: auto;
+  inset-inline-end: 5rem;
+  border: solid 2px var(--export-border-color);
+  border-radius: 1rem;
+  padding: 1rem;
+
+  /* This is needed for the tail */
+  overflow: visible;
+
+  box-shadow: 0.25rem 0.25rem 2rem rgba(0 0 0 / 0.2);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0);
+    transition: background 100ms linear;
+  }
+
+  &.is-open::backdrop {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .ExportDialog__tail {
+    color: var(--c-bg);
+    filter: drop-shadow(0 -2px 0 var(--export-border-color));
+    position: absolute;
+    top: -15px;
+    right: 30px;
+  }
+
+  h2 {
+    font-size: var(--sz-large);
+  }
+}
+
+.ExportDialog__body {
+  min-height: 20rem;
+  max-height: calc(100vh - 40rem);
+}
+
+.ExportDialog__output {
+  resize: vertical;
+  min-width: 45ch;
+  min-height: 1rem;
+  background-color: var(--c-gray-100);
+  color: var(--c-gray-900);
+  font-size: var(--sz-small);
+  overflow: auto;
+}

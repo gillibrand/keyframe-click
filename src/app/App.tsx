@@ -16,8 +16,9 @@ import Gear from "@images/gear.svg?react";
 import Copy from "@images/copy.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
-import { genCssKeyframeText } from "./output";
+import { genCssKeyframesText } from "@export/output";
 import { SplitButtons } from "@components/SplitButtons";
+import { ExportDialog } from "@export/ExportDialog";
 
 function App() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -174,7 +175,7 @@ function App() {
 
   const keyframeText = useMemo(() => {
     void keyframeTextNeedsRender;
-    return genCssKeyframeText(layers);
+    return genCssKeyframesText(layers);
   }, [layers, keyframeTextNeedsRender]);
 
   useEffect(() => {
@@ -372,8 +373,17 @@ function App() {
     },
     [layers]
   );
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = useCallback(() => {
+    setIsExporting(true);
+  }, []);
+
   return (
-    <>
+    <div className={isExporting ? "is-dialog-open" : undefined}>
+      {isExporting && <ExportDialog open={isExporting} onClose={() => setIsExporting(false)} layers={layers} />}
+
       <div className="[ h-screen ] [ flex flex-col ] [ mt-4 stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
         <div className="row">
@@ -403,10 +413,16 @@ function App() {
             </MenuProvider>
 
             <SplitButtons>
-              <button title="Set export options and copy">Export</button>
-              <button title="Copy with current export settings">
+              <button
+                title="Set options and copy keyframes"
+                onClick={handleExport}
+                className={isExporting ? "is-pressed" : undefined}
+              >
+                Copy...
+              </button>
+              <button title="Copy keyframes with current options">
                 <Copy />
-                <span className="sr-only">Copy to clipboard with current settings</span>
+                <span className="sr-only">Copy keyframes to clipboard with current options</span>
               </button>
             </SplitButtons>
           </div>
@@ -416,8 +432,6 @@ function App() {
         <div className="[ gradient-row ] [ grow ] [ flex flex-col ]">
           <div className="inspector-sidebar grow">
             <div className="timeline-wrapper ">
-              {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
-
               <canvas
                 className={"timeline " + (isAdding ? "is-adding" : "")}
                 width={1}
@@ -426,6 +440,8 @@ function App() {
                 ref={canvasRef}
                 tabIndex={0}
               />
+
+              {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
             </div>
 
             {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
@@ -469,7 +485,7 @@ function App() {
           </aside>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
