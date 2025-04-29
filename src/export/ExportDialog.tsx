@@ -5,11 +5,13 @@ import { Layers } from "@timeline/Layers";
 import { useEffect, useId, useMemo, useRef } from "react";
 import "./ExportDialog.css";
 import { genCssKeyframesText, normalizeAtRuleName } from "./output";
+import { createPortal } from "react-dom";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   layers: Layers;
+  id: string;
 }
 
 const AnimOptions = {
@@ -27,7 +29,7 @@ function indent(css: string) {
   return css.replace(/^/gm, "  ");
 }
 
-export function ExportDialog({ open, onClose, layers }: Props) {
+export function ExportDialog({ open, onClose, layers, id }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const [ruleName, setAnimationName] = useSetting("ruleName", "my-animation");
@@ -105,7 +107,7 @@ export function ExportDialog({ open, onClose, layers }: Props) {
     animateClose();
   }
 
-  return (
+  return createPortal(
     <dialog
       ref={ref}
       onClose={onClose}
@@ -113,6 +115,7 @@ export function ExportDialog({ open, onClose, layers }: Props) {
       onCancel={handleCancel}
       closedby="any"
       aria-labelledby={dialogLabelId}
+      id={id}
     >
       <Tail className="ExportDialog__tail" />
 
@@ -141,6 +144,7 @@ export function ExportDialog({ open, onClose, layers }: Props) {
           </button>
         </footer>
       </form>
-    </dialog>
+    </dialog>,
+    document.body
   );
 }

@@ -6,7 +6,7 @@ import { Point, UserDot } from "@timeline/point";
 import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isSpaceBarHandler, throttle } from "@util";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { useSetting } from "./useSettings";
 
@@ -380,9 +380,14 @@ function App() {
     setIsExporting(true);
   }, []);
 
+  const exportDialogId = useId();
+  const activeExportId = isExporting ? exportDialogId : undefined;
+
   return (
     <div className={isExporting ? "is-dialog-open" : undefined}>
-      {isExporting && <ExportDialog open={isExporting} onClose={() => setIsExporting(false)} layers={layers} />}
+      {isExporting && (
+        <ExportDialog open={isExporting} onClose={() => setIsExporting(false)} layers={layers} id={exportDialogId} />
+      )}
 
       <div className="[ h-screen ] [ flex flex-col ] [ mt-4 stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
@@ -420,7 +425,12 @@ function App() {
               >
                 Copy...
               </button>
-              <button title="Copy keyframes with current options">
+              <button
+                title="Copy keyframes with current options"
+                aria-haspopup="dialog"
+                aria-expanded={isExporting}
+                aria-controls={activeExportId}
+              >
                 <Copy />
                 <span className="sr-only">Copy keyframes to clipboard with current options</span>
               </button>

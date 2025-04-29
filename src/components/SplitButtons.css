@@ -14,19 +14,9 @@
 
   background-color: var(--c-green-700);
 
-  .is-dialog-open & {
-    transition: background-color 1000ms;
-    background-color: var(--c-neutral-500);
-  }
-
   &:hover,
   &.is-pressed {
     background-color: var(--c-green-800);
-
-    .is-dialog-open & {
-      transition: background-color 1000ms;
-      background-color: var(--c-neutral-600);
-    }
   }
 
   &:active {
