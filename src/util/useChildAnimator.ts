@@ -28,6 +28,48 @@ export function wipeOutWidth(node: HTMLElement) {
   ).finished;
 }
 
+export function dropIn(node: HTMLElement) {
+  // This takes up flow space immediately, so it only useful when adding the the end of list.
+  return node.animate(
+    {
+      translate: ["0 -50%", "0 0"],
+      opacity: [0, 1],
+    },
+    {
+      duration: 200,
+      easing: "ease-in-out",
+    }
+  ).finished;
+}
+
+export function dropOut(node: HTMLElement) {
+  // We can't just translate the node since that won't close up space it takes it until it's removed
+  // from the from DOM. So we translate the first child while also animating the height of the
+  // (outer) node. That makes is close up the space while translating away and looks nice. This only works
+  // if overflow is visible on the node that that while it shrink
+  node.firstElementChild?.animate(
+    {
+      translate: ["0 0", "0 -50%"],
+      opacity: [1, 0],
+    },
+    {
+      duration: 200,
+      easing: "ease-in-out",
+    }
+  );
+
+  return node.animate(
+    {
+      height: [`${node.offsetHeight}px`, "0"],
+    },
+    {
+      duration: 200,
+      easing: "ease-in-out",
+      fill: "forwards",
+    }
+  ).finished;
+}
+
 /**
  * Callback from `MutationObserver` when the parent is changed. Runs the relevant animations.
  *
@@ -71,7 +113,11 @@ async function animateChanges(
         // but it's really just marking something as "seen" to avoid working with it again.
         node.dataset["noAnimate"] = String(true);
 
-        change.nextSibling?.parentElement?.insertBefore(node, change.nextSibling);
+        if (change.nextSibling) {
+          change.nextSibling.parentElement?.insertBefore(node, change.nextSibling);
+        } else {
+          change.target.appendChild(node);
+        }
         await animateOut(node);
         node.parentElement?.removeChild(node);
       }
@@ -122,7 +168,7 @@ export function useChildAnimator<T extends HTMLElement>(type: ChangeType, option
 
       return () => mo.disconnect();
     },
-    [options, type]
+    [options?.animateIn, options?.animateOut, type]
   );
 
   return {

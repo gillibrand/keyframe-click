@@ -6,6 +6,7 @@ import { useEffect, useId, useMemo, useRef } from "react";
 import "./ExportDialog.css";
 import { genCssKeyframesText, normalizeAtRuleName } from "./output";
 import { createPortal } from "react-dom";
+import { useSendNote } from "@components/note";
 
 interface Props {
   open: boolean;
@@ -108,13 +109,17 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
     setAnimationName(normalizeAtRuleName(proposed));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  const sendNote = useSendNote();
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     e.stopPropagation();
 
     // Generate plain text version when copied
     navigator.clipboard.writeText(generateAtRule(genCssKeyframesText(layers), ruleName));
-    animateClose();
+    await animateClose();
+
+    sendNote(ruleName ? `Copied "${ruleName}"` : "Copied");
   }
 
   return createPortal(
@@ -134,7 +139,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
 
         <label className="stacked-label">
           <span>Rule name</span>
-          <input type="text" value={ruleName} onChange={handleNameChange} autoFocus />
+          <input type="text" value={ruleName} onChange={handleNameChange} autoFocus spellCheck={false} />
           <Hint>Leave empty for bare keyframes</Hint>
         </label>
 

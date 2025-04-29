@@ -11,14 +11,16 @@ import "./App.css";
 import { useSetting } from "./useSettings";
 
 import { MenuProvider } from "@components/menu/MenuContext";
+import { NoteList } from "@components/note/NoteList";
+import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
-import Gear from "@images/gear.svg?react";
+import { ExportDialog } from "@export/ExportDialog";
+import { genCssKeyframesText } from "@export/output";
 import Copy from "@images/copy.svg?react";
+import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
-import { genCssKeyframesText } from "@export/output";
-import { SplitButtons } from "@components/SplitButtons";
-import { ExportDialog } from "@export/ExportDialog";
+import cx from "classnames";
 
 function App() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -383,11 +385,15 @@ function App() {
   const exportDialogId = useId();
   const activeExportId = isExporting ? exportDialogId : undefined;
 
+  const classes = cx("relative", { "is-dialog-open": isExporting });
+
   return (
-    <div className={isExporting ? "is-dialog-open" : undefined}>
+    <div className={classes}>
       {isExporting && (
         <ExportDialog open={isExporting} onClose={() => setIsExporting(false)} layers={layers} id={exportDialogId} />
       )}
+
+      <NoteList />
 
       <div className="[ h-screen ] [ flex flex-col ] [ mt-4 stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
