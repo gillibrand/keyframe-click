@@ -15,7 +15,7 @@ interface Props {
 }
 
 const AnimOptions = {
-  duration: 64,
+  duration: 96,
   easing: "ease-in-out",
 };
 
@@ -29,19 +29,28 @@ function indent(css: string) {
   return css.replace(/^/gm, "  ");
 }
 
+/**
+ * Wraps a keyframe list in an at-rule if a name is given.
+ *
+ * @param keyframes Keyframe list.
+ * @param ruleName Optional name of the keyframes at-rule. The user might leave this blank.
+ * @returns Keyframe at-rule or the same keyframe list if no name was given.
+ */
+function generateAtRule(keyframes: string, ruleName?: string) {
+  if (!ruleName || ruleName.trim().length === 0) {
+    return keyframes;
+  } else {
+    return `@keyframes ${normalizeAtRuleName(ruleName)} {\n${indent(keyframes)}\n}`;
+  }
+}
+
 export function ExportDialog({ open, onClose, layers, id }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const [ruleName, setAnimationName] = useSetting("ruleName", "my-animation");
-  const keyframesText = useMemo(() => genCssKeyframesText(layers), [layers]);
 
-  const keyframesResult = useMemo(() => {
-    if (ruleName.trim().length === 0) {
-      return keyframesText;
-    } else {
-      return `@keyframes ${normalizeAtRuleName(ruleName)} {\n${indent(keyframesText)}\n}`;
-    }
-  }, [ruleName, keyframesText]);
+  const keyframesHtml = useMemo(() => genCssKeyframesText(layers, true), [layers]);
+  const keyframesAtRuleHtml = useMemo(() => generateAtRule(keyframesHtml, ruleName), [ruleName, keyframesHtml]);
 
   useEffect(
     function animateOnOpenClose() {
@@ -103,7 +112,8 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
     e.preventDefault();
     e.stopPropagation();
 
-    navigator.clipboard.writeText(keyframesResult);
+    // Generate plain text version when copied
+    navigator.clipboard.writeText(generateAtRule(genCssKeyframesText(layers), ruleName));
     animateClose();
   }
 
@@ -131,7 +141,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
         <div className="stacked-label flex flex-col min-h-px">
           <span id={previewLabelId}>Preview</span>
           <code className="ExportDialog__output" aria-labelledby={previewLabelId}>
-            <pre>{keyframesResult}</pre>
+            <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>
           </code>
         </div>
 

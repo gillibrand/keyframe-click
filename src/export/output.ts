@@ -2,6 +2,7 @@ import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Layers } from "@timeline/Layers";
 import { Point } from "@timeline/point";
 import { round2dp } from "@util";
+import { ColorName, Colors } from "@util/Colors";
 
 /**
  * Details about a CSS property that can be used on its own, but usually needs to be combined with a pair prop in a
@@ -17,6 +18,8 @@ interface PairPropInfo {
   /** The y property name, like `translateY` or `scaleY`. */
   yProp: CssProp;
 
+  color: ColorName;
+
   /**
    * The default value for the property. This is used when interpolating the value and the pair value cannot be
    * determined.
@@ -29,6 +32,7 @@ const TranslatePair: PairPropInfo = {
   xProp: "translateX",
   yProp: "translateY",
   defaultValue: 0,
+  color: "blue",
 } as const;
 
 const ScalePair: PairPropInfo = {
@@ -36,6 +40,7 @@ const ScalePair: PairPropInfo = {
   xProp: "scaleX",
   yProp: "scaleY",
   defaultValue: 100,
+  color: "orange",
 } as const;
 
 /**
@@ -83,7 +88,7 @@ interface TimeSlice {
  * all samples. If multiple layers have samples at the same time, they are merged into a single entry. Entries that are
  * missing a CSS prop are interpolated by the browser automatically.
  */
-export function genCssKeyframesText(layers: Layers): string {
+export function genCssKeyframesText(layers: Layers, asHtml?: boolean): string {
   const timeSlices = createTimeSlices(layers);
 
   // Collect all keyframe text in an array of lines we'll join later
@@ -102,17 +107,29 @@ export function genCssKeyframesText(layers: Layers): string {
       const sample = slice.props.get(cssProp)!;
 
       const pairInfo = PairProps[cssProp as PairProp] ?? null;
+
       if (pairInfo) {
         if (handledPairs.has(cssProp)) continue;
         const { shorthandProp, xProp, yProp } = pairInfo;
         handledPairs.add(xProp).add(yProp);
 
         const [xValue, yValue] = getXyForPair(slice, xProp, yProp);
-        parts.push(`  ${shorthandProp}: ${xValue}% ${yValue}%;`);
+        if (asHtml) {
+          const color = Colors[pairInfo.color];
+          parts.push(`  <span style="color: ${color}">${shorthandProp}: ${xValue}% ${yValue}%;</span>`);
+        } else {
+          parts.push(`  ${shorthandProp}: ${xValue}% ${yValue}%;`);
+        }
       } else {
-        const fn = CssInfos[sample.cssProp].fn;
+        const cssInfo = CssInfos[sample.cssProp];
+        const fn = cssInfo.fn;
         const value = sample.isFlipped ? -sample.y : sample.y;
-        parts.push(`  ${fn(value)}`);
+        if (asHtml) {
+          const color = Colors[cssInfo.color];
+          parts.push(`  <span style="color: ${color}">${fn(value)}</span>`);
+        } else {
+          parts.push(`  ${fn(value)}`);
+        }
       }
     }
 

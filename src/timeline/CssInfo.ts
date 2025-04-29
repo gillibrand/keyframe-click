@@ -32,31 +32,31 @@ const CssInfos = typedKeys({
     fn: (s) => {
       return `scale: ${Math.round(s) / 100};`;
     },
-    color: "green",
+    color: "red",
   },
 
   scaleX: {
     label: "Scale X",
     fn: NullPairFn,
-    color: "fuchsia",
+    color: "red",
   },
 
   scaleY: {
     label: "Scale Y",
     fn: NullPairFn,
-    color: "blue",
+    color: "orange",
   },
 
   translateX: {
     label: "Translate X",
     fn: NullPairFn,
-    color: "orange",
+    color: "blue",
   },
 
   translateY: {
     label: "Translate Y",
     fn: NullPairFn,
-    color: "cyan",
+    color: "sky",
   },
 
   opacity: {
@@ -64,7 +64,7 @@ const CssInfos = typedKeys({
     fn: (n) => {
       return `opacity: ${n / 100};`;
     },
-    color: "emerald",
+    color: "green",
   },
 
   rotate: {
@@ -72,7 +72,7 @@ const CssInfos = typedKeys({
     fn: (n) => {
       return `rotate: ${n / 100}turn;`;
     },
-    color: "yellow",
+    color: "fuchsia",
   },
 } as const);
 

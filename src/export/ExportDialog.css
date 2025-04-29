@@ -13,11 +13,11 @@
   /* This is needed for the tail */
   overflow: visible;
 
-  box-shadow: 0.25rem 0.25rem 2rem rgba(0 0 0 / 0.2);
+  /* box-shadow: 0.25rem 0.25rem 2rem rgba(0 0 0 / 0.2); */
 
   &::backdrop {
     background: rgba(0, 0, 0, 0);
-    transition: background 100ms linear;
+    transition: background 96ms linear;
   }
 
   &.is-open::backdrop {
@@ -38,15 +38,15 @@
 }
 
 .ExportDialog__body {
-  min-height: 20rem;
-  max-height: calc(100vh - 40rem);
+  min-height: 25rem;
+  max-height: calc(100vh - 20rem);
 }
 
 .ExportDialog__output {
-  resize: vertical;
+  resize: none;
   min-width: 45ch;
   min-height: 1rem;
-  background-color: var(--c-gray-100);
+  background-color: var(--c-gray-50);
   color: var(--c-gray-900);
   font-size: var(--sz-small);
   overflow: auto;
