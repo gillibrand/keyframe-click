@@ -49,12 +49,10 @@ const GlobalSettings = memo(function GlobalSettings({
 
   return (
     <>
-      <h2>
-        Property <span className="sr-only">Layer</span>
-      </h2>
+      <h2>Timeline</h2>
 
       <label className="stacked-label">
-        <span className="sr-only">Property Name</span>
+        <span>Property</span>
         <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
           {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
             <option key={otherCssProp} value={otherCssProp} disabled={isCssPropDisabled(otherCssProp as CssProp)}>

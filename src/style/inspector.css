@@ -12,6 +12,7 @@
     color: var(--c-gray-700);
     color: var(--c-neo-black);
     font-size: var(--sz-base);
+    font-weight: bold;
 
     &:not(:first-child) {
       border-block-start: solid 1px #ddd;
