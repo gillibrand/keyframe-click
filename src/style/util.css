@@ -126,3 +126,7 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 .justify-end {
   justify-content: end;
 }
+
+.select-none {
+  user-select: none;
+}

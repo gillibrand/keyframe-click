@@ -1,5 +1,5 @@
-import { unreachable } from "@util";
-import { useState } from "react";
+import { getOrInit, unreachable, Callback } from "@util";
+import { useCallback, useSyncExternalStore } from "react";
 
 const TimeUnits = ["ms", "s"] as const;
 export type TimeUnit = (typeof TimeUnits)[number];
@@ -81,7 +81,7 @@ function storageKey(name: string) {
  * @param name Base name of the setting.
  * @returns Stored setting value. Default value if missing in storage.
  */
-function readSetting<K extends SettingName>(name: K, defaultValue: Settings[K]): Settings[K] {
+function loadSetting<K extends SettingName>(name: K, defaultValue: Settings[K]): Settings[K] {
   const jsonValue = localStorage.getItem(storageKey(name));
 
   if (!jsonValue) return defaultValue;
@@ -98,28 +98,124 @@ function readSetting<K extends SettingName>(name: K, defaultValue: Settings[K]):
  * @param name Name of setting.
  * @param value Value to save.
  */
-function writeSetting<K extends SettingName>(name: K, value: Settings[K]) {
+function saveSetting<K extends SettingName>(name: K, value: Settings[K]) {
   localStorage.setItem(storageKey(name), JSON.stringify(value));
 }
 
 /**
+ * All the listeners, that is, every unique component that has called `useSetting`. Those components will be notified
+ * each time a setting in the cache is updated by calling all the callbacks. The callbacks from from React when
+ * `useSyncExternalStore` is called.
+ *
+ * Callbacks are mapped from the setting they are for. This means we only need to notify components that have used the
+ * setting being modified. Though if a component loaded multiple settings, it will get several callback.
+ */
+const listeners = new Map<SettingName, Callback[]>();
+
+/**
+ * Add a new listener.
+ *
+ * @param name Setting name.
+ * @param callback A callback to notify the listener that the setting changed.
+ */
+function addListener(name: SettingName, callback: () => void) {
+  const list = getOrInit(listeners, name, []);
+  list.push(callback);
+}
+
+/**
+ * Removes and existing listener.
+ *
+ * @param name Setting name.
+ * @param callback Callback to remove. This must be identical to the added callback.
+ */
+function removeListener(name: SettingName, callback: () => void) {
+  const list = getOrInit(listeners, name, undefined);
+  if (list === undefined) return;
+
+  const i = list.indexOf(callback);
+  if (i === -1) return;
+
+  list.splice(i, 1);
+}
+
+/** Cache of settings after they are first loaded or set. Future reads always come from the cache. */
+const cache = new Map<SettingName, Settings[SettingName]>();
+
+/**
+ * Gets the best setting from the cache, local storage, or the default. Caches the setting for next time once loaded.
+ *
+ * @param name Setting name.
+ * @param defaultValue Default if setting is missing.
+ * @returns The cached, saved, or default setting in that order.
+ */
+function getSetting<K extends SettingName>(name: K, defaultValue: Settings[K]) {
+  if (!cache.has(name)) {
+    const savedValue = loadSetting(name, defaultValue);
+    cache.set(name, savedValue);
+    return savedValue;
+  }
+
+  return cache.get(name) as Settings[K];
+}
+
+/**
+ * Adds setting to cache. Saves to local storage. Notifies listeners of the change.
+ *
+ * @param name Setting name.
+ * @param value New value set.
+ */
+function setSetting<K extends SettingName>(name: K, value: Settings[K]) {
+  const oldValue = cache.get(name);
+  if (oldValue === value) return;
+
+  saveSetting(name, value);
+  cache.set(name, value);
+
+  // notify listeners
+  listeners.get(name)?.forEach((callback) => callback());
+}
+
+/**
  * Hook to read and write settings. Settings are saved in localStorage automatically. Changes to settings cause a
- * reactive render.
+ * reactive render. Multiple components can use the same setting--they will all remain in sync globally.
+ *
+ * There is some overhear to write changes to local storage, so this should not be used for settings that change super
+ * frequently. Reads are always fast.
+ *
+ * One "gotcha" is that each call must pass a default value. The first one called will be used. All calls should really
+ * pass the same default so there is never a different default. This feels like a design problem... possibly defaults
+ * should be built into this module instead of passed by the callers.
  *
  * New setting names and types must be added to the `Settings` type.
  *
  * @param name Setting name.
- * @returns Save as `useState`, but the setting persists values to local storage.
+ * @returns Same as `useState`, but the setting persists values to local storage.
  */
 function useSetting<K extends SettingName>(name: K, defaultValue: Settings[K]) {
-  const [value, setValue] = useState<Settings[K]>(() => readSetting(name, defaultValue));
+  const getSnapshot = useCallback(() => {
+    return getSetting(name, defaultValue);
+  }, [name, defaultValue]);
 
-  function setValueAndSetting(value: Settings[K]) {
-    writeSetting(name, value);
-    setValue(value);
-  }
+  const subscribe = useCallback(
+    (onStoreChange: Callback) => {
+      addListener(name, onStoreChange);
 
-  return [value, setValueAndSetting] as const;
+      return () => removeListener(name, onStoreChange);
+    },
+    [name]
+  );
+
+  const value = useSyncExternalStore(subscribe, getSnapshot);
+
+  const setValue = useCallback(
+    (value: Settings[K]) => {
+      setSetting(name, value);
+    },
+    [name]
+  );
+
+  return [value, setValue] as const;
 }
 
 export { useSetting };

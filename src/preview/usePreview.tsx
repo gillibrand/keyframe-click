@@ -167,7 +167,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const didEnd = useCallback(() => {
     stopPreview();
-  }, []);
+  }, [stopPreview]);
 
   const togglePreview = useCallback(() => {
     if (isPlaying) {

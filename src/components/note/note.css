@@ -14,15 +14,17 @@
 
     border: solid 2px var(--c-sky-800);
     border-radius: 0.25rem;
-    box-shadow: 1px 1px 5px rgba(0 0 0 / 0.2);
+    box-shadow: 5px 5px 15px rgba(0 0 0 / 0.4);
     color: var(--c-sky-800);
     background-color: var(--c-sky-50);
-    font-size: var(--sz-small);
+    /* font-size: var(--sz-small); */
 
     pointer-events: none;
     outline: solid 1px var(--c-neutral-50);
 
     max-width: 40ch;
+    min-width: 15ch;
+    text-align: center;
     line-height: 1.5;
   }
 }

@@ -13,15 +13,10 @@
   /* This is needed for the tail */
   overflow: visible;
 
-  /* box-shadow: 0.25rem 0.25rem 2rem rgba(0 0 0 / 0.2); */
+  box-shadow: 0.25rem 0.25rem 2rem rgba(0 0 0 / 0.2);
 
   &::backdrop {
     background: rgba(0, 0, 0, 0);
-    transition: background 96ms linear;
-  }
-
-  &.is-open::backdrop {
-    background: rgba(0, 0, 0, 0.05);
   }
 
   .ExportDialog__tail {

@@ -1,4 +1,4 @@
-import { isDevMode } from "@util";
+import { isDevMode, round2dp } from "@util";
 import { ColorName } from "@util/Colors";
 
 type OutputFn = (n: number) => string;
@@ -62,7 +62,7 @@ const CssInfos = typedKeys({
   opacity: {
     label: "Opacity",
     fn: (n) => {
-      return `opacity: ${n / 100};`;
+      return `opacity: ${round2dp(n / 100)};`;
     },
     color: "green",
   },
@@ -70,7 +70,7 @@ const CssInfos = typedKeys({
   rotate: {
     label: "Rotate",
     fn: (n) => {
-      return `rotate: ${n / 100}turn;`;
+      return `rotate: ${round2dp(n / 100)}turn;`;
     },
     color: "fuchsia",
   },

@@ -84,11 +84,45 @@ interface TimeSlice {
 }
 
 /**
+ * CSS--or any text--with newlines in it. Each line will be indented by 2 spaces.
+ *
+ * @param css
+ * @returns Indented CSS.
+ */
+function indent(css: string) {
+  return css.replace(/^/gm, "  ");
+}
+
+export function copyToClipboard(layers: Layers, ruleName: string) {
+  navigator.clipboard.writeText(generateCssAtRule(genCssKeyframeList(layers), ruleName));
+  return ruleName ? `Copied "${ruleName}"` : "Copied keyframes";
+}
+
+/**
+ * Wraps a keyframe list in an at-rule if a name is given.
+ *
+ * @param keyframes Keyframe list.
+ * @param ruleName Optional name of the keyframes at-rule. The user might leave this blank.
+ * @returns Keyframe at-rule or the same keyframe list if no name was given.
+ */
+export function generateCssAtRule(keyframes: string | Layers, ruleName?: string): string {
+  if (typeof keyframes !== "string") {
+    keyframes = genCssKeyframeList(keyframes);
+  }
+
+  if (!ruleName || ruleName.trim().length === 0) {
+    return keyframes;
+  } else {
+    return `@keyframes ${normalizeAtRuleName(ruleName)} {\n${indent(keyframes)}\n}`;
+  }
+}
+
+/**
  * Generates CSS keyframe body text (the actual keyframe entries). Looks at all given layers and produces entries for
  * all samples. If multiple layers have samples at the same time, they are merged into a single entry. Entries that are
  * missing a CSS prop are interpolated by the browser automatically.
  */
-export function genCssKeyframesText(layers: Layers, asHtml?: boolean): string {
+export function genCssKeyframeList(layers: Layers, asHtml?: boolean): string {
   const timeSlices = createTimeSlices(layers);
 
   // Collect all keyframe text in an array of lines we'll join later
@@ -147,7 +181,7 @@ export function genCssKeyframesText(layers: Layers, asHtml?: boolean): string {
  * @returns A full named `@keyframes` entry.
  */
 export function getCssKeyframeAnimation(name: string, layers: Layers) {
-  return `@keyframes ${name} {\n` + genCssKeyframesText(layers) + "}";
+  return `@keyframes ${name} {\n` + genCssKeyframeList(layers) + "}";
 }
 
 function getXyForPair(slice: TimeSlice, xProp: CssProp, yProp: CssProp) {

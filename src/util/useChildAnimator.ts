@@ -36,7 +36,7 @@ export function dropIn(node: HTMLElement) {
       opacity: [0, 1],
     },
     {
-      duration: 200,
+      duration: 100,
       easing: "ease-in-out",
     }
   ).finished;
@@ -53,7 +53,7 @@ export function dropOut(node: HTMLElement) {
       opacity: [1, 0],
     },
     {
-      duration: 200,
+      duration: 100,
       easing: "ease-in-out",
     }
   );
@@ -63,7 +63,7 @@ export function dropOut(node: HTMLElement) {
       height: [`${node.offsetHeight}px`, "0"],
     },
     {
-      duration: 200,
+      duration: 100,
       easing: "ease-in-out",
       fill: "forwards",
     }

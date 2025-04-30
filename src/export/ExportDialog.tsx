@@ -1,12 +1,12 @@
-import { useSetting } from "@app/useSettings";
 import { Hint } from "@components/Hint";
+import { useSendNote } from "@components/note";
 import Tail from "@images/tail.svg?react";
 import { Layers } from "@timeline/Layers";
 import { useEffect, useId, useMemo, useRef } from "react";
-import "./ExportDialog.css";
-import { genCssKeyframesText, normalizeAtRuleName } from "./output";
 import { createPortal } from "react-dom";
-import { useSendNote } from "@components/note";
+import "./ExportDialog.css";
+import { copyToClipboard, genCssKeyframeList, generateCssAtRule, normalizeAtRuleName } from "./output";
+import { useSetting } from "@app/useSettings";
 
 interface Props {
   open: boolean;
@@ -20,38 +20,13 @@ const AnimOptions = {
   easing: "ease-in-out",
 };
 
-/**
- * CSS--or any text--with newlines in it. Each line will be indented by 2 spaces.
- *
- * @param css
- * @returns Indented CSS.
- */
-function indent(css: string) {
-  return css.replace(/^/gm, "  ");
-}
-
-/**
- * Wraps a keyframe list in an at-rule if a name is given.
- *
- * @param keyframes Keyframe list.
- * @param ruleName Optional name of the keyframes at-rule. The user might leave this blank.
- * @returns Keyframe at-rule or the same keyframe list if no name was given.
- */
-function generateAtRule(keyframes: string, ruleName?: string) {
-  if (!ruleName || ruleName.trim().length === 0) {
-    return keyframes;
-  } else {
-    return `@keyframes ${normalizeAtRuleName(ruleName)} {\n${indent(keyframes)}\n}`;
-  }
-}
-
 export function ExportDialog({ open, onClose, layers, id }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
-  const [ruleName, setAnimationName] = useSetting("ruleName", "my-animation");
+  const [ruleName, setRuleName] = useSetting("ruleName", "my-animation");
 
-  const keyframesHtml = useMemo(() => genCssKeyframesText(layers, true), [layers]);
-  const keyframesAtRuleHtml = useMemo(() => generateAtRule(keyframesHtml, ruleName), [ruleName, keyframesHtml]);
+  const keyframesHtml = useMemo(() => genCssKeyframeList(layers, true), [layers]);
+  const keyframesAtRuleHtml = useMemo(() => generateCssAtRule(keyframesHtml, ruleName), [ruleName, keyframesHtml]);
 
   useEffect(
     function animateOnOpenClose() {
@@ -78,7 +53,6 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
 
   /** Animates the dialog out and closes it. */
   async function animateClose() {
-    console.warn("close");
     const dialog = ref.current;
     if (!dialog) return;
 
@@ -106,7 +80,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
 
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const proposed = e.target.value;
-    setAnimationName(normalizeAtRuleName(proposed));
+    setRuleName(normalizeAtRuleName(proposed));
   }
 
   const sendNote = useSendNote();
@@ -115,11 +89,9 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
     e.preventDefault();
     e.stopPropagation();
 
-    // Generate plain text version when copied
-    navigator.clipboard.writeText(generateAtRule(genCssKeyframesText(layers), ruleName));
+    const note = copyToClipboard(layers, ruleName);
     await animateClose();
-
-    sendNote(ruleName ? `Copied "${ruleName}"` : "Copied");
+    sendNote(note);
   }
 
   return createPortal(
@@ -135,7 +107,9 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
       <Tail className="ExportDialog__tail" />
 
       <form className="ExportDialog__body [ flex flex-col ] [ stack ]" onSubmit={handleSubmit}>
-        <h2 id={dialogLabelId}>Copy keyframes</h2>
+        <h2 id={dialogLabelId} className="select-none">
+          Copy keyframes
+        </h2>
 
         <label className="stacked-label">
           <span>Rule name</span>

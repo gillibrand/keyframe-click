@@ -11,11 +11,11 @@ import "./App.css";
 import { useSetting } from "./useSettings";
 
 import { MenuProvider } from "@components/menu/MenuContext";
-import { NoteList } from "@components/note/NoteList";
+import { useSendNote, NoteList } from "@components/note";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { ExportDialog } from "@export/ExportDialog";
-import { genCssKeyframesText } from "@export/output";
+import { copyToClipboard, genCssKeyframeList } from "@export/output";
 import Copy from "@images/copy.svg?react";
 import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
@@ -47,6 +47,8 @@ function App() {
   // Timeline global settings
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
+
+  // const [ruleName] = useSetting("ruleName", "my-animation");
 
   useEffect(
     /**
@@ -177,7 +179,7 @@ function App() {
 
   const keyframeText = useMemo(() => {
     void keyframeTextNeedsRender;
-    return genCssKeyframesText(layers);
+    return genCssKeyframeList(layers);
   }, [layers, keyframeTextNeedsRender]);
 
   useEffect(() => {
@@ -382,6 +384,15 @@ function App() {
     setIsExporting(true);
   }, []);
 
+  const [ruleName] = useSetting("ruleName", "my-anim");
+
+  const sendNote = useSendNote();
+
+  function handleCopyNow() {
+    const note = copyToClipboard(layers, ruleName);
+    sendNote(note);
+  }
+
   const exportDialogId = useId();
   const activeExportId = isExporting ? exportDialogId : undefined;
 
@@ -436,6 +447,7 @@ function App() {
                 aria-haspopup="dialog"
                 aria-expanded={isExporting}
                 aria-controls={activeExportId}
+                onClick={handleCopyNow}
               >
                 <Copy />
                 <span className="sr-only">Copy keyframes to clipboard with current options</span>
