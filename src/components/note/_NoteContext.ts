@@ -5,7 +5,7 @@ export interface NoteProps {
   id: string;
 }
 
-export type SendNoteFn = (message: string) => void;
+export type SendNoteFn = (message: ReactNode) => void;
 
 export interface NoteContextValue {
   /**
