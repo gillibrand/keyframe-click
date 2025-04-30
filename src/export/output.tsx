@@ -3,6 +3,7 @@ import { Layers } from "@timeline/Layers";
 import { Point } from "@timeline/point";
 import { round2dp } from "@util";
 import { ColorName, Colors } from "@util/Colors";
+import Check from "@images/check.svg?react";
 
 /**
  * Details about a CSS property that can be used on its own, but usually needs to be combined with a pair prop in a
@@ -93,9 +94,22 @@ function indent(css: string) {
   return css.replace(/^/gm, "  ");
 }
 
+/**
+ * Copies the generated keyframes to the clipboard. Changes what is copied based on the presence of a rule name.
+ *
+ * @param layers Layers to generate CSS from.
+ * @param ruleName Optional at-rule name. If missing, a bare keyframe list is returned.
+ * @returns A message about the success that should be shown in a notification. This function doesn't do that for you
+ *   since sometime we want to animate a dialog closed first.
+ */
 export function copyToClipboard(layers: Layers, ruleName: string) {
   navigator.clipboard.writeText(generateCssAtRule(genCssKeyframeList(layers), ruleName));
-  return ruleName ? `Copied "${ruleName}"` : "Copied keyframes";
+
+  return (
+    <span className="flex items-center gap-2">
+      <Check /> {ruleName ? `Copied "${ruleName}"` : "Copied keyframes"}
+    </span>
+  );
 }
 
 /**

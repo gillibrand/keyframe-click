@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, ReactNode, useState } from "react";
 import { NoteProps, _NoteContext } from "./_NoteContext";
 
 const MaxNotes = 3;
@@ -19,7 +19,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
   }
 
   /** Adds a visible note. Schedules it to be removed soon. */
-  function sendNote(message: string) {
+  function sendNote(message: ReactNode) {
     setNotes((old) => {
       const id = crypto.randomUUID();
 

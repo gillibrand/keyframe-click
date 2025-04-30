@@ -1,7 +1,7 @@
-import { createContext } from "react";
+import { createContext, ReactNode } from "react";
 
 export interface NoteProps {
-  message: string;
+  message: ReactNode;
   id: string;
 }
 
