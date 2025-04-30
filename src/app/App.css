@@ -18,8 +18,16 @@
 .inspector-sidebar {
   display: grid;
   gap: 1rem;
-  grid-template-columns: 1fr 15rem;
+  grid-template-columns: 1fr 18rem;
   align-items: stretch;
+}
+
+.tile {
+  border: solid 2px var(--c-neo-black);
+  padding: 1rem;
+  background-color: white;
+  background-color: var(--c-neo-white);
+  box-shadow: 0.25rem 0.25rem 0 0 var(--c-neo-black);
 }
 
 .timeline-wrapper {

@@ -473,7 +473,7 @@ function App() {
             </div>
 
             {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
-            <div>
+            <div className="tile">
               <TimelineInspector
                 cssProp={layers.getCssProp()}
                 onChangeCssProp={setCssProp}
@@ -497,7 +497,7 @@ function App() {
           <aside className="inspector-sidebar">
             {preview}
 
-            <div>
+            <div className="tile">
               <PreviewInspector
                 isPlaying={isPlaying}
                 duration={duration}

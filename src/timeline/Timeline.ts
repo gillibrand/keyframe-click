@@ -146,6 +146,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
       canvas.width = newWidth;
       canvas.height = newHeight;
+
       // Need to reset DPI scale after each width change
       cx.scale(scale, scale);
       drawNow(false);
@@ -329,7 +330,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     // above 100% gray
     _cx.fillStyle = Colors.Gray50;
 
-    const fullDiffReal = asRealY(MinY) - asRealY(MaxY) - 1;
+    const fullDiffReal = asRealY(MinY) - asRealY(MaxY);
 
     _cx.fillStyle = Colors.White;
     _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiffReal);
@@ -365,15 +366,25 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     if (document.activeElement === _canvas) {
       // Draw our own focus ring. This is because we draw large dots that appear to break out of the canvas
-      _cx.lineWidth = 2;
+      _cx.lineWidth = 4;
       _cx.strokeStyle = "#1c7ef3";
       _cx.lineJoin = "round";
     } else {
-      _cx.lineWidth = 1;
-      _cx.strokeStyle = Colors.Gray900;
+      _cx.lineWidth = 2;
+      _cx.strokeStyle = Colors.NeoBlack;
     }
 
     _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX - 1, fullDiffReal);
+
+    // draw shadow
+    _cx.strokeStyle = Colors.NeoBlack;
+    _cx.lineWidth = 4;
+    _cx.beginPath();
+    _cx.moveTo(InsetX + 4, _canvas.clientHeight - InsetY + 2);
+    _cx.lineTo(width() - InsetX + 2, _canvas.clientHeight - InsetY + 2);
+    _cx.lineTo(width() - InsetX + 2, InsetY + 4);
+    _cx.stroke();
+
     _cx.lineWidth = 1;
 
     drawAxisText();

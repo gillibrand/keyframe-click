@@ -1,6 +1,6 @@
 .ExportDialog {
   --export-bg-color: var(--c-neutral-50);
-  --export-border-color: var(--c-slate-600);
+  --export-border-color: var(--c-neo-black);
   position: fixed;
   margin: 0;
   inset-block-start: 5rem;
@@ -8,19 +8,37 @@
   inset-inline-end: 5rem;
   border: solid 2px var(--export-border-color);
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 0rem;
 
   /* This is needed for the tail */
   overflow: visible;
 
+  --bg: var(--c-neo-teal);
+  --bg: var(--c-neo-white);
+  background: var(--bg);
+
   box-shadow: 0.25rem 0.25rem 2rem rgba(0 0 0 / 0.2);
+  box-shadow:
+    0.25rem 0.25rem 0 0 var(--c-neo-black),
+    0 0 0 1px white;
 
   &::backdrop {
-    background: rgba(0, 0, 0, 0);
+    background: rgba(0 0 0 / 0.1);
+  }
+
+  &::backdrop {
+    background: rgba(0 0 0 / 0);
+    transition: background 100ms linear;
+  }
+
+  &.is-open::backdrop {
+    background: rgba(0, 0, 0, 0.05);
   }
 
   .ExportDialog__tail {
     color: var(--c-bg);
+    color: var(--c-neo-white);
+    color: var(--bg);
     filter: drop-shadow(0 -2px 0 var(--export-border-color));
     position: absolute;
     top: -15px;
@@ -32,7 +50,19 @@
   }
 }
 
-.ExportDialog__body {
+.ExportDialog__body,
+.ExportDialog__footer {
+  padding: 1rem;
+}
+
+.ExportDialog__footer {
+  background-color: var(--c-neo-white);
+  border-top: solid 2px black;
+  border-end-start-radius: 1rem;
+  border-end-end-radius: 1rem;
+}
+
+.ExportDialog__form {
   min-height: 25rem;
   max-height: calc(100vh - 20rem);
 }

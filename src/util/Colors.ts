@@ -35,6 +35,8 @@ export const Colors = {
   violet: "oklch(0.491 0.27 292.581)",
   yellow: "oklch(0.554 0.135 66.442)",
   zinc: "oklch(0.37 0.013 285.805)",
+
+  NeoBlack: "black",
 };
 
 export type ColorName = keyof typeof Colors;

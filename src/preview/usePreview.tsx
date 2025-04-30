@@ -214,7 +214,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const preview = (
     <div
-      className="Preview"
+      className="Preview tile"
       ref={ref}
       style={cssVariables}
       onAnimationStart={didStart}

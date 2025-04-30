@@ -111,6 +111,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   padding-block-start: 1rem;
 }
 
+.p-4 {
+  padding: 1rem;
+}
+
 .origin-top-right {
   transform-origin: top right;
 }

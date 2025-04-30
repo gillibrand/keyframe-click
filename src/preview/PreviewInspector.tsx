@@ -2,6 +2,7 @@ import { Duration, TimeUnit } from "@app/useSettings";
 import "@style/inspector.css";
 import { Segmented, SegmentedButton } from "../components/Segmented";
 import { Speed } from "./usePreview";
+import { Select } from "@components/Select";
 
 interface Props {
   duration: Duration;
@@ -78,9 +79,9 @@ export function PreviewInspector({
 
       <label className="stacked-label">
         <span>Image</span>
-        <select name="" id="">
+        <Select value="ball">
           <option value="ball">Ball</option>
-        </select>
+        </Select>
       </label>
 
       <label className="stacked-label">
@@ -88,15 +89,16 @@ export function PreviewInspector({
         <div className="col-2 gap-2">
           <input
             type="number"
+            className="textbox"
             min={1}
             onChange={(e) => handleDurationTimChange(e.target.value)}
             value={duration.time}
           />
 
-          <select value={duration.unit} onChange={(e) => handleDurationUnitChange(e.target.value)}>
+          <Select value={duration.unit} onChange={(e) => handleDurationUnitChange(e.target.value)}>
             <option value="ms">milliseconds</option>
             <option value="s">seconds</option>
-          </select>
+          </Select>
         </div>
       </label>
 

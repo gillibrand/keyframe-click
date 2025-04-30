@@ -106,29 +106,38 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
     >
       <Tail className="ExportDialog__tail" />
 
-      <form className="ExportDialog__body [ flex flex-col ] [ stack ]" onSubmit={handleSubmit}>
-        <h2 id={dialogLabelId} className="select-none">
-          Copy keyframes
-        </h2>
+      <form className="ExportDialog__form [ flex flex-col ] [ Xstack ]" onSubmit={handleSubmit}>
+        <div className="flex flex-col min-h-px stack p-4">
+          <h2 id={dialogLabelId} className="select-none">
+            Copy keyframes
+          </h2>
 
-        <label className="stacked-label">
-          <span>Rule name</span>
-          <input type="text" value={ruleName} onChange={handleNameChange} autoFocus spellCheck={false} />
-          <Hint>Leave empty for bare keyframes</Hint>
-        </label>
+          <label className="stacked-label">
+            <span>Rule name</span>
+            <input
+              className="textbox"
+              type="text"
+              value={ruleName}
+              onChange={handleNameChange}
+              autoFocus
+              spellCheck={false}
+            />
+            <Hint>Leave empty for bare keyframes</Hint>
+          </label>
 
-        <div className="stacked-label flex flex-col min-h-px">
-          <span id={previewLabelId}>Preview</span>
-          <code className="ExportDialog__output" aria-labelledby={previewLabelId}>
-            <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>
-          </code>
+          <div className="stacked-label flex flex-col min-h-px grow">
+            <span id={previewLabelId}>Preview</span>
+            <code className="ExportDialog__output" aria-labelledby={previewLabelId}>
+              <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>
+            </code>
+          </div>
         </div>
 
-        <footer className="flex justify-end gap-4 mt-4">
+        <footer className="ExportDialog__footer flex justify-end gap-4 mt-4">
           <button onClick={animateClose} className="push-button" type="button">
             Cancel
           </button>
-          <button className="push-button is-default" type="submit">
+          <button className="push-button is-primary" type="submit">
             Copy
           </button>
         </footer>

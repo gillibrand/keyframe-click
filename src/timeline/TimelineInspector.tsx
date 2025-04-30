@@ -1,4 +1,5 @@
 import { Hint } from "@components/Hint";
+import { Select } from "@components/Select";
 import "@style/inspector.css";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { DotType, moveDot, UserDot } from "@timeline/point";
@@ -54,13 +55,13 @@ const GlobalSettings = memo(function GlobalSettings({
 
       <label className="stacked-label">
         <span className="sr-only">Property Name</span>
-        <select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
+        <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
           {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
             <option key={otherCssProp} value={otherCssProp} disabled={isCssPropDisabled(otherCssProp as CssProp)}>
               {namedFn.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
 
       <label className="stacked-label">
@@ -137,7 +138,7 @@ export const TimelineInspector = memo(function Inspector({
       <div className="stack-small">
         <div className="flex gap-2">
           <button
-            className={cx("push-button flex-auto basis-1", { "is-pressed": isAdding })}
+            className={cx("push-button is-secondary flex-auto basis-1", { "is-pressed": isAdding })}
             aria-pressed={isAdding}
             onClick={onClickAdd}
           >
@@ -160,10 +161,10 @@ export const TimelineInspector = memo(function Inspector({
         <>
           <label className="stacked-label">
             <span>Style</span>
-            <select onChange={(e) => handleTypeChange(e.target.value)} value={selected.type}>
+            <Select onChange={(e) => handleTypeChange(e.target.value)} value={selected.type}>
               <option value="square">Square</option>
               <option value="round">Round</option>
-            </select>
+            </Select>
           </label>
 
           <div className="col-2 gap-2">
@@ -172,6 +173,7 @@ export const TimelineInspector = memo(function Inspector({
                 Offset <span className="text-light">%</span>
               </span>
               <input
+                className="textbox"
                 type="number"
                 id={xId}
                 value={normalX(selected.x)}
@@ -184,6 +186,7 @@ export const TimelineInspector = memo(function Inspector({
                 Value <span className="text-light">%</span>
               </span>
               <input
+                className="textbox"
                 id={yId}
                 value={normalY(selected.y)}
                 type="number"
