@@ -41,7 +41,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
         dialog.classList.add("is-open");
         dialog.animate(
           {
-            scale: [0.9, 1],
+            scale: [0.5, 1],
             opacity: [0, 1],
           },
           AnimOptions
@@ -60,7 +60,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
 
     await dialog.animate(
       {
-        scale: [1, 0.9],
+        scale: [1, 0.5],
         opacity: [1, 0],
       },
       AnimOptions

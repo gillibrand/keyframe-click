@@ -68,8 +68,11 @@
       background-color: rgba(0 0 0 / 0.1);
     }
 
+    transition: rotate 250ms;
+
     &[aria-pressed="true"] {
       background-color: rgba(0 0 0 / 0.15);
+      rotate: 0.25turn;
     }
 
     &:active {

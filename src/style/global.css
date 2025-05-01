@@ -165,6 +165,7 @@ input[type="checkbox"] {
   appearance: none;
   border: solid 2px var(--c-neo-black);
   border-radius: 0.5rem;
+  border-radius: 999px;
   padding: 0.5rem 1rem;
   background-color: white;
 

@@ -426,7 +426,7 @@ function App() {
               <MenuButton
                 style={{
                   // TODO: standard icon colors
-                  color: "var(--c-gray-600)",
+                  color: "var(--c-neo-black)",
                 }}
                 title="Settings"
               >
