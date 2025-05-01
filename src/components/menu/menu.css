@@ -7,6 +7,7 @@
 
   display: flex;
   gap: 0.5rem;
+  cursor: default;
 
   &:not(:first-child) {
     padding-block-start: 0.5rem;
@@ -33,7 +34,7 @@
   cursor: pointer;
 
   &.is-hover {
-    background-color: var(--c-blue);
+    background-color: var(--c-neo-blue);
     color: white;
   }
 }
@@ -83,13 +84,20 @@
 
 .Menu {
   position: absolute;
-  border: solid 1px #aaa;
-  box-shadow: 2px 2px 20px rgba(0 0 0 / 0.15);
+  border: solid var(--border-width) var(--border-color);
+
+  box-shadow:
+    0.125rem 0.125rem 0 0 var(--c-neo-black),
+    0 0 0 0.5px white,
+    0.125rem 0.125rem 0 0.5px white,
+    0 0 50px rgba(0 0 0 / 0.2);
+
   list-style-type: none;
   outline: none;
+  user-select: none;
 
   padding: 0;
   margin: 0;
   background-color: var(--c-neutral-50);
-  border-radius: 0.55rem;
+  z-index: 1;
 }

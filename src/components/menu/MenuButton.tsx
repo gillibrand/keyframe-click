@@ -58,7 +58,7 @@ export function MenuButton({ style, children, title }: MenuButtonProps) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (!isPressed) return;
 
-    if (e.key === "Escape") {
+    if (e.key === "Escape" || e.key === "Tab") {
       e.preventDefault();
       setIsPressed(false);
       buttonRef.current?.focus();

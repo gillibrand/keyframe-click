@@ -252,7 +252,7 @@ function App() {
   const items: MenuItem[] = [
     {
       type: "label",
-      label: "Grid settings",
+      label: "Timeline settings",
     },
     {
       type: "toggle",
