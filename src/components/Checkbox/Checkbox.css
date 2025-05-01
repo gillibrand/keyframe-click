@@ -1,0 +1,29 @@
+.Checkbox_box {
+  border: solid var(--border-width) var(--border-color);
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-grid;
+  place-items: center;
+  background-color: white;
+  color: white;
+
+  .Checkbox.is-checked & {
+    background-color: var(--c-neo-blue);
+  }
+
+  &:not(:is(.is-active, :disabled)) {
+    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+  }
+}
+
+.Checkbox:hover {
+  .Checkbox_box {
+    filter: brightness(0.95);
+  }
+}
+
+.Checkbox.is-checked:hover {
+  .Checkbox_box {
+    filter: brightness(1.1);
+  }
+}

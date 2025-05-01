@@ -3,6 +3,7 @@ import "@style/inspector.css";
 import { Segmented, SegmentedButton } from "../components/Segmented";
 import { Speed } from "./usePreview";
 import { Select } from "@components/Select";
+import { Checkbox } from "@components/Checkbox/Checkbox";
 
 interface Props {
   duration: Duration;
@@ -64,10 +65,12 @@ export function PreviewInspector({
       </div>
 
       <div className="stack-small">
-        <label className="block-label">
+        {/* <label className="block-label">
           <input type="checkbox" onChange={(e) => onChangeIsRepeat(e.target.checked)} checked={isRepeat} />
           <span>Repeat</span>
-        </label>
+        </label> */}
+
+        <Checkbox label="Repeat" checked={isRepeat} onChange={(e) => onChangeIsRepeat(e.target.checked)} />
 
         {/* <label className="block-label">
           <input type="checkbox" checked={isAutoPlay} onChange={(e) => onChangeAutoPlay(e.target.checked)} />

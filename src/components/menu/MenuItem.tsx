@@ -1,6 +1,6 @@
-import cx from "classnames";
 import { memo } from "react";
 import Check from "@images/check.svg?react";
+import { cx } from "@util/cx";
 
 interface ToggleMenuItemProps {
   label: string;

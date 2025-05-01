@@ -134,3 +134,7 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 .select-none {
   user-select: none;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}

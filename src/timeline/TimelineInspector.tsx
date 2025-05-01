@@ -1,11 +1,12 @@
+import { Checkbox } from "@components/Checkbox/Checkbox";
 import { Hint } from "@components/Hint";
 import { Select } from "@components/Select";
 import "@style/inspector.css";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { DotType, moveDot, UserDot } from "@timeline/point";
+import { cx } from "@util/cx";
 import { useStable } from "@util/hooks";
 import { round3dp } from "@util/index";
-import cx from "classnames";
 import { memo, useId } from "react";
 
 interface GlobalProps {
@@ -50,7 +51,6 @@ const GlobalSettings = memo(function GlobalSettings({
   return (
     <>
       <h2>Timeline</h2>
-
       <label className="stacked-label">
         <span>Property</span>
         <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
@@ -61,7 +61,6 @@ const GlobalSettings = memo(function GlobalSettings({
           ))}
         </Select>
       </label>
-
       <label className="stacked-label">
         <span>Extra frames</span>
         <div className="flex gap-4">
@@ -77,11 +76,7 @@ const GlobalSettings = memo(function GlobalSettings({
           <output htmlFor={samplesId}>{sampleCount}</output>
         </div>
       </label>
-
-      <label className="block-label">
-        <input type="checkbox" checked={isFlipped} onChange={(e) => onChangeIsFlipped(e.target.checked)} />{" "}
-        <span>Flip values</span>
-      </label>
+      <Checkbox label="Flip values" checked={isFlipped} onChange={(e) => onChangeIsFlipped(e.target.checked)} />
     </>
   );
 });

@@ -20,7 +20,7 @@ import Copy from "@images/copy.svg?react";
 import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
-import cx from "classnames";
+import { cx } from "@util/cx";
 
 function App() {
   const timelineRef = useRef<Timeline | null>(null);

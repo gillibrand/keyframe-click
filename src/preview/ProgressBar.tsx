@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import "./ProgressBar.css";
-import cx from "classnames";
+import { cx } from "@util/cx";
 
 interface Props {
   /**

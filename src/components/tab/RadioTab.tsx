@@ -1,6 +1,6 @@
 import Close from "@images/close.svg?react";
 import { ColorName, Colors } from "@util/Colors";
-import cx from "classnames";
+import { cx } from "@util/cx";
 import { CSSProperties, memo, useId, useMemo, useRef } from "react";
 
 interface Props {

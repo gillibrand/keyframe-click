@@ -4,7 +4,7 @@ import { useChildAnimator } from "@util/useChildAnimator";
 import { useCallback } from "react";
 import { RadioTab } from "./RadioTab";
 import "./tab.css";
-import cx from "classnames";
+import { cx } from "@util/cx";
 
 export interface TabData {
   cssProp: CssProp;

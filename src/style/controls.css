@@ -19,8 +19,14 @@
 
   min-width: 12ch;
 
-  &:not(:is(:active, :disabled, [aria-pressed="true"])) {
+  transition: box-shadow 100ms;
+
+  &:not(:disabled) {
     box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+  }
+
+  &:is(:active, [aria-pressed="true"]) {
+    box-shadow: 0.0625rem 0.0625rem 0 0 var(--shadow-color);
   }
 
   &:disabled {
