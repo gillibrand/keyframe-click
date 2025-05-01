@@ -1,6 +1,7 @@
 :root {
   --outline-color: var(--c-neo-black);
-  --outline-width: 2px;
+  --outline-color: var(--c-neo-blue);
+  --outline-width: 3px;
   --outline-offset: 2px;
 
   --border-color: var(--c-neo-black);
@@ -51,7 +52,7 @@
     }
 
     &:focus-visible {
-      outline: solid 2px var(--c-neo-black);
+      outline: solid var(--outline-width) var(--outline-color);
       outline-offset: 2px;
       box-shadow: none;
     }
