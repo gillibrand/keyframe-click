@@ -40,15 +40,25 @@
   &:not(:disabled) {
     cursor: pointer;
     color: white;
-    background-color: #0273f8;
+    color: var(--c-neo-white);
+    background-color: var(--c-neo-blue);
+
+    &.is-secondary {
+      color: var(--c-neo-black);
+      background-color: var(--c-neo-teal);
+      background-color: var(--c-neo-white);
+      background-color: white;
+    }
 
     &:hover {
       filter: brightness(1.05);
     }
 
     &.is-primary {
-      color: white;
-      background-color: #f801eb;
+      /* color: white; */
+      /* font-weight: bold; */
+      /* background-color: var(--c-neo-teal); */
+      /* color: var(--c-neo-black); */
     }
 
     &:focus-visible {

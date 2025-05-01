@@ -1,14 +1,26 @@
 .SplitButtons {
-  --radius: 0.5rem;
-  --color: var(--c-neutral-100);
-  --sb-bg-color: #f801eb;
+  --sb-radius: 0rem;
+  --sb-radius: 0.5rem;
+  --sb-radius: 999px;
+
+  --sb-bg-color: #ff69b4;
+  --sb-bg-color: var(--c-neo-pink);
+  --sb-bg-color: var(--c-neo-teal);
+  --sb-bg-color: var(--c-neo-blue);
+
+  --sb-color: var(--c-neutral-100);
+  --sb-color: var(--c-neo-black);
+  --sb-color: var(--c-neo-white);
+
+  /* min-width: 18rem; */
 }
 
 .SplitButtons > button {
   appearance: none;
-  color: var(--color);
-
-  padding: 0.375rem 1rem;
+  background-color: var(--sb-bg-color);
+  color: var(--sb-color);
+  /* min-width: 12ch; */
+  padding: 0.375rem 1.5rem;
   position: relative;
 
   border: 2px solid var(--c-neo-black);
@@ -17,20 +29,18 @@
     border-inline-start-style: none;
   }
 
-  background-color: var(--sb-bg-color);
-
   &:not(:active) {
     box-shadow: 0.125rem 0.125rem 0 0 var(--c-neo-black);
   }
 
   &:hover,
   &.is-pressed {
-    background-color: var(--c-green-800);
+    filter: brightness(0.95);
   }
 
   &:active {
-    background-color: var(--c-green-900);
-    box-shadow: px px 0 0px rgba(0 0 0 / 0.5);
+    filter: brightness(0.9);
+    box-shadow: 0.0675rem 0.0675rem 0 0 var(--c-neo-black);
   }
 
   &:enabled {
@@ -39,39 +49,13 @@
 
   &:first-child,
   &:focus-visible {
-    border-start-start-radius: var(--radius);
-    border-end-start-radius: var(--radius);
+    border-start-start-radius: var(--sb-radius);
+    border-end-start-radius: var(--sb-radius);
   }
 
   &:last-child,
   &:focus-visible {
-    border-start-end-radius: var(--radius);
-    border-end-end-radius: var(--radius);
+    border-start-end-radius: var(--sb-radius);
+    border-end-end-radius: var(--sb-radius);
   }
-
-  &:focus-visible {
-    z-index: 1;
-    outline-offset: 2px;
-    border-color: white;
-  }
-
-  /* Button vertical separator */
-  /* &:not(:first-child)::before {
-    display: block;
-    position: absolute;
-    height: 65%;
-    width: 1px;
-    border-inline-start: solid 1px var(--color);
-    content: "";
-    left: -0px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.75;
-  }
-
-  &:is(:hover, :focus-visible, .is-pressed)::before,
-  &:is(:hover, :focus-visible, .is-pressed) + &::before {
-    transition: opacity 100ms;
-    opacity: 0;
-  } */
 }

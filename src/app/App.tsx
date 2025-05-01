@@ -438,7 +438,7 @@ function App() {
               <button
                 title="Set options and copy keyframes"
                 onClick={handleExport}
-                className={isExporting ? "is-pressed" : undefined}
+                className={cx("grow", { "is-pressed": isExporting })}
               >
                 Copy...
               </button>
