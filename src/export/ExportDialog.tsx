@@ -134,10 +134,10 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
         </div>
 
         <footer className="ExportDialog__footer flex justify-end gap-4 mt-4">
-          <button onClick={animateClose} className="push-button" type="button">
+          <button onClick={animateClose} className="button" type="button">
             Cancel
           </button>
-          <button className="push-button is-primary" type="submit">
+          <button className="button is-primary" type="submit">
             Copy
           </button>
         </footer>

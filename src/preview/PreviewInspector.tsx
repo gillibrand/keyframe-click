@@ -53,11 +53,11 @@ export function PreviewInspector({
 
       <div className="stack-small">
         {isPlaying ? (
-          <button className="push-button w-full" onClick={onClickStop}>
+          <button className="button w-full" onClick={onClickStop}>
             Stop
           </button>
         ) : (
-          <button className="push-button w-full" onClick={onClickPlay}>
+          <button className="button w-full" onClick={onClickPlay}>
             Play
           </button>
         )}

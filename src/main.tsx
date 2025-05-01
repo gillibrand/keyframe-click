@@ -1,6 +1,7 @@
 import "@style/global.css";
 import "@style/util.css";
 import "@style/colors.css";
+import "@style/controls.css";
 import "@style/layout.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

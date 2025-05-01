@@ -4,19 +4,19 @@
 
 .Select > select {
   appearance: none;
-  border: solid 2px var(--c-neo-black);
+  border: solid var(--border-width) var(--border-color);
   border-radius: 0;
-  padding: calc(0.25rem - 0px);
+  padding: 0.25rem;
   display: block;
   width: 100%;
   cursor: pointer;
 
   &:not(:disabled) {
-    box-shadow: 0.125rem 0.125rem 0 0 var(--c-neo-black);
+    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
 
     &:focus-visible {
-      outline: solid 2px var(--c-neo-black);
-      outline-offset: 2px;
+      outline: solid var(--outline-width) var(--outline-color);
+      outline-offset: var(--outline-offset);
       box-shadow: 0 0 0 2px var(--c-neo-white);
     }
   }
