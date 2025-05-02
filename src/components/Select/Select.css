@@ -10,6 +10,7 @@
   display: block;
   width: 100%;
   cursor: pointer;
+  background-color: white;
 
   &:not(:disabled) {
     box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);

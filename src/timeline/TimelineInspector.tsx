@@ -70,6 +70,8 @@ const GlobalSettings = memo(function GlobalSettings({
             max={50}
             className="flex-auto"
             value={sampleCount}
+            // Must supply the style as a CSS prop for Webkit to style the fill
+            style={{ "--progress": `${sampleCount * 2}%` } as React.CSSProperties}
             onChange={(e) => onChangeSampleCount(parseInt(e.target.value))}
             id={samplesId}
           />

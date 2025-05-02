@@ -364,28 +364,37 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.stroke();
     }
 
-    if (document.activeElement === _canvas) {
-      // Draw our own focus ring. This is because we draw large dots that appear to break out of the canvas
-      _cx.lineWidth = 4;
-      _cx.strokeStyle = "#1c7ef3";
-      _cx.lineJoin = "round";
-    } else {
-      _cx.lineWidth = 2;
-      _cx.strokeStyle = Colors.NeoBlack;
-    }
-
+    // border
+    _cx.lineWidth = 2;
+    _cx.strokeStyle = Colors.NeoBlack;
     _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX - 1, fullDiffReal);
 
-    // draw shadow
-    _cx.strokeStyle = Colors.NeoBlack;
-    _cx.lineWidth = 4;
-    _cx.beginPath();
-    _cx.moveTo(InsetX + 4, _canvas.clientHeight - InsetY + 2);
-    _cx.lineTo(width() - InsetX + 2, _canvas.clientHeight - InsetY + 2);
-    _cx.lineTo(width() - InsetX + 2, InsetY + 4);
-    _cx.stroke();
+    const isFocused = document.activeElement === _canvas;
 
-    _cx.lineWidth = 1;
+    // shadow
+    if (!isFocused) {
+      _cx.strokeStyle = Colors.NeoBlack;
+      _cx.lineWidth = 4;
+      _cx.beginPath();
+      _cx.moveTo(InsetX + 4, _canvas.clientHeight - InsetY + 2);
+      _cx.lineTo(width() - InsetX + 2, _canvas.clientHeight - InsetY + 2);
+      _cx.lineTo(width() - InsetX + 2, InsetY + 4);
+      _cx.stroke();
+    }
+
+    // Draw our own focus ring. This is because we draw large dots that appear to break out of the canvas
+    if (isFocused) {
+      // blue line
+      _cx.lineWidth = 3;
+      _cx.strokeStyle = "#1c7ef3";
+      _cx.strokeRect(InsetX - 3, InsetY - 3, width() - 2 * InsetX - 1 + 6, fullDiffReal + 6);
+
+      // inset white line to cover background color and ensure the outer client is well contrasted
+      _cx.strokeRect(InsetX - 3, InsetY - 3, width() - 2 * InsetX - 1 + 6, fullDiffReal + 6);
+      _cx.lineWidth = 1;
+      _cx.strokeStyle = "white";
+      _cx.strokeRect(InsetX - 1, InsetY - 1, width() - 2 * InsetX - 1 + 2, fullDiffReal + 2);
+    }
 
     drawAxisText();
   }

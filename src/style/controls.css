@@ -67,12 +67,12 @@
       border-color: transparent;
       transition: none;
     }
-  }
 
-  &:active,
-  &[aria-pressed="true"] {
-    background-color: #0762d2;
-    /* box-shadow: 0.0625rem 0.0625rem 0 0 var(--shadow-color); */
+    &:active,
+    &[aria-pressed="true"] {
+      filter: brightness(0.9);
+      /* color: white; */
+    }
   }
 }
 
@@ -87,5 +87,62 @@
       outline-offset: var(--outline-offset);
       box-shadow: 0 0 0 2px var(--c-neo-white);
     }
+  }
+}
+
+/* RANGE */
+input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+
+  /* Chrome, Safari, Edge (WebKit-based) */
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--c-neo-teal);
+    background: var(--c-neo-blue);
+    border: solid 2px var(--c-neo-black);
+    box-shadow:
+      2px 2px 0 0 var(--shadow-color),
+      0 0 0 2px white;
+    margin-top: -8px;
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: 10px;
+    background-image: linear-gradient(to right, var(--c-neo-blue) var(--progress), white var(--progress));
+    border-radius: 999px;
+    border: solid 2px var(--c-neo-black);
+  }
+
+  /* FIREFOX */
+  /* We can style the "control" itself since there is a pseudo element to style the range */
+  @-moz-document url-prefix() {
+    & {
+      border-radius: 999px;
+      border: solid 2px var(--c-neo-black);
+      height: 10px;
+    }
+  }
+
+  &::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: var(--c-neo-teal);
+    background: var(--c-neo-blue);
+    border: solid 2px var(--c-neo-black);
+    box-shadow:
+      2px 2px 0 0 var(--shadow-color),
+      0 0 0 2px white;
+  }
+
+  &::-moz-range-progress {
+    height: 6px;
+    background: var(--c-neo-blue);
+    border-radius: 3px;
   }
 }

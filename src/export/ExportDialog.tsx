@@ -100,6 +100,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
       onClose={onClose}
       className="ExportDialog origin-top-right"
       onCancel={handleCancel}
+      // FIXME: this only works in Chrome
       closedby="any"
       aria-labelledby={dialogLabelId}
       id={id}
