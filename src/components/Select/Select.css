@@ -11,11 +11,12 @@
   width: 100%;
   cursor: pointer;
   background-color: white;
+  outline: none;
 
   &:not(:disabled) {
     box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
 
-    &:focus-visible {
+    &:focus-visible.focus-visible {
       outline: solid var(--outline-width) var(--outline-color);
       outline-offset: var(--outline-offset);
       box-shadow: 0 0 0 2px var(--c-neo-white);

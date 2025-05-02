@@ -21,6 +21,7 @@ import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, diamond, ex, willDraw } from "./drawing";
 import { Layers } from "./Layers";
 import { diffPt, findYForXInCurve, nearPt, Point, togglePt, UserDot } from "./point";
+import { isFocusVisible } from "@util/focusVisible";
 
 type DraggingPoint = {
   point: UserDot;
@@ -110,6 +111,16 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   let _onIsAdding: ((adding: boolean) => void) | undefined;
 
   let _state: State = "default";
+
+  // We save whether focus is "visible" (based on keyboard vs mouse activity) when we focus on the
+  // canvas. This lets us maintain the same visible focus state the entire time so we don't Tab in,
+  // then click a dot and have the border disappear. Similarly, if we click with the mouse first, we
+  // don't want the focus ring to appear if we hit the keyboard. Basically, only show focus ring if
+  // we Tabbed into this.
+  //
+  // I want o investigate a more subtle ring later so maybe we always show it. It's useful but is a
+  // little distracting as-is.
+  let _isFocusVisible = false;
 
   /**
    * Applies scaling to match the retina screen resolution. This will increase the actual canvas element size, but scale
@@ -369,7 +380,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _cx.strokeStyle = Colors.NeoBlack;
     _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX - 1, fullDiffReal);
 
-    const isFocused = document.activeElement === _canvas;
+    const isFocused = _isFocusVisible;
 
     // shadow
     if (!isFocused) {
@@ -683,10 +694,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function onFocus() {
+    _isFocusVisible = isFocusVisible();
     draw();
   }
 
   function onBlur() {
+    _isFocusVisible = false;
     draw();
   }
 
