@@ -97,7 +97,7 @@ input[type="range"] {
   cursor: pointer;
 
   outline: none;
-
+  margin: 0;
   &:focus-visible {
     box-shadow:
       0 0 0 1px white,
