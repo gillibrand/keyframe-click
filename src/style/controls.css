@@ -45,26 +45,27 @@
 
     &.is-secondary {
       color: var(--c-neo-black);
-      background-color: var(--c-neo-teal);
-      background-color: var(--c-neo-white);
       background-color: white;
+
+      &:focus-visible {
+        border-color: var(--c-neo-black);
+      }
+    }
+
+    &.is-danger {
+      background-color: var(--c-neo-danger);
     }
 
     &:hover {
       filter: brightness(1.05);
     }
 
-    &.is-primary {
-      /* color: white; */
-      /* font-weight: bold; */
-      /* background-color: var(--c-neo-teal); */
-      /* color: var(--c-neo-black); */
-    }
-
     &:focus-visible {
       outline: solid var(--outline-width) var(--outline-color);
-      outline-offset: 2px;
+      outline-offset: var(--outline-offset);
       box-shadow: none;
+      border-color: transparent;
+      transition: none;
     }
   }
 

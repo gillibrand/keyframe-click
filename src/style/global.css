@@ -37,6 +37,8 @@
   --c-neo-teal: #4ccdc0;
   --c-neo-pink: #f902eb;
 
+  --c-neo-danger: #ff2583;
+
   --c-blue: #1c7ef3;
   --c-body: var(--c-gray-700);
   --c-bg: var(--c-neo-white);

@@ -31,7 +31,7 @@
 .Checkbox:has(:focus-visible) {
   .Checkbox_box {
     outline: solid var(--outline-width) var(--outline-color);
-    outline-offset: 2px;
+    outline-offset: var(--outline-offset);
     box-shadow: 1px 1px 0 0 var(--shadow-color);
     box-shadow: none;
   }

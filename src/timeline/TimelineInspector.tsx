@@ -137,15 +137,15 @@ export const TimelineInspector = memo(function Inspector({
           >
             Add Point
           </button>
-          <button className="button flex-auto basis-1" onClick={onClickDelete} disabled={!selected}>
-            Delete{" "}
+          <button className="button flex-auto basis-1 is-danger" onClick={onClickDelete} disabled={!selected}>
+            Delete
           </button>
         </div>
         <Hint>
           {useStable(
-            <>
-              Hold <kbd>Shift</kbd> over the grid to add quickly
-            </>
+            <div className="text-center">
+              Hold <kbd>Shift</kbd> over timeline to add quickly
+            </div>
           )}
         </Hint>
       </div>

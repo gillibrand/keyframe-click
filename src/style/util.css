@@ -127,6 +127,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   text-align: end;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .justify-end {
   justify-content: end;
 }
@@ -137,4 +141,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

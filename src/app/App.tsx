@@ -448,6 +448,7 @@ function App() {
                 aria-expanded={isExporting}
                 aria-controls={activeExportId}
                 onClick={handleCopyNow}
+                className="center"
               >
                 <Copy />
                 <span className="sr-only">Copy keyframes to clipboard with current options</span>
