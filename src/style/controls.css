@@ -26,7 +26,7 @@
     box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
   }
 
-  &:is(:active, [aria-pressed="true"]) {
+  &:not(:disabled):is(:active, [aria-pressed="true"]) {
     box-shadow: 0.0625rem 0.0625rem 0 0 var(--shadow-color);
   }
 
@@ -68,10 +68,9 @@
       transition: none;
     }
 
-    &:active,
+    &:active:not(:disabled),
     &[aria-pressed="true"] {
       filter: brightness(0.9);
-      /* color: white; */
     }
   }
 }
