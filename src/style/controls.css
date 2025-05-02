@@ -96,13 +96,27 @@ input[type="range"] {
   -webkit-appearance: none;
   cursor: pointer;
 
+  outline: none;
+
+  &:focus-visible {
+    box-shadow:
+      0 0 0 1px white,
+      0 0 0 4px var(--c-neo-blue);
+  }
+
+  @-moz-document url-prefix() {
+    &:focus-visible {
+      box-shadow:
+        0 0 0 2px white,
+        0 0 0 5px var(--c-neo-blue);
+    }
+  }
   /* Chrome, Safari, Edge (WebKit-based) */
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background: var(--c-neo-teal);
     background: var(--c-neo-blue);
     border: solid 2px var(--c-neo-black);
     box-shadow:
