@@ -70,7 +70,7 @@ export function PreviewInspector({
           <span>Repeat</span>
         </label> */}
 
-        <Checkbox label="Repeat" checked={isRepeat} onChange={(e) => onChangeIsRepeat(e.target.checked)} />
+        <Checkbox label="Loop" checked={isRepeat} onChange={(e) => onChangeIsRepeat(e.target.checked)} />
 
         {/* <label className="block-label">
           <input type="checkbox" checked={isAutoPlay} onChange={(e) => onChangeAutoPlay(e.target.checked)} />

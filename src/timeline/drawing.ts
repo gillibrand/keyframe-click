@@ -42,8 +42,9 @@ export function circle(p: Point, ctx: CanvasRenderingContext2D) {
   const x = center(p.x);
   const y = center(p.y);
 
-  ctx.arc(x, y, 5, 0, 2 * Math.PI);
+  ctx.arc(x, y, 7, 0, 2 * Math.PI);
   ctx.fill();
+  ctx.lineWidth = 2;
   ctx.stroke();
 }
 
@@ -54,6 +55,7 @@ export function bullsEye(p: Point, focused: boolean, ctx: CanvasRenderingContext
     ctx.fillStyle = Colors.White;
     ctx.strokeStyle = Colors.Black;
     ctx.beginPath();
+    ctx.lineWidth = 2;
     ctx.arc(x, y, 7, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();

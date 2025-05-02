@@ -481,7 +481,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   function drawAddMarker() {
     if (_addingAtUserPoint === null) return;
 
-    _cx.strokeStyle = Colors.Blue;
+    _cx.strokeStyle = Colors.Danger;
+    _cx.lineWidth = 2;
 
     const dots = _layers.getDots();
     let y = findYForXInCurve(_addingAtUserPoint.x, dots);
@@ -831,7 +832,14 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     endAddingDot();
     _state = "adding";
 
-    _addingAtUserPoint = at ? asUserPoint(at) : null;
+    // Start where the mouse is, or at a default when they click the Add Point button off the
+    // timeline. That starts on the right side to be near the button.
+    _addingAtUserPoint = at
+      ? asUserPoint(at)
+      : {
+          x: 95,
+          y: 50,
+        };
 
     _canvas.addEventListener("mousemove", onMouseMoveAdding);
     _canvas.addEventListener("click", onClickAdding);

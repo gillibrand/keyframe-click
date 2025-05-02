@@ -1,6 +1,8 @@
 export const Colors = {
   Black: "black",
   Red: "red",
+  Pink: "#f902eb",
+  Danger: "#ff2583",
   White: "white",
   Blue: "#1c7ef3",
 

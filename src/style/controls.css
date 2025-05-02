@@ -93,18 +93,19 @@
 input[type="range"] {
   appearance: none;
   -webkit-appearance: none;
+  background-color: transparent;
   cursor: pointer;
-
   outline: none;
   margin: 0;
+
   &:focus-visible {
-    box-shadow:
-      0 0 0 1px white,
-      0 0 0 4px var(--c-neo-blue);
+    outline: solid 3px var(--c-neo-blue);
+    outline-offset: 2px;
   }
 
   @-moz-document url-prefix() {
     &:focus-visible {
+      outline: none;
       box-shadow:
         0 0 0 2px white,
         0 0 0 5px var(--c-neo-blue);
