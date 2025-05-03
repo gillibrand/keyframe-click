@@ -1,11 +1,11 @@
 :root {
   --outline-color: var(--c-neo-black);
   --outline-color: var(--c-neo-blue);
-  --outline-width: 3px;
-  --outline-offset: 2px;
+  --outline-width: 0.1875rem;
+  --outline-offset: 0.125rem;
 
   --border-color: var(--c-neo-black);
-  --border-width: 2px;
+  --border-width: 0.125rem;
 
   --shadow-color: var(--border-color);
 }
@@ -79,6 +79,8 @@
   appearance: none;
   border: solid var(--border-width) var(--border-color);
   padding: calc(0.25rem + 1px);
+  border-top-width: 0.1875rem;
+  border-left-width: 0.1875rem;
 
   &:not(:disabled) {
     &:focus-visible {
