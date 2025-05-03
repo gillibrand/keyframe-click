@@ -1,6 +1,6 @@
 .NoteList {
   position: absolute;
-  top: 0.5rem;
+  top: 0rem;
   left: 50%;
   translate: -50% 0;
   z-index: 1;
@@ -12,15 +12,21 @@
   & > * {
     padding: 0.5rem 1rem;
 
-    border: solid 2px var(--c-sky-800);
-    border-radius: 0.25rem;
-    box-shadow: 5px 5px 15px rgba(0 0 0 / 0.4);
-    color: var(--c-sky-800);
-    background-color: var(--c-sky-50);
-    /* font-size: var(--sz-small); */
+    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+
+    box-shadow:
+      0.25rem 0.25rem 0 0 var(--c-neo-black),
+      0 0 0 0.5px white,
+      0.25rem 0.25rem 0 0.5px white,
+      0 0 75px rgba(0 0 0 / 0.25);
+
+    border-radius: 0.5rem;
+    border: solid 2px var(--c-neo-black);
+
+    background-color: var(--c-neo-teal);
+    color: var(--c-neo-black);
 
     pointer-events: none;
-    outline: solid 1px var(--c-neutral-50);
 
     max-width: 40ch;
     min-width: 15ch;

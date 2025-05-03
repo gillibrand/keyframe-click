@@ -17,7 +17,6 @@
   --bg: var(--c-neo-white);
   background: var(--bg);
 
-  box-shadow: 0.25rem 0.25rem 2rem rgba(0 0 0 / 0.2);
   box-shadow:
     0.25rem 0.25rem 0 0 var(--c-neo-black),
     0 0 0 0.5px white,

@@ -1,10 +1,16 @@
 import { dropIn, dropOut, useChildAnimator } from "@util/useChildAnimator";
-import { memo, useContext } from "react";
-import { _NoteContext, NoteProps } from "./_NoteContext";
+import { memo } from "react";
+import { NoteProps, useNoteContext } from "./_NoteContext";
 
-function Note({ message }: NoteProps) {
+function Note({ message, id }: NoteProps) {
+  const { dismissNote } = useNoteContext();
+
+  function handleDelete() {
+    dismissNote(id);
+  }
+
   return (
-    <li className="Note ">
+    <li className="Note" onClick={handleDelete}>
       <div>{message}</div>
     </li>
   );
@@ -16,8 +22,7 @@ function Note({ message }: NoteProps) {
  * notification messages if they are visible.
  */
 export const NoteList = memo(function NoteList() {
-  const context = useContext(_NoteContext);
-  if (!context) throw new Error("not wrapped in NoteProvider");
+  const context = useNoteContext();
 
   const { parentRef } = useChildAnimator<HTMLUListElement>("both", {
     animateIn: dropIn,
@@ -25,7 +30,7 @@ export const NoteList = memo(function NoteList() {
   });
 
   return (
-    <ul className="NoteList [ flex flex-col items-center ] stack-small" ref={parentRef}>
+    <ul className="NoteList [ flex flex-col items-center ] stack" ref={parentRef}>
       {context.notes.map((note) => (
         <Note key={note.id} {...note}></Note>
       ))}

@@ -12,7 +12,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
    *
    * @param deadId ID of note to remove.
    */
-  function deleteNote(deadId: string) {
+  function dismissNote(deadId: string) {
     setNotes((old) => {
       return old.filter((note) => note.id !== deadId);
     });
@@ -28,7 +28,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
       }
 
       setTimeout(() => {
-        deleteNote(id);
+        dismissNote(id);
       }, 3000);
 
       return old?.concat({
@@ -40,7 +40,8 @@ export function NoteProvider({ children }: PropsWithChildren) {
 
   const value = {
     sendNote,
-    notes,
+    dismissNote,
+    notes: [...notes],
   };
 
   return <_NoteContext.Provider value={value}>{children}</_NoteContext.Provider>;
