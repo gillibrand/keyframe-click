@@ -1,19 +1,20 @@
 .Segmented {
   appearance: none;
   padding: 0;
-  border: solid 1px var(--c-gray-500);
+  border: solid var(--border-width) var(--border-color);
   display: flex;
-  /* font-size: var(--sz-small); */
-  border-radius: 5px;
+  border-radius: 0.5rem;
   background-color: white;
   overflow: hidden;
   justify-items: center;
   justify-content: center;
 
   &:has(:focus-visible) {
-    outline: solid 2px var(--c-blue);
-    outline-offset: 1px;
+    outline: solid var(--outline-width) var(--c-neo-blue);
+    outline-offset: var(--outline-offset);
   }
+
+  font-size: var(--sz-small);
 }
 
 .Segmented__button {
@@ -23,26 +24,24 @@
   }
 
   background-color: white;
-  padding: 0.125rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   text-align: center;
   flex: auto;
 
   /* leading border to separate each button */
   &:not(:first-child) {
-    border-inline-start: solid 1px;
+    border-inline-start: solid var(--border-width);
     border-color: inherit;
   }
 
-  /*  */
   &:has(:checked) {
     &,
     &:has(:checked) + * {
-      border-color: var(--c-blue);
+      border-color: var(--c-neo-blue);
     }
 
     background-color: var(--c-blue-500);
     color: white;
-    /* text-shadow: 0px 0px 2px rgba(0 0 0 / 0.7); */
   }
 
   & > input {
