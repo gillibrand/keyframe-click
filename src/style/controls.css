@@ -78,7 +78,7 @@
 .textbox {
   appearance: none;
   border: solid var(--border-width) var(--border-color);
-  padding: calc(0.25rem + 1px);
+  padding: calc(0.25rem);
   border-top-width: 0.1875rem;
   border-left-width: 0.1875rem;
 
