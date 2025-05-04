@@ -10,12 +10,14 @@
   justify-content: center;
   font-size: var(--sz-small);
 
+  &:not(:has(:focus-visible)) {
+    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+  }
+
   &:has(:focus-visible) {
     outline: solid var(--outline-width) var(--c-neo-blue);
     outline-offset: var(--outline-offset);
   }
-
-  box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
 }
 
 .Segmented__button {

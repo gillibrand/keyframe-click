@@ -1,9 +1,10 @@
 import { dropIn, dropOut, useChildAnimator } from "@util/useChildAnimator";
 import { memo } from "react";
-import { NoteProps, useNoteContext } from "./_NoteContext";
+import { NoteProps, useNoteApi, useNotes } from "./_NoteContext";
+import "./note.css";
 
 function Note({ message, id }: NoteProps) {
-  const { dismissNote } = useNoteContext();
+  const { dismissNote } = useNoteApi();
 
   function handleDelete() {
     dismissNote(id);
@@ -22,7 +23,7 @@ function Note({ message, id }: NoteProps) {
  * notification messages if they are visible.
  */
 export const NoteList = memo(function NoteList() {
-  const context = useNoteContext();
+  const notes = useNotes();
 
   const { parentRef } = useChildAnimator<HTMLUListElement>("both", {
     animateIn: dropIn,
@@ -31,7 +32,7 @@ export const NoteList = memo(function NoteList() {
 
   return (
     <ul className="NoteList [ flex flex-col items-center ] stack" ref={parentRef}>
-      {context.notes.map((note) => (
+      {notes.map((note) => (
         <Note key={note.id} {...note}></Note>
       ))}
     </ul>

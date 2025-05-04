@@ -5,7 +5,6 @@ import "@style/inspector.css";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { DotType, moveDot, UserDot } from "@timeline/point";
 import { cx } from "@util/cx";
-import { useStable } from "@util/hooks";
 import { round3dp } from "@util/index";
 import { memo, useId } from "react";
 
@@ -144,11 +143,15 @@ export const TimelineInspector = memo(function Inspector({
           </button>
         </div>
         <Hint>
-          {useStable(
-            <div className="text-center">
-              Hold <kbd>Shift</kbd> over timeline to add quickly
-            </div>
-          )}
+          <div className="text-center">
+            {isAdding ? (
+              <>Click timeline to add the point</>
+            ) : (
+              <>
+                Hold <kbd>Shift</kbd> over timeline to add quickly
+              </>
+            )}
+          </div>
         </Hint>
       </div>
 

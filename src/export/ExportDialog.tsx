@@ -1,12 +1,12 @@
+import { useSetting } from "@app/useSettings";
 import { Hint } from "@components/Hint";
-import { useSendNote } from "@components/note";
+import { useNoteApi } from "@components/note/_NoteContext";
 import Tail from "@images/tail.svg?react";
 import { Layers } from "@timeline/Layers";
 import { useEffect, useId, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import "./ExportDialog.css";
 import { copyToClipboard, genCssKeyframeList, generateCssAtRule, normalizeAtRuleName } from "./output";
-import { useSetting } from "@app/useSettings";
 
 interface Props {
   open: boolean;
@@ -83,7 +83,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
     setRuleName(normalizeAtRuleName(proposed));
   }
 
-  const sendNote = useSendNote();
+  const { sendNote } = useNoteApi();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -107,7 +107,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
     >
       <Tail className="ExportDialog__tail" />
 
-      <form className="ExportDialog__form [ flex flex-col ] [ Xstack ]" onSubmit={handleSubmit}>
+      <form className="ExportDialog__form [ flex flex-col ]" onSubmit={handleSubmit}>
         <div className="flex flex-col min-h-px stack p-4">
           <h2 id={dialogLabelId} className="select-none">
             Copy keyframes

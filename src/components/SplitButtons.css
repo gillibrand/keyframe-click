@@ -19,7 +19,6 @@
   appearance: none;
   background-color: var(--sb-bg-color);
   color: var(--sb-color);
-  /* min-width: 12ch; */
   padding: 0.375rem 1.5rem;
   position: relative;
 
@@ -39,6 +38,7 @@
   }
 
   &:active {
+    transition: box-shadow 100ms;
     filter: brightness(0.9);
     box-shadow: 0.0675rem 0.0675rem 0 0 var(--c-neo-black);
   }

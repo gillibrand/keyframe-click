@@ -11,7 +11,7 @@ import "./App.css";
 import { useSetting } from "./useSettings";
 
 import { MenuProvider } from "@components/menu/MenuContext";
-import { useSendNote, NoteList } from "@components/note";
+import { NoteList, useNoteApi } from "@components/note";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { ExportDialog } from "@export/ExportDialog";
@@ -42,13 +42,13 @@ function App() {
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
   const [isDataDirty, isDotsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
+  // const [showMessage, setShowMessage] = useState(false);
 
   // Timeline global settings
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
-  // const [ruleName] = useSetting("ruleName", "my-animation");
+  const { sendNote } = useNoteApi();
 
   useEffect(
     /**
@@ -98,7 +98,6 @@ function App() {
       };
 
       timeline.onAdding = (adding: boolean) => {
-        if (!adding) setShowMessage(false);
         setIsAdding(adding);
       };
 
@@ -143,7 +142,6 @@ function App() {
   const handleClickAdd = useCallback(() => {
     if (!canvasRef.current) return;
 
-    setShowMessage(true);
     const timeline = timelineRef.current;
     if (!timeline) return;
 
@@ -386,8 +384,6 @@ function App() {
 
   const [ruleName] = useSetting("ruleName", "my-anim");
 
-  const sendNote = useSendNote();
-
   function handleCopyNow() {
     const note = copyToClipboard(layers, ruleName);
     sendNote(note);
@@ -470,7 +466,7 @@ function App() {
                 tabIndex={0}
               />
 
-              {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>}
+              {/* {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>} */}
             </div>
 
             {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}

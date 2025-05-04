@@ -1,5 +1,5 @@
-import { PropsWithChildren, ReactNode, useState } from "react";
-import { NoteProps, _NoteContext } from "./_NoteContext";
+import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
+import { NoteApiValue, NoteProps, NoteApiContext, NotesContext } from "./_NoteContext";
 
 const MaxNotes = 3;
 
@@ -12,37 +12,47 @@ export function NoteProvider({ children }: PropsWithChildren) {
    *
    * @param deadId ID of note to remove.
    */
-  function dismissNote(deadId: string) {
+  const dismissNote = useCallback((deadId: string) => {
     setNotes((old) => {
       return old.filter((note) => note.id !== deadId);
     });
-  }
+  }, []);
 
   /** Adds a visible note. Schedules it to be removed soon. */
-  function sendNote(message: ReactNode) {
-    setNotes((old) => {
+  const sendNote = useCallback(
+    (message: ReactNode, timeoutMs: number = 3000) => {
       const id = crypto.randomUUID();
 
-      if (old.length >= MaxNotes) {
-        old = old.slice(1);
-      }
+      setNotes((old) => {
+        if (old.length >= MaxNotes) {
+          old = old.slice(1);
+        }
 
-      setTimeout(() => {
-        dismissNote(id);
-      }, 3000);
+        setTimeout(() => {
+          dismissNote(id);
+        }, timeoutMs);
 
-      return old?.concat({
-        message,
-        id: id,
+        return old?.concat({
+          message,
+          id: id,
+        });
       });
-    });
-  }
 
-  const value = {
-    sendNote,
-    dismissNote,
-    notes: [...notes],
-  };
+      return id;
+    },
+    [dismissNote]
+  );
 
-  return <_NoteContext.Provider value={value}>{children}</_NoteContext.Provider>;
+  const api: NoteApiValue = useMemo(() => {
+    return {
+      sendNote,
+      dismissNote,
+    };
+  }, [sendNote, dismissNote]);
+
+  return (
+    <NotesContext.Provider value={notes}>
+      <NoteApiContext.Provider value={api}>{children}</NoteApiContext.Provider>
+    </NotesContext.Provider>
+  );
 }
