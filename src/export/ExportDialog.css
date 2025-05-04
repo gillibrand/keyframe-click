@@ -49,7 +49,7 @@
 
 .ExportDialog__footer {
   background-color: var(--c-neo-white);
-  border-top: solid 2px black;
+  /* border-top: solid 2px black; */
   border-end-start-radius: 1rem;
   border-end-end-radius: 1rem;
 }

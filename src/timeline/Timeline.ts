@@ -37,12 +37,12 @@ type DraggingHandle = {
 
 type Dragging = DraggingPoint | DraggingHandle;
 
-function createThreshold(origin: Point, threshold: number) {
+function createThreshold(realOrigin: Point, threshold: number) {
   let passed = false;
 
   return (e: MouseEvent) => {
     if (!passed) {
-      if (!nearPt(origin, asUserX(e.offsetX), asUserY(e.offsetY), threshold)) {
+      if (!nearPt(realOrigin, e.offsetX, e.offsetY, threshold)) {
         passed = true;
       }
     }
@@ -196,8 +196,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     if (_addingAtUserPoint !== null) return;
 
     _dragging = null;
-    const x = asUserX(e.offsetX);
-    const y = asUserY(e.offsetY);
+    const realX = e.offsetX;
+    const x = asUserX(realX);
+    const realY = e.offsetY;
+    const y = asUserY(realY);
 
     const isConvertClick = e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey;
     let newSelected: number | null = null;
@@ -209,7 +211,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
         for (let i = 0; i < dots.length; i++) {
           const p = dots[i];
 
-          if (nearPt(p, x, y)) {
+          if (nearPt(asRealPoint(p), realX, realY)) {
             togglePt(p);
             newSelected = i;
             // TODO: this can cause two draws. May need to buffer
@@ -221,7 +223,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       } else {
         for (let i = 0; i < dots.length; i++) {
           const p = dots[i];
-          if (nearPt(p, x, y)) {
+          if (nearPt(asRealPoint(p), realX, realY)) {
             newSelected = i;
             const maxX = dots[i + 1] ? dots[i + 1].x : width();
             const minX = i > 0 ? dots[i - 1].x : 0;
@@ -230,10 +232,11 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
           }
 
           if (p.type === "round") {
-            if (nearPt(p.h1, x, y)) {
+            console.info(">>> p.h1", p.h1);
+            if (nearPt(asRealPoint(p.h1), realX, realY)) {
               newSelected = i;
               _dragging = { point: p, handle: p.h1, otherHandle: p.h2 };
-            } else if (nearPt(p.h2, x, y)) {
+            } else if (nearPt(asRealPoint(p.h2), realX, realY)) {
               newSelected = i;
               _dragging = { point: p, handle: p.h2, otherHandle: p.h1 };
             }
@@ -320,7 +323,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   }
 
   function startDrag(x: number, y: number) {
-    isPastThreshold = createThreshold({ x, y }, 1);
+    isPastThreshold = createThreshold({ x: asRealX(x), y: asRealY(y) }, 2);
     document.addEventListener("mousemove", onMouseMoveDrag);
     document.addEventListener("mouseup", onMouseUpDrag);
   }
