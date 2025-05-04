@@ -454,7 +454,7 @@ function App() {
         </div>
 
         {/* TIMELINE ROW */}
-        <div className="[ gradient-row ] [ grow ] [ flex flex-col ]">
+        <div className="[ row ] [ grow ]">
           <div className="inspector-sidebar grow">
             <div className="timeline-wrapper ">
               <canvas
@@ -490,7 +490,7 @@ function App() {
         </div>
 
         {/* PREVIEW ROW */}
-        <div className="gradient-row">
+        <div className="row">
           <aside className="inspector-sidebar">
             {preview}
 
