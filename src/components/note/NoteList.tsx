@@ -31,7 +31,7 @@ export const NoteList = memo(function NoteList() {
   });
 
   return (
-    <ul className="NoteList [ flex flex-col items-center ]" ref={parentRef}>
+    <ul className="NoteList [ flex flex-col items-center ]" ref={parentRef} aria-live="polite" role="status">
       {notes.map((note) => (
         <Note key={note.id} {...note}></Note>
       ))}
