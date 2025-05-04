@@ -10,6 +10,10 @@
   list-style: none;
 
   & > * {
+    /* Must use margin button of the visible element to push down the next note. Can't be on the
+    wrapper since that needs to animation to height zero.  */
+    margin-bottom: 1rem;
+
     padding: 0.5rem 1rem;
 
     box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);

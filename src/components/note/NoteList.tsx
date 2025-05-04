@@ -31,7 +31,7 @@ export const NoteList = memo(function NoteList() {
   });
 
   return (
-    <ul className="NoteList [ flex flex-col items-center ] stack" ref={parentRef}>
+    <ul className="NoteList [ flex flex-col items-center ]" ref={parentRef}>
       {notes.map((note) => (
         <Note key={note.id} {...note}></Note>
       ))}
