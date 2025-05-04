@@ -48,11 +48,9 @@
   }
 
   &:focus-visible {
-    outline: solid var(--outline-width) var(--outline-color);
-    outline-offset: var(--outline-offset);
-    box-shadow: 0 0 0 var(--outline-offset) white;
-    border-color: transparent;
-    z-index: 1;
+    outline: solid var(--outline-width) white;
+    outline-offset: -5px;
+    outline-offset: -5px;
   }
 
   &:first-child {
