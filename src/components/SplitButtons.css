@@ -48,9 +48,8 @@
   }
 
   &:focus-visible {
-    outline: solid var(--outline-width) white;
-    outline-offset: -5px;
-    outline-offset: -5px;
+    outline: solid 0.125rem white;
+    outline-offset: -0.25rem;
   }
 
   &:first-child {
