@@ -1,7 +1,7 @@
 import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
 import { NoteApiValue, NoteProps, NoteApiContext, NotesContext } from "./_NoteContext";
 
-const MaxNotes = 3;
+const MaxNotes = 1;
 
 /** Context provider to support global notifications. Wrap around the app level. */
 export function NoteProvider({ children }: PropsWithChildren) {
@@ -23,9 +23,17 @@ export function NoteProvider({ children }: PropsWithChildren) {
     (message: ReactNode, timeoutMs: number = 3000) => {
       const id = crypto.randomUUID();
 
+      function removeMaxNotes() {
+        setNotes((old) => {
+          const diff = old.length - MaxNotes;
+          if (diff <= 0) return old;
+          return old.slice(diff, old.length);
+        });
+      }
+
       setNotes((old) => {
         if (old.length >= MaxNotes) {
-          old = old.slice(1);
+          setTimeout(removeMaxNotes, 200);
         }
 
         setTimeout(() => {
