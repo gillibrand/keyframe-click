@@ -145,7 +145,7 @@ export const TimelineInspector = memo(function Inspector({
         <Hint>
           <div className="text-center">
             {isAdding ? (
-              <>Click timeline to add the point</>
+              <>Click timeline to place the point</>
             ) : (
               <>
                 Hold <kbd>Shift</kbd> over timeline to add quickly
