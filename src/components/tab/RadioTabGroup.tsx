@@ -1,7 +1,7 @@
 import Plus from "@images/plus.svg?react";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { useChildAnimator } from "@util/useChildAnimator";
-import { useCallback } from "react";
+import { useCallback, useId } from "react";
 import { RadioTab } from "./RadioTab";
 import "./tab.css";
 import { cx } from "@util/cx";
@@ -12,6 +12,7 @@ export interface TabData {
 }
 
 interface Props {
+  label: string;
   radioGroupName: string;
   tabs: TabData[];
   checkedId: string;
@@ -25,6 +26,7 @@ interface Props {
 
 export function RadioTabGroup({
   tabs,
+  label,
   radioGroupName,
   onDelete,
   canAddNew,
@@ -58,13 +60,18 @@ export function RadioTabGroup({
     [onDelete, focusOnCheckedTab]
   );
 
+  const labelId = useId();
+
   return (
     <div className={cx("RadioTabGroup gap-4", className)}>
+      <span id={labelId} className="sr-only">
+        {label}
+      </span>
       <div className="flex min-w-px RadioTabGroup__tabs" ref={animationParentRef}>
         {tabs.map((t) => (
           // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
           // so can shrink to 0 width
-          <div key={t.id} className="RadioTabGroup__tabWrapper min-w-px">
+          <div key={t.id} className="RadioTabGroup__tabWrapper min-w-px" role="radiogroup" aria-labelledby={labelId}>
             <RadioTab
               id={t.id}
               label={CssInfos[t.cssProp].label}

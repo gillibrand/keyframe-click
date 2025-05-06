@@ -31,24 +31,35 @@
 
 .RadioTab {
   font-size: var(--sz-small);
-  padding: 0.325em 0.9375rem;
   padding: 0.5rem 0.5rem 0.5rem 1rem;
 
   min-width: 5rem;
-  cursor: pointer;
   user-select: none;
   white-space: nowrap;
 
   --default-tab-bg-color: var(--tab-bg-color, gray);
-  background-color: white;
-
   color: var(--default-tab-bg-color);
+  background-color: white;
 
   &:has(:checked) {
     color: white;
     background-color: color-mix(in srgb, var(--default-tab-bg-color) 100%, transparent);
     z-index: 1;
     position: relative;
+  }
+
+  &:not(:disabled) {
+    &:not(:has(:checked)) {
+      cursor: pointer;
+
+      &:hover {
+        filter: brightness(0.97);
+      }
+
+      &:active {
+        filter: brightness(0.9);
+      }
+    }
   }
 
   > label {
@@ -58,9 +69,7 @@
   &:not(.can-delete),
   &:not(:has(:checked)) {
     .RadioTab__button {
-      /* visibility: hidden; */
-      scale: 0;
-      /* opacity: 0; */
+      visibility: hidden;
       flex-shrink: 100;
     }
   }
@@ -68,33 +77,25 @@
 
 .RadioTab__button {
   appearance: none;
-  border-radius: 999px;
-  border: none;
-  background-color: var(--c-neo-white);
-  padding: 0;
-  color: black;
-  cursor: pointer;
-
-  /* transition:
-    scale 100ms,
-    opacity 100ms; */
-
-  line-height: 1;
-
-  width: 1.2rem;
-  height: 1.2rem;
-
   display: grid;
   place-items: center;
   flex-shrink: 0;
 
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  padding: 0;
+  line-height: 1;
+
+  border: none;
+
+  background-color: var(--c-neo-white);
+  color: black;
+  cursor: pointer;
+
   &:active {
     filter: brightness(0.7);
   }
-
-  /* &:hover,
-  &:focus-visible {
-  } */
 
   &:hover {
     filter: brightness(0.9);

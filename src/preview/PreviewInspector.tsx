@@ -107,7 +107,7 @@ export function PreviewInspector({
 
       <label className="stacked-label">
         <span>Speed</span>
-        <Segmented label="Speed" onChange={onChangeSpeed} checkedValue={speed}>
+        <Segmented onChange={onChangeSpeed} checkedValue={speed}>
           <SegmentedButton value={1}>
             100<span className="text-small">%</span>
           </SegmentedButton>

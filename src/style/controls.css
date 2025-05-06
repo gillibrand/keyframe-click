@@ -59,6 +59,10 @@
       &:focus-visible {
         border-color: var(--c-neo-black);
       }
+
+      &:hover {
+        filter: brightness(0.97);
+      }
     }
 
     &.is-danger {
@@ -66,7 +70,7 @@
     }
 
     &:hover {
-      filter: brightness(1.05);
+      filter: brightness(1.1);
     }
 
     &:focus-visible {

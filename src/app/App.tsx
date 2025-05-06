@@ -408,6 +408,7 @@ function App() {
           <div className="flex gap-4 items-center justify-between">
             <RadioTabGroup
               tabs={tabs}
+              label="Active property"
               radioGroupName="property"
               canAddNew={remainingCssProps.size > 0}
               onAddNew={addNewTab}

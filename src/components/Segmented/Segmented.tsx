@@ -17,7 +17,7 @@ interface ContextType<T> {
 const Context = createContext(null as unknown as ContextType<unknown>);
 
 interface Props<T> extends PropsWithChildren {
-  label: string;
+  label?: string;
   checkedValue: T;
   onChange?: (value: T) => void;
   ariaLabel?: string;
@@ -52,14 +52,17 @@ export const Segmented = genericMemo(function Segmented<T = string>({
   const Provider = Context.Provider as Provider<ContextType<T>>;
 
   const labelId = useId();
+  const maybeLabelId = label ? labelId : undefined;
 
   return (
     // This should be a fieldset, but it has rendering errors with a border radius and overflow in Chrome as of 135.0.7049.96
-    <div className="Segmented" role="radiogroup" aria-labelledby={labelId}>
+    <div className="Segmented" role="radiogroup" aria-labelledby={maybeLabelId}>
       <Provider value={contextValue}>{children}</Provider>
-      <span className="sr-only" id={labelId}>
-        {label}
-      </span>
+      {label && (
+        <span className="sr-only" id={labelId}>
+          {label}
+        </span>
+      )}
     </div>
   );
 });
