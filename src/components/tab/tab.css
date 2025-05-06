@@ -83,20 +83,18 @@
 
   &:active {
     filter: brightness(0.7);
-    background-color: red;
   }
 
-  &:hover,
+  /* &:hover,
   &:focus-visible {
-  }
+  } */
 
   &:hover {
-    /* filter: brightness(0.9); */
-    /* background-color: red; */
+    filter: brightness(0.9);
   }
 
   &:active:not(:disabled),
   &[aria-pressed="true"] {
-    /* filter: brightness(0.9); */
+    filter: brightness(0.9);
   }
 }
