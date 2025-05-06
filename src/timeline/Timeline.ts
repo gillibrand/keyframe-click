@@ -232,7 +232,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
           }
 
           if (p.type === "round") {
-            console.info(">>> p.h1", p.h1);
             if (nearPt(asRealPoint(p.h1), realX, realY)) {
               newSelected = i;
               _dragging = { point: p, handle: p.h1, otherHandle: p.h2 };
