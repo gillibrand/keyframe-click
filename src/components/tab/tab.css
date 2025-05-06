@@ -81,9 +81,9 @@
   place-items: center;
   flex-shrink: 0;
 
-  width: 1.2rem;
-  height: 1.2rem;
-  border-radius: 999px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
   padding: 0;
   line-height: 1;
 
@@ -93,16 +93,11 @@
   color: black;
   cursor: pointer;
 
-  &:active {
-    filter: brightness(0.7);
-  }
-
   &:hover {
     filter: brightness(0.9);
   }
 
-  &:active:not(:disabled),
-  &[aria-pressed="true"] {
-    filter: brightness(0.9);
+  &:active {
+    filter: brightness(0.8);
   }
 }

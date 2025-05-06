@@ -38,12 +38,13 @@
   }
 
   &.is-round {
-    padding: 0.5rem;
-    min-width: 1rem;
-    aspect-ratio: 2;
+    min-width: 0;
+    padding: 0;
+    width: 2.4rem;
     display: grid;
     place-items: center;
     flex-shrink: 0;
+    align-self: stretch;
   }
 
   &:not(:disabled) {

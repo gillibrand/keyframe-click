@@ -67,11 +67,16 @@ export function RadioTabGroup({
       <span id={labelId} className="sr-only">
         {label}
       </span>
-      <div className="flex min-w-px RadioTabGroup__tabs" ref={animationParentRef}>
+      <div
+        className="flex min-w-px RadioTabGroup__tabs"
+        ref={animationParentRef}
+        role="radiogroup"
+        aria-labelledby={labelId}
+      >
         {tabs.map((t) => (
           // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
           // so can shrink to 0 width
-          <div key={t.id} className="RadioTabGroup__tabWrapper min-w-px" role="radiogroup" aria-labelledby={labelId}>
+          <div key={t.id} className="RadioTabGroup__tabWrapper min-w-px">
             <RadioTab
               id={t.id}
               label={CssInfos[t.cssProp].label}
