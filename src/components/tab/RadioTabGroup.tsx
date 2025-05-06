@@ -59,8 +59,8 @@ export function RadioTabGroup({
   );
 
   return (
-    <div className={cx("RadioTabGroup", className)}>
-      <div className="flex min-w-px" ref={animationParentRef}>
+    <div className={cx("RadioTabGroup gap-4", className)}>
+      <div className="flex min-w-px RadioTabGroup__tabs" ref={animationParentRef}>
         {tabs.map((t) => (
           // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
           // so can shrink to 0 width
@@ -80,7 +80,7 @@ export function RadioTabGroup({
       </div>
 
       <button
-        className="button is-secondary is-round ml-375"
+        className="button is-secondary is-round"
         onClick={onAddNew}
         disabled={!canAddNew}
         title={!canAddNew ? "All properties are already being used" : "Add property"}

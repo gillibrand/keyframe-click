@@ -5,7 +5,27 @@
 
 .RadioTabGroup__tabWrapper:not(:first-child) {
   & > .RadioTab {
-    margin-inline-start: 0.375rem;
+    /* leading border to separate each button */
+    border-inline-start: solid var(--border-width) var(--c-neo-black);
+  }
+}
+
+.RadioTabGroup__tabs {
+  border-radius: 0.5rem;
+  /* border-end-start-radius: 0; */
+  /* border-end-end-radius: 0; */
+  overflow: hidden;
+  border: solid 2px var(--c-neo-black);
+
+  background-color: white;
+  box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+
+  &:has(:focus-visible) {
+    outline: solid var(--outline-width) var(--outline-color);
+    outline-offset: var(--outline-offset);
+    box-shadow: 0 0 0 0.125rem white;
+    /* border-color: transparent; */
+    z-index: 1;
   }
 }
 
@@ -22,11 +42,7 @@
   --default-tab-bg-color: var(--tab-bg-color, gray);
   background-color: white;
 
-  border: solid 2px var(--c-neo-black);
-
   color: var(--default-tab-bg-color);
-
-  border-radius: 999px;
 
   &:has(:checked) {
     color: white;
@@ -42,35 +58,26 @@
   &:not(.can-delete),
   &:not(:has(:checked)) {
     .RadioTab__button {
-      visibility: hidden;
+      /* visibility: hidden; */
+      scale: 0;
+      /* opacity: 0; */
       flex-shrink: 100;
-
-      /* width: 0; */
     }
-  }
-
-  &:last-child {
-    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
-  }
-
-  &:has(:focus-visible) {
-    outline: solid var(--outline-width) var(--outline-color);
-    outline-offset: var(--outline-offset);
-    box-shadow: 0 0 0 0.125rem white;
-    border-color: transparent;
-    z-index: 1;
   }
 }
 
 .RadioTab__button {
   appearance: none;
-  border-radius: 4px;
   border-radius: 999px;
   border: none;
   background-color: var(--c-neo-white);
   padding: 0;
   color: black;
   cursor: pointer;
+
+  /* transition:
+    scale 100ms,
+    opacity 100ms; */
 
   line-height: 1;
 

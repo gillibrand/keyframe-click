@@ -64,7 +64,7 @@ export const RadioTab = memo(function RadioTab({
 
   return (
     <div
-      className={cx("RadioTab flex flex-nowrap gap-2 items-center", { "can-delete": !!canDelete })}
+      className={cx("RadioTab flex flex-nowrap gap-3 items-center", { "can-delete": !!canDelete })}
       style={style}
       onKeyDown={handleDelKey}
       onClick={moveFocusToInputOnClick}
