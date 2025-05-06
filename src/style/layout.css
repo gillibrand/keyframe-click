@@ -4,7 +4,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: minmax(min-content, 1700px);
+  grid-template-columns: minmax(500px, 1700px);
   justify-content: center;
 
   padding-inline: 1rem;
@@ -12,6 +12,6 @@
 
 .row {
   & + & {
-    margin-top: 1rem;
+    margin-block-start: 1rem;
   }
 }

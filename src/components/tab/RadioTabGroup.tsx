@@ -34,16 +34,16 @@ export function RadioTabGroup({
   onChange,
   className,
 }: Props) {
-  const { parentRef } = useChildAnimator<HTMLDivElement>("both");
+  const { parentRef: animationParentRef } = useChildAnimator<HTMLDivElement>("both");
 
   /**
    * Change keyboard focus to the tab that is currently checked. This uses the ref to the checked value so that it is
    * always up-to-date.
    */
   const focusOnCheckedTab = useCallback(() => {
-    const checkedTabNode = parentRef.current?.querySelector<HTMLInputElement>("input:checked");
+    const checkedTabNode = animationParentRef.current?.querySelector<HTMLInputElement>("input:checked");
     if (checkedTabNode) checkedTabNode.focus();
-  }, [parentRef]);
+  }, [animationParentRef]);
 
   const handleDelete = useCallback(
     (id: string) => {
@@ -59,25 +59,28 @@ export function RadioTabGroup({
   );
 
   return (
-    <div className={cx("RadioTabGroup", "flex", className)} ref={parentRef}>
-      {tabs.map((t) => (
-        // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
-        // so can shrink to 0 width
-        <div key={t.id}>
-          <RadioTab
-            id={t.id}
-            label={CssInfos[t.cssProp].label}
-            radioName={radioGroupName}
-            color={CssInfos[t.cssProp].color}
-            checked={checkedId === t.id}
-            onCheck={onChange}
-            canDelete={canDelete}
-            onDelete={handleDelete}
-          />
-        </div>
-      ))}
+    <div className={cx("RadioTabGroup", className)}>
+      <div className="flex min-w-px" ref={animationParentRef}>
+        {tabs.map((t) => (
+          // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
+          // so can shrink to 0 width
+          <div key={t.id} className="RadioTabGroup__tabWrapper min-w-px">
+            <RadioTab
+              id={t.id}
+              label={CssInfos[t.cssProp].label}
+              radioName={radioGroupName}
+              color={CssInfos[t.cssProp].color}
+              checked={checkedId === t.id}
+              onCheck={onChange}
+              canDelete={canDelete}
+              onDelete={handleDelete}
+            />
+          </div>
+        ))}
+      </div>
+
       <button
-        className="round-btn"
+        className="button is-secondary is-round ml-375"
         onClick={onAddNew}
         disabled={!canAddNew}
         title={!canAddNew ? "All properties are already being used" : "Add property"}

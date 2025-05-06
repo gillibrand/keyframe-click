@@ -1,70 +1,103 @@
 .RadioTabGroup {
-  /* padding-block-end: 0.375rem; */
-  /* border-block-end: solid 1px gray; */
+  display: flex;
+  min-width: 1px;
+}
 
-  & > *:not(:last-child) > * {
-    margin-inline-end: 0.5rem;
+.RadioTabGroup__tabWrapper:not(:first-child) {
+  & > .RadioTab {
+    margin-inline-start: 0.375rem;
   }
 }
 
 .RadioTab {
   font-size: var(--sz-small);
   padding: 0.325em 0.9375rem;
-  padding-inline-end: 0.325em;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+
+  min-width: 5rem;
   cursor: pointer;
   user-select: none;
-  overflow: hidden;
   white-space: nowrap;
 
   --default-tab-bg-color: var(--tab-bg-color, gray);
-  background-color: color-mix(in srgb, var(--default-tab-bg-color) 10%, white);
   background-color: white;
 
-  border: solid 2px;
-  border-radius: 999px;
-  border-color: var(--default-tab-bg-color);
+  border: solid 2px var(--c-neo-black);
+
   color: var(--default-tab-bg-color);
 
-  &:has(:focus-visible) {
-    outline: solid 2px var(--c-blue);
-    outline-offset: 1px;
-  }
+  border-radius: 999px;
 
   &:has(:checked) {
     color: white;
     background-color: color-mix(in srgb, var(--default-tab-bg-color) 100%, transparent);
+    z-index: 1;
+    position: relative;
   }
 
   > label {
     cursor: inherit;
   }
 
-  > input {
-    /* visually hidden radio button; keyboard accessible */
-    position: absolute;
-    clip-path: inset(50%);
-  }
-
-  .round-btn {
-    background-color: rgba(255 255 255 / 0.75);
-    padding: 0.325em;
-    color: white;
-    color: black;
-
-    &:hover,
-    &:focus-visible {
-      background-color: rgba(255 255 255 / 0.85);
-    }
-
-    &:active {
-      background-color: rgba(255 255 255 / 0.6);
-    }
-  }
-
   &:not(.can-delete),
   &:not(:has(:checked)) {
-    .round-btn {
+    .RadioTab__button {
       visibility: hidden;
+      flex-shrink: 100;
+
+      /* width: 0; */
     }
+  }
+
+  &:last-child {
+    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+  }
+
+  &:has(:focus-visible) {
+    outline: solid var(--outline-width) var(--outline-color);
+    outline-offset: var(--outline-offset);
+    box-shadow: 0 0 0 0.125rem white;
+    border-color: transparent;
+    position: absolute;
+    z-index: 1;
+  }
+}
+
+.RadioTab__button {
+  appearance: none;
+  border-radius: 4px;
+  border-radius: 999px;
+  border: none;
+  background-color: var(--c-neo-white);
+  padding: 0;
+  color: black;
+  cursor: pointer;
+
+  line-height: 1;
+
+  width: 1.2rem;
+  height: 1.2rem;
+
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  &:active {
+    filter: brightness(0.7);
+    background-color: red;
+  }
+
+  &:hover,
+  &:focus-visible {
+  }
+
+  &:hover {
+    /* filter: brightness(0.9); */
+    /* background-color: red; */
+  }
+
+  &:active:not(:disabled),
+  &[aria-pressed="true"] {
+    /* filter: brightness(0.9); */
   }
 }

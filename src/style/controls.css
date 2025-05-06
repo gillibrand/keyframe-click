@@ -37,6 +37,15 @@
     background-color: transparent;
   }
 
+  &.is-round {
+    padding: 0.5rem;
+    min-width: 1rem;
+    aspect-ratio: 2;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
   &:not(:disabled) {
     cursor: pointer;
     color: white;
@@ -63,7 +72,7 @@
     &:focus-visible {
       outline: solid var(--outline-width) var(--outline-color);
       outline-offset: var(--outline-offset);
-      box-shadow: none;
+      box-shadow: 0 0 0 0.125rem white;
       border-color: transparent;
       transition: none;
     }

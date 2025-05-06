@@ -64,13 +64,15 @@ export const RadioTab = memo(function RadioTab({
 
   return (
     <div
-      className={cx("RadioTab flex flex-nowrap gap-3 items-center", { "can-delete": !!canDelete })}
+      className={cx("RadioTab flex flex-nowrap gap-2 items-center", { "can-delete": !!canDelete })}
       style={style}
       onKeyDown={handleDelKey}
       onClick={moveFocusToInputOnClick}
       data-id={id}
     >
-      <label htmlFor={inputId}>{label}</label>
+      <label className="truncate" htmlFor={inputId}>
+        {label}
+      </label>
 
       <input
         ref={inputRef}
@@ -80,13 +82,14 @@ export const RadioTab = memo(function RadioTab({
         value={label}
         checked={checked}
         data-checked={checked ? "true" : "false"}
+        className="sr-only"
         onChange={(e) => {
           if (e.target.checked) onCheck(id);
         }}
       />
 
       <button
-        className="round-btn"
+        className="RadioTab__button"
         title="close"
         onClick={promptToDelete}
         tabIndex={-1} // no focus; use Del key to invoke instead

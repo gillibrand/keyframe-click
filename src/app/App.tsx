@@ -402,10 +402,10 @@ function App() {
 
       <NoteList />
 
-      <div className="[ h-screen ] [ flex flex-col ] [ mt-4 stack stack--trail ]">
+      <div className="[ h-screen ] [ flex flex-col ] [ pt-4 stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
         <div className="row">
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center justify-between">
             <RadioTabGroup
               tabs={tabs}
               radioGroupName="property"
@@ -415,7 +415,6 @@ function App() {
               canDelete={layers.size > 1 ? canDeleteTab : undefined}
               checkedId={layers.getActiveLayer().id}
               onChange={changeTab}
-              className="grow"
             />
 
             <MenuProvider items={items}>
@@ -423,6 +422,7 @@ function App() {
                 style={{
                   // TODO: standard icon colors
                   color: "var(--c-neo-black)",
+                  marginInlineStart: "auto",
                 }}
                 title="Settings"
               >
@@ -454,7 +454,7 @@ function App() {
         </div>
 
         {/* TIMELINE ROW */}
-        <div className="[ row ] [ grow ]">
+        <section className="[ row ] [ grow ]">
           <div className="inspector-sidebar grow">
             <div className="timeline-wrapper ">
               <canvas
@@ -470,7 +470,7 @@ function App() {
             </div>
 
             {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
-            <div className="tile">
+            <section className="tile">
               <TimelineInspector
                 cssProp={layers.getCssProp()}
                 onChangeCssProp={setCssProp}
@@ -485,16 +485,16 @@ function App() {
                 isAdding={isAdding}
                 disabledCssProps={disabledCssProps}
               />
-            </div>
+            </section>
           </div>
-        </div>
+        </section>
 
         {/* PREVIEW ROW */}
-        <div className="row">
-          <aside className="inspector-sidebar">
+        <section className="row">
+          <section className="inspector-sidebar">
             {preview}
 
-            <div className="tile">
+            <section className="tile">
               <PreviewInspector
                 isPlaying={isPlaying}
                 duration={duration}
@@ -506,9 +506,9 @@ function App() {
                 speed={speed}
                 onChangeSpeed={setSpeed}
               />
-            </div>
-          </aside>
-        </div>
+            </section>
+          </section>
+        </section>
       </div>
     </div>
   );
