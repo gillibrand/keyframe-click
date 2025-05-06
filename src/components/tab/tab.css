@@ -90,7 +90,7 @@
   border: none;
 
   background-color: var(--c-neo-white);
-  color: black;
+  color: #444;
   cursor: pointer;
 
   &:hover {
