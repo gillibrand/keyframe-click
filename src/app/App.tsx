@@ -22,7 +22,7 @@ import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
 import { cx } from "@util/cx";
 
-function App() {
+export function App() {
   const timelineRef = useRef<Timeline | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -42,7 +42,6 @@ function App() {
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
   const [isDataDirty, isDotsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  // const [showMessage, setShowMessage] = useState(false);
 
   // Timeline global settings
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
@@ -392,127 +391,117 @@ function App() {
   const exportDialogId = useId();
   const activeExportId = isExporting ? exportDialogId : undefined;
 
-  const classes = cx("relative", { "is-dialog-open": isExporting });
-
   return (
-    <div className={classes}>
+    <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
         <ExportDialog open={isExporting} onClose={() => setIsExporting(false)} layers={layers} id={exportDialogId} />
       )}
 
       <NoteList />
 
-      <div className="[ h-screen ] [ flex flex-col ] [ pt-4 stack stack--trail ]">
+      <div className="flex-col grow [ stack stack--trailXXX ]">
         {/* TABS and SETTINGS at top */}
-        <div className="row">
-          <div className="flex gap-4 items-center justify-between">
-            <RadioTabGroup
-              tabs={tabs}
-              label="Active property"
-              radioGroupName="property"
-              canAddNew={remainingCssProps.size > 0}
-              onAddNew={addNewTab}
-              onDelete={deleteTab}
-              canDelete={layers.size > 1 ? canDeleteTab : undefined}
-              checkedId={layers.getActiveLayer().id}
-              onChange={changeTab}
-            />
+        <section className="flex gap-4 items-center justify-between">
+          <RadioTabGroup
+            tabs={tabs}
+            label="Active property"
+            radioGroupName="property"
+            canAddNew={remainingCssProps.size > 0}
+            onAddNew={addNewTab}
+            onDelete={deleteTab}
+            canDelete={layers.size > 1 ? canDeleteTab : undefined}
+            checkedId={layers.getActiveLayer().id}
+            onChange={changeTab}
+          />
 
-            <MenuProvider items={items}>
-              <MenuButton
-                style={{
-                  // TODO: standard icon colors
-                  color: "var(--c-neo-black)",
-                  marginInlineStart: "auto",
-                }}
-                title="Settings"
-              >
-                <Gear />
-              </MenuButton>
-            </MenuProvider>
+          <MenuProvider items={items}>
+            <MenuButton
+              style={{
+                // TODO: standard icon colors
+                color: "var(--c-neo-black)",
+                marginInlineStart: "auto",
+              }}
+              title="Settings"
+            >
+              <Gear />
+            </MenuButton>
+          </MenuProvider>
 
-            <SplitButtons>
-              <button
-                title="Set options and copy keyframes"
-                onClick={handleExport}
-                className={cx("grow", { "is-pressed": isExporting })}
-              >
-                Copy...
-              </button>
-              <button
-                title="Copy keyframes with current options"
-                aria-haspopup="dialog"
-                aria-expanded={isExporting}
-                aria-controls={activeExportId}
-                onClick={handleCopyNow}
-                className="center"
-              >
-                <Copy />
-                <span className="sr-only">Copy keyframes to clipboard with current options</span>
-              </button>
-            </SplitButtons>
-          </div>
-        </div>
+          <SplitButtons>
+            <button
+              title="Set options and copy keyframes"
+              onClick={handleExport}
+              className={cx("grow", { "is-pressed": isExporting })}
+            >
+              Copy...
+            </button>
+            <button
+              title="Copy keyframes with current options"
+              aria-haspopup="dialog"
+              aria-expanded={isExporting}
+              aria-controls={activeExportId}
+              onClick={handleCopyNow}
+              className="center"
+            >
+              <Copy />
+              <span className="sr-only">Copy keyframes to clipboard with current options</span>
+            </button>
+          </SplitButtons>
+        </section>
 
         {/* TIMELINE ROW */}
-        <section className="[ row ] [ grow ]">
-          <div className="inspector-sidebar grow">
-            <div className="timeline-wrapper ">
-              <canvas
-                className={"timeline " + (isAdding ? "is-adding" : "")}
-                width={1}
-                height={1}
-                id="canvas"
-                ref={canvasRef}
-                tabIndex={0}
-              />
+        <section className="inspector-sidebar grow">
+          <div className="timeline-wrapper ">
+            <canvas
+              className={"timeline " + (isAdding ? "is-adding" : "")}
+              width={1}
+              height={1}
+              id="canvas"
+              ref={canvasRef}
+              tabIndex={0}
+            />
 
-              {/* {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>} */}
-            </div>
+            {/* {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>} */}
+          </div>
 
-            {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
-            <section className="tile">
-              <TimelineInspector
-                cssProp={layers.getCssProp()}
-                onChangeCssProp={setCssProp}
-                sampleCount={layers.getSampleCount()}
-                onChangeSampleCount={setSampleCount}
-                isFlipped={layers.getIsFlipped()}
-                onChangeIsFlipped={setIsFlipped}
-                selected={selectedDot}
-                onChangeSelectedProps={handleInspectorSelectedChange}
-                onClickAdd={handleClickAdd}
-                onClickDelete={handleClickDelete}
-                isAdding={isAdding}
-                disabledCssProps={disabledCssProps}
-              />
-            </section>
+          {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
+          <div className="tile">
+            <TimelineInspector
+              cssProp={layers.getCssProp()}
+              onChangeCssProp={setCssProp}
+              sampleCount={layers.getSampleCount()}
+              onChangeSampleCount={setSampleCount}
+              isFlipped={layers.getIsFlipped()}
+              onChangeIsFlipped={setIsFlipped}
+              selected={selectedDot}
+              onChangeSelectedProps={handleInspectorSelectedChange}
+              onClickAdd={handleClickAdd}
+              onClickDelete={handleClickDelete}
+              isAdding={isAdding}
+              disabledCssProps={disabledCssProps}
+            />
           </div>
         </section>
 
         {/* PREVIEW ROW */}
-        <section className="row">
-          <section className="inspector-sidebar">
-            {preview}
+        <section className="inspector-sidebar">
+          {preview}
 
-            <section className="tile">
-              <PreviewInspector
-                isPlaying={isPlaying}
-                duration={duration}
-                onChangeDuration={setDuration}
-                isRepeat={isRepeat}
-                onChangeIsRepeat={setIsRepeat}
-                onClickPlay={playPreview}
-                onClickStop={stopPreview}
-                speed={speed}
-                onChangeSpeed={setSpeed}
-              />
-            </section>
-          </section>
+          <div className="tile">
+            <PreviewInspector
+              isPlaying={isPlaying}
+              duration={duration}
+              onChangeDuration={setDuration}
+              isRepeat={isRepeat}
+              onChangeIsRepeat={setIsRepeat}
+              onClickPlay={playPreview}
+              onClickStop={stopPreview}
+              speed={speed}
+              onChangeSpeed={setSpeed}
+            />
+          </div>
         </section>
       </div>
-    </div>
+    </main>
   );
 }
-
-export default App;

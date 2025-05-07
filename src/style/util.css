@@ -3,6 +3,7 @@
 }
 
 .flex-col {
+  display: flex;
   flex-direction: column;
 }
 
@@ -117,6 +118,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .mt-0 {
   margin-block-start: 0 !important;
+}
+
+.ptb-4 {
+  padding-block: 1rem;
 }
 
 .ml-375 {

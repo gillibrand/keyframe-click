@@ -7,12 +7,12 @@ import "@style/util.css";
 import "@util/focusVisible";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./app/App.tsx";
+import { AppFrame } from "@app/AppFrame";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <NoteProvider>
-      <App />
+      <AppFrame />
     </NoteProvider>
   </StrictMode>
 );
