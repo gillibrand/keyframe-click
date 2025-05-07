@@ -7,7 +7,7 @@ import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import "./App.css";
+import "./TimelinePage.css";
 import { useSetting } from "./useSettings";
 
 import { MenuProvider } from "@components/menu/MenuContext";
@@ -22,7 +22,7 @@ import { loadSavedLayers } from "@timeline/Layers";
 import { useForceRender } from "@util/hooks";
 import { cx } from "@util/cx";
 
-export function App() {
+export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
