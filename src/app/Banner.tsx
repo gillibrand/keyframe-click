@@ -35,7 +35,9 @@ export function Banner() {
   return (
     <header className="ptb-4x Banner">
       <div className="wrapper flex gap-8 items-end">
-        <h1 className="Banner__title">Keyframe Click</h1>
+        <h1 className="Banner__title cursor-default" onClick={gotoTimeline}>
+          Keyframe Click
+        </h1>
 
         <nav className="Banner__nav flex gap-6">
           <a className="Banner__link" {...href("#/")} onClick={gotoTimeline}>
