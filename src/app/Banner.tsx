@@ -39,7 +39,7 @@ export function Banner() {
           Keyframe Click
         </h1>
 
-        <nav className="Banner__nav flex gap-6">
+        <nav className="Banner__nav flex gap-4">
           <a className="Banner__link" {...href("#/")} onClick={gotoTimeline}>
             Timeline
           </a>
