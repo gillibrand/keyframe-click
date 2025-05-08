@@ -20,8 +20,6 @@
 
     box-shadow:
       0.25rem 0.25rem 0 0 var(--c-neo-black),
-      0 0 0 0.5px white,
-      0.25rem 0.25rem 0 0.5px white,
       0 0 75px rgba(0 0 0 / 0.25);
 
     border-radius: 0.5rem;
