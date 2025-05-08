@@ -144,8 +144,8 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   padding-block: 0.5rem;
 }
 
-.ml-375 {
-  margin-inline-start: 0.375rem;
+.ml-auto {
+  margin-inline-start: auto;
 }
 
 .origin-top-right {

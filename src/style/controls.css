@@ -18,7 +18,7 @@
   padding: 0.5rem 1rem;
   background-color: white;
 
-  min-width: 12ch;
+  min-width: 10ch;
 
   transition: box-shadow 100ms;
 
@@ -68,6 +68,10 @@
 
     &.is-danger {
       background-color: var(--c-neo-danger);
+    }
+
+    &.is-icon {
+      padding-inline-end: 0.25rem;
     }
 
     &:hover {

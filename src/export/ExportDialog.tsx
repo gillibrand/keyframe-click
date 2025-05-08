@@ -38,14 +38,17 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
       } else {
         dialog.showModal();
 
-        dialog.classList.add("is-open");
-        dialog.animate(
-          {
-            scale: [0.5, 1],
-            opacity: [0, 1],
-          },
-          AnimOptions
-        );
+        dialog
+          .animate(
+            {
+              scale: [0.8, 1],
+              opacity: [0, 1],
+            },
+            AnimOptions
+          )
+          .finished.then(() => {
+            dialog.classList.add("is-open");
+          });
       }
     },
     [open]
@@ -60,7 +63,7 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
 
     await dialog.animate(
       {
-        scale: [1, 0.5],
+        scale: [1, 0.8],
         opacity: [1, 0],
       },
       AnimOptions

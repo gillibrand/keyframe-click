@@ -17,11 +17,13 @@
   --bg: var(--c-neo-white);
   background: var(--bg);
 
-  box-shadow:
-    0.25rem 0.25rem 0 0 var(--c-neo-black),
-    0 0 0 1px white,
-    0.25rem 0.25rem 0 1px white,
-    0 0 150px rgba(0 0 0 / 0.35);
+  &.is-open {
+    box-shadow:
+      0.25rem 0.25rem 0 0 var(--c-neo-black),
+      0 0 0 1px white,
+      0.25rem 0.25rem 0 1px white,
+      0 0 150px rgba(0 0 0 / 0.35);
+  }
 
   &::backdrop {
     background: transparent;

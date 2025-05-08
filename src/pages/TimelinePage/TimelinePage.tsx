@@ -7,8 +7,8 @@ import { Timeline, createTimeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import "./TimelinePage.css";
 import { useSetting } from "../../app/useSettings";
+import "./TimelinePage.css";
 
 import { MenuProvider } from "@components/menu/MenuContext";
 import { NoteList, useNoteApi } from "@components/note";
@@ -17,10 +17,11 @@ import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { ExportDialog } from "@export/ExportDialog";
 import { copyToClipboard, genCssKeyframeList } from "@export/output";
 import Copy from "@images/copy.svg?react";
+import Down from "@images/down.svg?react";
 import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
-import { useForceRender, useLiveState } from "@util/hooks";
 import { cx } from "@util/cx";
+import { useForceRender, useLiveState } from "@util/hooks";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -47,6 +48,7 @@ export function TimelinePage() {
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
+  const [filename] = useState("");
   const { sendNote } = useNoteApi();
 
   useEffect(
@@ -117,8 +119,9 @@ export function TimelinePage() {
 
       timeline.setSnapToGrid(snapToGrid);
       timeline.setLabelYAxis(labelYAxis);
+      timeline.setFilename(filename);
     },
-    [labelYAxis, snapToGrid]
+    [labelYAxis, snapToGrid, filename]
   );
 
   useEffect(
@@ -214,7 +217,6 @@ export function TimelinePage() {
   useEffect(
     function addEventListenersOnMount() {
       function handleKeyDown(e: KeyboardEvent) {
-        console.info(">>> sh");
         switch (e.key) {
           case "Shift": {
             if (timelineRef.current && canvasRef.current && !getIsExporting()) {
@@ -402,6 +404,8 @@ export function TimelinePage() {
   const isExporting = getIsExporting();
   const activeExportId = isExporting ? exportDialogId : undefined;
 
+  function handleSave() {}
+
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
@@ -438,14 +442,19 @@ export function TimelinePage() {
             </MenuButton>
           </MenuProvider>
 
+          <button className="button is-secondary  flex-center gap-2" onClick={handleSave}>
+            File <Down />
+          </button>
+
           <SplitButtons>
             <button
               title="Set options and copy keyframes"
               onClick={handleExport}
-              className={cx("grow", { "is-pressed": isExporting })}
+              className={cx("grow flex-center gap-2 is-icon", { "is-pressed": isExporting })}
             >
-              Copy...
+              Copy <Down />
             </button>
+
             <button
               title="Copy keyframes with current options"
               aria-haspopup="dialog"

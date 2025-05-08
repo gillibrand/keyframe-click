@@ -58,6 +58,7 @@ export interface Timeline {
 
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
+  setFilename: (filename: string) => void;
 
   set onDraw(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
@@ -111,6 +112,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   let _onIsAdding: ((adding: boolean) => void) | undefined;
 
   let _state: State = "default";
+
+  let _filename = "";
 
   // We save whether focus is "visible" (based on keyboard vs mouse activity) when we focus on the
   // canvas. This lets us maintain the same visible focus state the entire time so we don't Tab in,
@@ -410,6 +413,24 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     }
 
     drawAxisText();
+    drawFilename();
+  }
+
+  function drawFilename() {
+    if (!_filename) return;
+
+    _cx.font = " 16px Lucida Grande";
+
+    const r = _cx.measureText(_filename);
+
+    const x = (width() - r.width) / 2;
+    const y = InsetY + 20;
+
+    _cx.fillStyle = Colors.White;
+    _cx.fillRect(x, y - 10, r.width, 18);
+
+    _cx.fillStyle = Colors.Gray600;
+    _cx.fillText(_filename, x, y);
   }
 
   /**
@@ -740,6 +761,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _snapToGrid = snapToGrid;
   }
 
+  function setFilename(filename: string) {
+    if (_filename === filename) return;
+    _filename = filename;
+    draw();
+  }
+
   function setLabelYAxis(labelYAxis: boolean) {
     if (_labelYAxis === labelYAxis) return;
     _labelYAxis = labelYAxis;
@@ -893,6 +920,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     setSnapToGrid,
     setLabelYAxis,
 
+    setFilename,
     draw,
   };
 }
