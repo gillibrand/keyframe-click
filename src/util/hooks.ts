@@ -1,4 +1,4 @@
-import { MutableRefObject, ReactNode, useCallback, useMemo, useReducer, useRef } from "react";
+import { MutableRefObject, ReactNode, useCallback, useMemo, useReducer, useRef, useState } from "react";
 
 /**
  * A custom hook that returns a memoized value that never changes. This is useful for preventing unnecessary re-renders
@@ -77,4 +77,41 @@ export function useUuid() {
     uuid.current = crypto.randomUUID();
   }
   return uuid.current;
+}
+
+function isSetStateFunction<T>(fn: React.SetStateAction<T>): fn is (prevState: T) => T {
+  return typeof fn === "function";
+}
+
+/**
+ * Creates state that you can inspect at any time without needing to add the getter as a dependency.
+ *
+ * @param initial Initial value.
+ * @returns A getter and a setter. When the setter is called it will force a render like normal state. The getter can be
+ *   called inside `useEffect` and similar without needing to be a dependency (or add it, but it won't change later--it
+ *   is a stable function).
+ */
+export function useLiveState<T>(initialState: T | (() => T)) {
+  const [value, setValue] = useState(initialState);
+  const valueRef = useRef<T>(value);
+
+  const setValueAndRef = useCallback((valueOrCallback: React.SetStateAction<T>) => {
+    setValue((prevValue) => {
+      let newValue: T;
+      if (isSetStateFunction(valueOrCallback)) {
+        newValue = valueOrCallback(prevValue);
+      } else {
+        newValue = valueOrCallback;
+      }
+
+      valueRef.current = newValue;
+      return newValue;
+    });
+  }, []);
+
+  const getValue = useCallback(() => {
+    return valueRef.current;
+  }, []);
+
+  return [getValue, setValueAndRef] as const;
 }

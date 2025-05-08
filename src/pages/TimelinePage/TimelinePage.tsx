@@ -19,7 +19,7 @@ import { copyToClipboard, genCssKeyframeList } from "@export/output";
 import Copy from "@images/copy.svg?react";
 import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
-import { useForceRender } from "@util/hooks";
+import { useForceRender, useLiveState } from "@util/hooks";
 import { cx } from "@util/cx";
 
 export function TimelinePage() {
@@ -209,12 +209,15 @@ export function TimelinePage() {
     keyframeText,
   });
 
+  const [getIsExporting, setIsExporting] = useLiveState(false);
+
   useEffect(
     function addEventListenersOnMount() {
       function handleKeyDown(e: KeyboardEvent) {
+        console.info(">>> sh");
         switch (e.key) {
           case "Shift": {
-            if (timelineRef.current && canvasRef.current) {
+            if (timelineRef.current && canvasRef.current && !getIsExporting()) {
               const rect = canvasRef.current.getBoundingClientRect();
               const at = {
                 x: lastMouseRef.current.x - rect.x,
@@ -252,7 +255,7 @@ export function TimelinePage() {
         window.addEventListener("mousemove", handleMouseMove);
       };
     },
-    [togglePreview]
+    [togglePreview, getIsExporting]
   );
 
   const items: MenuItem[] = [
@@ -384,11 +387,9 @@ export function TimelinePage() {
     [layers]
   );
 
-  const [isExporting, setIsExporting] = useState(false);
-
   const handleExport = useCallback(() => {
     setIsExporting(true);
-  }, []);
+  }, [setIsExporting]);
 
   const [ruleName] = useSetting("ruleName", "my-anim");
 
@@ -398,12 +399,13 @@ export function TimelinePage() {
   }
 
   const exportDialogId = useId();
+  const isExporting = getIsExporting();
   const activeExportId = isExporting ? exportDialogId : undefined;
 
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
-        <ExportDialog open={isExporting} onClose={() => setIsExporting(false)} layers={layers} id={exportDialogId} />
+        <ExportDialog open={true} onClose={() => setIsExporting(false)} layers={layers} id={exportDialogId} />
       )}
 
       <NoteList />

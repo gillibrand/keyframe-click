@@ -3,7 +3,7 @@
   --export-border-color: var(--c-neo-black);
   position: fixed;
   margin: 0;
-  inset-block-start: 7.25rem;
+  inset-block-start: 8rem;
   inset-inline-start: auto;
   inset-inline-end: 5rem;
   border: solid 2px var(--export-border-color);
@@ -21,7 +21,7 @@
     0.25rem 0.25rem 0 0 var(--c-neo-black),
     0 0 0 1px white,
     0.25rem 0.25rem 0 1px white,
-    0 0 75px rgba(0 0 0 / 0.25);
+    0 0 150px rgba(0 0 0 / 0.35);
 
   &::backdrop {
     background: transparent;
