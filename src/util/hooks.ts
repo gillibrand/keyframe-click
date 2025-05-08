@@ -1,4 +1,14 @@
-import { MutableRefObject, ReactNode, useCallback, useMemo, useReducer, useRef, useState } from "react";
+import {
+  Dispatch,
+  MutableRefObject,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * A custom hook that returns a memoized value that never changes. This is useful for preventing unnecessary re-renders
@@ -95,7 +105,7 @@ export function useLiveState<T>(initialState: T | (() => T)) {
   const [value, setValue] = useState(initialState);
   const valueRef = useRef<T>(value);
 
-  const setValueAndRef = useCallback((valueOrCallback: React.SetStateAction<T>) => {
+  const setValueAndRef: Dispatch<SetStateAction<T>> = useCallback((valueOrCallback) => {
     setValue((prevValue) => {
       let newValue: T;
       if (isSetStateFunction(valueOrCallback)) {
