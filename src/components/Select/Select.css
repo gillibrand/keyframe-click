@@ -9,11 +9,11 @@
   padding: 0.25rem;
   display: block;
   width: 100%;
-  cursor: pointer;
   background-color: white;
   outline: none;
 
   &:not(:disabled) {
+    cursor: pointer;
     box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
 
     &:focus-visible.focus-visible {
@@ -22,9 +22,18 @@
       box-shadow: 0 0 0 2px var(--c-neo-white);
     }
   }
+
+  &:disabled {
+    border-color: gray;
+
+    & + svg {
+      color: gray;
+    }
+  }
 }
 
 .Select > svg {
+  color: inherit;
   position: absolute;
   pointer-events: none;
   right: calc(0.5rem + 2px);

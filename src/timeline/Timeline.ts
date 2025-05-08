@@ -508,6 +508,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
    *   data and we can skip the callback. Defaults to true.
    */
   function draw(notify: boolean = true) {
+    // console.warn("should draw");
     if (drawTimer !== null) return;
 
     drawTimer = requestAnimationFrame(() => {
@@ -712,7 +713,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   _canvas.addEventListener("keydown", onKeyDown);
 
   function destroy() {
-    endAddingDot();
+    endAddingDot(false);
 
     _canvas.removeEventListener("keydown", onKeyDown);
     _canvas.removeEventListener("mousedown", onMouseDown);
@@ -746,7 +747,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     draw();
   }
 
-  function endAddingDot() {
+  function endAddingDot(notify: boolean = true) {
     const oldState = _state;
     _addingAtUserPoint = null;
     _state = "default";
@@ -756,7 +757,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     _canvas.removeEventListener("click", onClickAdding);
     _canvas.removeEventListener("mousemove", onMouseMoveAdding);
 
-    draw();
+    if (notify) draw();
 
     // Only notify if really changed. We remove all listeners anyways just in case there's a mismatch
     if (_onIsAdding && oldState === "adding") _onIsAdding(false);

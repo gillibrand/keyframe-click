@@ -1,0 +1,48 @@
+.Banner {
+  background-color: #f7f7f7;
+  border-block-end: solid 2px var(--c-neo-black);
+}
+
+.Banner__nav {
+  position: relative;
+  inset-block-start: 0.125rem;
+  overflow: hidden;
+  padding-inline: 0.125rem;
+}
+
+.Banner__title {
+  color: var(--c-neo-black);
+
+  padding-block: 0.5rem;
+}
+
+.Banner__link {
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--c-neo-black);
+  padding: 0.5rem 1rem;
+
+  padding-block-end: 0.5rem;
+
+  border: solid transparent;
+  border-start-start-radius: 0.75rem;
+  border-start-end-radius: 0.75rem;
+  border-width: 0.175rem 0.175rem 0 0.175rem;
+
+  &[aria-current="page"] {
+    color: var(--c-neo-blue);
+    color: var(--c-neo-black);
+    background-color: rgba(0 0 0 / 0.05);
+    background-color: white;
+    background-color: #ffb800;
+    border-color: var(--c-neo-black);
+    box-shadow: 0.125rem 0.125rem 0 0 var(--c-neo-black);
+    display: block;
+  }
+
+  &:focus-visible {
+    outline: solid var(--outline-width) white;
+    outline-offset: -6px;
+    border-color: var(--outline-color);
+  }
+}

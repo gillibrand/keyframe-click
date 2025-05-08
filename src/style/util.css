@@ -15,6 +15,10 @@
   flex-shrink: 1;
 }
 
+.stack-large > * + * {
+  margin-block-start: 1.75rem;
+}
+
 .stack > * + * {
   margin-block-start: 1.125rem;
 }
@@ -71,6 +75,14 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   gap: 1rem;
 }
 
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
 .flex-auto {
   flex: auto;
 }
@@ -85,6 +97,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .items-center {
   align-items: center;
+}
+
+.items-end {
+  align-items: end;
 }
 
 .items-stretch {
@@ -122,6 +138,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .ptb-4 {
   padding-block: 1rem;
+}
+
+.ptb-2 {
+  padding-block: 0.5rem;
 }
 
 .ml-375 {

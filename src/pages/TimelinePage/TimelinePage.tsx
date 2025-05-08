@@ -8,7 +8,7 @@ import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import "./TimelinePage.css";
-import { useSetting } from "./useSettings";
+import { useSetting } from "../../app/useSettings";
 
 import { MenuProvider } from "@components/menu/MenuContext";
 import { NoteList, useNoteApi } from "@components/note";
@@ -40,7 +40,7 @@ export function TimelinePage() {
 
   // Transient state
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
-  const [isDataDirty, isDotsDirty] = useState(false);
+  const [isDataDirty, setIsDataDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   // Timeline global settings
@@ -67,7 +67,7 @@ export function TimelinePage() {
   /** Save dot and settings data to localStorage. */
   const saveLayers = useCallback(() => {
     layers.save();
-    isDotsDirty(false);
+    setIsDataDirty(false);
   }, [layers]);
 
   /** Callback when canvas element is created. Wraps it with a timeline. */
@@ -91,7 +91,7 @@ export function TimelinePage() {
       }, 100);
 
       timeline.onDraw = () => {
-        isDotsDirty(true);
+        setIsDataDirty(true);
         didDrawThrottled();
         saveLayersDebounced();
       };
@@ -135,7 +135,16 @@ export function TimelinePage() {
         window.removeEventListener("pagehide", saveLayers);
       };
     },
-    [isDataDirty, saveLayers]
+    [saveLayers, isDataDirty]
+  );
+
+  useEffect(
+    function saveLayersOnUnMount() {
+      return () => {
+        if (isDataDirty) saveLayers();
+      };
+    },
+    [saveLayers, isDataDirty]
   );
 
   const handleClickAdd = useCallback(() => {
@@ -399,7 +408,7 @@ export function TimelinePage() {
 
       <NoteList />
 
-      <div className="flex-col grow [ stack stack--trailXXX ]">
+      <div className="flex-col grow [ stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
         <section className="flex gap-4 items-center justify-between">
           <RadioTabGroup
