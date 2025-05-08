@@ -4,6 +4,8 @@ import { Segmented, SegmentedButton } from "../components/Segmented";
 import { Speed } from "./usePreview";
 import { Select } from "@components/Select";
 import { Checkbox } from "@components/Checkbox/Checkbox";
+import Stop from "@images/stop.svg?react";
+import Play from "@images/play.svg?react";
 
 interface Props {
   duration: Duration;
@@ -54,12 +56,12 @@ export function PreviewInspector({
 
       <div className="stack-small">
         {isPlaying ? (
-          <button className="button w-full" onClick={onClickStop}>
-            Stop
+          <button className="button w-full flex-center gap-2" onClick={onClickStop}>
+            Stop <Stop />
           </button>
         ) : (
-          <button className="button w-full" onClick={onClickPlay}>
-            Play
+          <button className="button w-full flex-center gap-2 " onClick={onClickPlay}>
+            Play <Play />
           </button>
         )}
       </div>

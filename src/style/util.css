@@ -172,8 +172,18 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   justify-content: end;
 }
 
+.justify-center {
+  justify-content: center;
+}
+
 .justify-between {
   justify-content: space-between;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .select-none {
