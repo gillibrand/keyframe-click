@@ -3,7 +3,7 @@
   --export-border-color: var(--c-neo-black);
   position: fixed;
   margin: 0;
-  inset-block-start: 5rem;
+  inset-block-start: 7.5rem;
   inset-inline-start: auto;
   inset-inline-end: 5rem;
   border: solid 2px var(--export-border-color);
