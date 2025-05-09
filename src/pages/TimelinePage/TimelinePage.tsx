@@ -389,9 +389,11 @@ export function TimelinePage() {
     [layers]
   );
 
-  const handleExport = useCallback(() => {
+  const startExport = useCallback(() => {
     setIsExporting(true);
   }, [setIsExporting]);
+
+  const stopExporting = useCallback(() => setIsExporting(false), [setIsExporting]);
 
   const [ruleName] = useSetting("ruleName", "my-anim");
 
@@ -408,7 +410,7 @@ export function TimelinePage() {
 
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
-      {isExporting && <ExportDialog open={true} onClose={() => setIsExporting(false)} layers={layers} id={DialogId} />}
+      {isExporting && <ExportDialog open={true} onClose={stopExporting} layers={layers} id={DialogId} />}
 
       <div className="flex-col grow [ stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
@@ -445,7 +447,7 @@ export function TimelinePage() {
           <SplitButtons>
             <button
               title="Set options and copy keyframes"
-              onClick={handleExport}
+              onClick={startExport}
               className={cx("grow flex-center gap-2 is-icon", { "is-pressed": isExporting })}
             >
               Copy <Down />

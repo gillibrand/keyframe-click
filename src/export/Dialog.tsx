@@ -14,8 +14,8 @@ interface DialogProps extends PropsWithChildren {
 }
 
 const AnimOptions = {
-  duration: 96,
-  easing: "ease-in-out",
+  duration: 111,
+  easing: "ease-out",
 };
 
 /** Functions to interact with the dialog. Pass in a ref to get an instance. */
@@ -44,14 +44,15 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
 
     await dialog.animate(
       {
-        scale: [1, 0.8],
+        scale: [1, 0.9],
         opacity: [1, 0],
       },
       AnimOptions
     ).finished;
 
     dialog.close();
-  }, []);
+    if (onClose) onClose();
+  }, [onClose]);
 
   useImperativeHandle(apiRef, () => {
     return {
@@ -61,6 +62,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
 
   useEffect(
     function animateOnOpenClose() {
+      console.info(">>> eff", open);
       const dialog = dialogRef.current;
       if (!dialog) return;
 
@@ -69,17 +71,14 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
       } else {
         dialog.showModal();
 
-        dialog
-          .animate(
-            {
-              scale: [0.8, 1],
-              opacity: [0, 1],
-            },
-            AnimOptions
-          )
-          .finished.then(() => {
-            dialog.classList.add("is-open");
-          });
+        dialog.classList.add("is-open");
+        dialog.animate(
+          {
+            scale: [0.9, 1],
+            opacity: [0.4, 1],
+          },
+          AnimOptions
+        );
       }
     },
     [open, animateClose]
@@ -89,6 +88,14 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
   function handleCancel(e: React.UIEvent<HTMLDialogElement>) {
     e.preventDefault();
     animateClose();
+  }
+
+  /** Close the dialog when clicking on the backdrop. */
+  function handleLightDismiss(e: React.MouseEvent<HTMLDialogElement>) {
+    // Check if the click target is the dialog itself (backdrop click)
+    if (e.target === e.currentTarget) {
+      animateClose();
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -105,17 +112,16 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="Dialog origin-top-right stack"
+      className="Dialog origin-top-right"
       onCancel={handleCancel}
-      // FIXME: this only works in Chrome
-      closedby="any"
+      onClick={handleLightDismiss}
       aria-labelledby={dialogLabelId}
       id={id}
     >
       <Tail className="Dialog__tail" />
 
-      <form action="dialog" className="Dialog__formXX [ flex flex-col ] stack" onSubmit={handleSubmit}>
-        <header className="px-4">
+      <form action="dialog" className="[ flex flex-col ] stack" onSubmit={handleSubmit}>
+        <header className="px-4 pt-4">
           <h2 id={dialogLabelId}>{label}</h2>
         </header>
 

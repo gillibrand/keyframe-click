@@ -21,12 +21,17 @@
     box-shadow:
       0.25rem 0.25rem 0 0 var(--c-neo-black),
       0 0 0 1px white,
-      0.25rem 0.25rem 0 1px white,
-      0 0 150px rgba(0 0 0 / 0.35);
+      0.25rem 0.25rem 0 1px white;
+
+    &::backdrop {
+      opacity: 1;
+    }
   }
 
   &::backdrop {
-    background: transparent;
+    transition: opacity 150ms ease;
+    background: rgba(0 0 0 / 0.11);
+    opacity: 0;
   }
 
   h2 {
