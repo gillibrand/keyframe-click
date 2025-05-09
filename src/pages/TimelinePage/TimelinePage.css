@@ -65,5 +65,5 @@
 }
 
 #root .is-dialog-open :where(button, label, .RadioTab) {
-  filter: grayscale(0.75);
+  filter: grayscale(0.5);
 }
