@@ -34,7 +34,7 @@
 
   &:hover,
   &.is-pressed {
-    filter: brightness(0.95);
+    filter: brightness(1.1);
   }
 
   &:active {

@@ -1,10 +1,9 @@
 import { useSetting } from "@app/useSettings";
 import { Hint } from "@components/Hint";
 import { useNoteApi } from "@components/note/_NoteContext";
-import Tail from "@images/tail.svg?react";
 import { Layers } from "@timeline/Layers";
-import { useEffect, useId, useMemo, useRef } from "react";
-import { createPortal } from "react-dom";
+import { useCallback, useId, useMemo, useRef } from "react";
+import { Dialog, DialogApi, DialogBody, DialogFooter } from "./Dialog";
 import "./ExportDialog.css";
 import { copyToClipboard, genCssKeyframeList, generateCssAtRule, normalizeAtRuleName } from "./output";
 
@@ -15,70 +14,18 @@ interface Props {
   id: string;
 }
 
-const AnimOptions = {
-  duration: 96,
-  easing: "ease-in-out",
-};
-
 export function ExportDialog({ open, onClose, layers, id }: Props) {
-  const ref = useRef<HTMLDialogElement>(null);
+  const dialogApi = useRef<DialogApi>(null);
 
   const [ruleName, setRuleName] = useSetting("ruleName", "my-animation");
 
   const keyframesHtml = useMemo(() => genCssKeyframeList(layers, true), [layers]);
   const keyframesAtRuleHtml = useMemo(() => generateCssAtRule(keyframesHtml, ruleName), [ruleName, keyframesHtml]);
 
-  useEffect(
-    function animateOnOpenClose() {
-      const dialog = ref.current;
-      if (!dialog) return;
-
-      if (!open) {
-        animateClose();
-      } else {
-        dialog.showModal();
-
-        dialog
-          .animate(
-            {
-              scale: [0.8, 1],
-              opacity: [0, 1],
-            },
-            AnimOptions
-          )
-          .finished.then(() => {
-            dialog.classList.add("is-open");
-          });
-      }
-    },
-    [open]
-  );
-
-  /** Animates the dialog out and closes it. */
-  async function animateClose() {
-    const dialog = ref.current;
-    if (!dialog) return;
-
-    dialog.classList.remove("is-open");
-
-    await dialog.animate(
-      {
-        scale: [1, 0.8],
-        opacity: [1, 0],
-      },
-      AnimOptions
-    ).finished;
-
-    dialog.close();
+  function handleCancel() {
+    dialogApi.current?.animateClose();
   }
 
-  /** Intercept and prevent a cancel. Run animated close instead. */
-  function handleCancel(e: React.UIEvent<HTMLDialogElement>) {
-    e.preventDefault();
-    animateClose();
-  }
-
-  const dialogLabelId = useId();
   const previewLabelId = useId();
 
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -88,65 +35,45 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
 
   const { sendNote } = useNoteApi();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const handleSubmit = useCallback(async () => {
     const note = copyToClipboard(layers, ruleName);
-    await animateClose();
+    await dialogApi.current?.animateClose();
     sendNote(note);
-  }
+  }, [layers, ruleName, dialogApi, sendNote]);
 
-  return createPortal(
-    <dialog
-      ref={ref}
-      onClose={onClose}
-      className="ExportDialog origin-top-right"
-      onCancel={handleCancel}
-      // FIXME: this only works in Chrome
-      closedby="any"
-      aria-labelledby={dialogLabelId}
-      id={id}
-    >
-      <Tail className="ExportDialog__tail" />
+  return (
+    <Dialog label="Copy keyframes" open={open} onClose={onClose} ref={dialogApi} onSubmit={handleSubmit} id={id}>
+      <DialogBody>
+        <label className="stacked-label">
+          <span>Rule name</span>
+          <input
+            className="textbox"
+            type="text"
+            value={ruleName}
+            onChange={handleNameChange}
+            autoFocus
+            spellCheck={false}
+          />
+          <Hint>Leave empty for bare keyframes</Hint>
+        </label>
 
-      <form className="ExportDialog__form [ flex flex-col ]" onSubmit={handleSubmit}>
-        <div className="flex flex-col min-h-px stack p-4">
-          <h2 id={dialogLabelId} className="select-none">
-            Copy keyframes
-          </h2>
-
-          <label className="stacked-label">
-            <span>Rule name</span>
-            <input
-              className="textbox"
-              type="text"
-              value={ruleName}
-              onChange={handleNameChange}
-              autoFocus
-              spellCheck={false}
-            />
-            <Hint>Leave empty for bare keyframes</Hint>
-          </label>
-
-          <div className="stacked-label flex flex-col min-h-px grow">
-            <span id={previewLabelId}>Preview</span>
-            <code className="ExportDialog__output" aria-labelledby={previewLabelId}>
-              <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>
-            </code>
-          </div>
+        <div className="stacked-label flex-col min-h-px  ">
+          <span id={previewLabelId}>Preview</span>
+          <code className="ExportDialog__output" aria-labelledby={previewLabelId}>
+            <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>
+          </code>
         </div>
+      </DialogBody>
 
-        <footer className="ExportDialog__footer flex justify-end gap-4 pt-4">
-          <button onClick={animateClose} className="button is-secondary" type="button">
-            Cancel
-          </button>
-          <button className="button is-primary" type="submit">
-            Copy
-          </button>
-        </footer>
-      </form>
-    </dialog>,
-    document.body
+      <DialogFooter>
+        <button onClick={handleCancel} className="button is-secondary" type="button">
+          Cancel
+        </button>
+
+        <button className="button is-primary" type="submit">
+          Copy
+        </button>
+      </DialogFooter>
+    </Dialog>
   );
 }

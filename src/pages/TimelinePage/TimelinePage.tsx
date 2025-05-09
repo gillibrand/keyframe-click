@@ -11,7 +11,7 @@ import { useSetting } from "../../app/useSettings";
 import "./TimelinePage.css";
 
 import { MenuProvider } from "@components/menu/MenuContext";
-import { NoteList, useNoteApi } from "@components/note";
+import { useNoteApi } from "@components/note";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { ExportDialog } from "@export/ExportDialog";
@@ -400,19 +400,15 @@ export function TimelinePage() {
     sendNote(note);
   }
 
-  const exportDialogId = useId();
+  const DialogId = useId();
   const isExporting = getIsExporting();
-  const activeExportId = isExporting ? exportDialogId : undefined;
+  const activeExportId = isExporting ? DialogId : undefined;
 
   function handleSave() {}
 
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
-      {isExporting && (
-        <ExportDialog open={true} onClose={() => setIsExporting(false)} layers={layers} id={exportDialogId} />
-      )}
-
-      <NoteList />
+      {isExporting && <ExportDialog open={true} onClose={() => setIsExporting(false)} layers={layers} id={DialogId} />}
 
       <div className="flex-col grow [ stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
