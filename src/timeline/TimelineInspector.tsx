@@ -132,15 +132,15 @@ export const TimelineInspector = memo(function Inspector({
       <h2>Point</h2>
 
       <div className="stack-small">
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <button
-            className={cx("button flex-auto basis-1", { "is-pressed": isAdding })}
+            className={cx("button flex-auto flex-1", { "is-pressed": isAdding })}
             aria-pressed={isAdding}
             onClick={onClickAdd}
           >
             Add Point
           </button>
-          <button className="button flex-auto basis-1 is-danger" onClick={onClickDelete} disabled={!selected}>
+          <button className="button flex-auto flex-1 is-danger" onClick={onClickDelete} disabled={!selected}>
             Delete
           </button>
         </div>

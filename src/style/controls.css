@@ -26,7 +26,7 @@
     box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
   }
 
-  &:not(:disabled):is(:active, [aria-pressed="true"]) {
+  &:not(:disabled):is(:active, [aria-pressed="true"], [aria-expanded]) {
     box-shadow: 0.0625rem 0.0625rem 0 0 var(--shadow-color);
   }
 

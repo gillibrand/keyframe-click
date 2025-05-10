@@ -37,7 +37,8 @@
     filter: brightness(1.1);
   }
 
-  &:active {
+  &:active,
+  &.is-pressed {
     transition: box-shadow 100ms;
     filter: brightness(0.9);
     box-shadow: 0.0675rem 0.0675rem 0 0 var(--c-neo-black);

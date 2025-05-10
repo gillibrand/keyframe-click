@@ -22,6 +22,7 @@ import Gear from "@images/gear.svg?react";
 import { loadSavedLayers } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
+import { FileDialog } from "@export/FileDialog";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -48,7 +49,7 @@ export function TimelinePage() {
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
-  const [filename] = useState("");
+  const [filename, setFilename] = useState("");
   const { sendNote } = useNoteApi();
 
   useEffect(
@@ -212,14 +213,15 @@ export function TimelinePage() {
     keyframeText,
   });
 
-  const [getIsExporting, setIsExporting] = useLiveState(false);
+  const [getIsExportOpen, setIsExportOpen] = useLiveState(false);
+  const [getIsFileOpen, setIsFileOpen] = useLiveState(false);
 
   useEffect(
     function addEventListenersOnMount() {
       function handleKeyDown(e: KeyboardEvent) {
         switch (e.key) {
           case "Shift": {
-            if (timelineRef.current && canvasRef.current && !getIsExporting()) {
+            if (timelineRef.current && canvasRef.current && !getIsExportOpen() && !getIsFileOpen()) {
               const rect = canvasRef.current.getBoundingClientRect();
               const at = {
                 x: lastMouseRef.current.x - rect.x,
@@ -257,7 +259,7 @@ export function TimelinePage() {
         window.addEventListener("mousemove", handleMouseMove);
       };
     },
-    [togglePreview, getIsExporting]
+    [togglePreview, getIsExportOpen, getIsFileOpen]
   );
 
   const items: MenuItem[] = [
@@ -284,8 +286,8 @@ export function TimelinePage() {
   ];
 
   /**
-   * A checksum of the current visible tab state. This reflects the number of tabs, what CSS props they are for, and the
-   * active tab. This can then be used to trigger updates to the visible tabs and related data when they change.
+   * A checksum of the current visible tab state. This reflects the number of tabs, what CSS props they are for, and
+   * the active tab. This can then be used to trigger updates to the visible tabs and related data when they change.
    *
    * This avoid rendering them each time unrelated state like `sampleCount` changes. Performance is probably not a big
    * deal here, so maybe this is overkill. Tabs weren't rendering so often before, so I want to keep that, but maybe
@@ -314,8 +316,8 @@ export function TimelinePage() {
   }, [layers, tabsChecksum]);
 
   /**
-   * This has to be below effects that push changes to Layers. This is also used to know what prop to default to on new
-   * tabs.
+   * This has to be below effects that push changes to Layers. This is also used to know what prop to default to on
+   * new tabs.
    */
   const remainingCssProps = useMemo(() => {
     void tabsChecksum;
@@ -390,10 +392,16 @@ export function TimelinePage() {
   );
 
   const startExport = useCallback(() => {
-    setIsExporting(true);
-  }, [setIsExporting]);
+    setIsExportOpen(true);
+  }, [setIsExportOpen]);
 
-  const stopExporting = useCallback(() => setIsExporting(false), [setIsExporting]);
+  const stopExporting = useCallback(() => setIsExportOpen(false), [setIsExportOpen]);
+
+  const startFile = useCallback(() => {
+    setIsFileOpen(true);
+  }, [setIsFileOpen]);
+
+  const stopFile = useCallback(() => setIsFileOpen(false), [setIsFileOpen]);
 
   const [ruleName] = useSetting("ruleName", "my-anim");
 
@@ -403,14 +411,46 @@ export function TimelinePage() {
   }
 
   const DialogId = useId();
-  const isExporting = getIsExporting();
-  const activeExportId = isExporting ? DialogId : undefined;
+  const isExportOpen = getIsExportOpen();
+  const isFileOpen = getIsFileOpen();
+  const activeExportId = isExportOpen ? DialogId : undefined;
 
-  function handleSave() {}
+  const copyButtonRef = useRef<HTMLButtonElement>(null);
+  const fileButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleSave = useCallback(
+    (name: string) => {
+      sendNote(`Saved "${name}"`);
+      setFilename(name);
+    },
+    [sendNote]
+  );
+
+  const handleNew = useCallback(() => {
+    setFilename("");
+  }, []);
 
   return (
-    <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
-      {isExporting && <ExportDialog open={true} onClose={stopExporting} layers={layers} id={DialogId} />}
+    <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExportOpen })}>
+      {isExportOpen && (
+        <ExportDialog
+          open={true}
+          onClose={stopExporting}
+          layers={layers}
+          id={DialogId}
+          near={copyButtonRef.current ?? undefined}
+        />
+      )}
+
+      {isFileOpen && (
+        <FileDialog
+          near={fileButtonRef.current ?? undefined}
+          onClose={stopFile}
+          onSave={handleSave}
+          onNew={handleNew}
+          initialFilename={filename}
+        />
+      )}
 
       <div className="flex-col grow [ stack stack--trail ]">
         {/* TABS and SETTINGS at top */}
@@ -440,27 +480,29 @@ export function TimelinePage() {
             </MenuButton>
           </MenuProvider>
 
-          <button className="button is-secondary  flex-center gap-2" onClick={handleSave}>
-            File <Down />
+          <button
+            className={cx("button is-secondary flex-center gap-2", { "is-pressed": isFileOpen })}
+            aria-pressed={isFileOpen}
+            onClick={startFile}
+            ref={fileButtonRef}
+          >
+            Save <Down />
           </button>
 
           <SplitButtons>
             <button
               title="Set options and copy keyframes"
               onClick={startExport}
-              className={cx("grow flex-center gap-2 is-icon", { "is-pressed": isExporting })}
+              className="grow flex-center gap-2 is-icon"
+              aria-haspopup="dialog"
+              aria-expanded={isExportOpen}
+              aria-controls={activeExportId}
+              ref={copyButtonRef}
             >
               Copy <Down />
             </button>
 
-            <button
-              title="Copy keyframes with current options"
-              aria-haspopup="dialog"
-              aria-expanded={isExporting}
-              aria-controls={activeExportId}
-              onClick={handleCopyNow}
-              className="center"
-            >
+            <button title="Copy keyframes with current options" onClick={handleCopyNow} className="center">
               <Copy />
               <span className="sr-only">Copy keyframes to clipboard with current options</span>
             </button>

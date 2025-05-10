@@ -12,9 +12,10 @@ interface Props {
   onClose: () => void;
   layers: Layers;
   id: string;
+  near?: HTMLElement;
 }
 
-export function ExportDialog({ open, onClose, layers, id }: Props) {
+export function ExportDialog({ open, onClose, layers, id, near }: Props) {
   const dialogApi = useRef<DialogApi>(null);
 
   const [ruleName, setRuleName] = useSetting("ruleName", "my-animation");
@@ -42,7 +43,15 @@ export function ExportDialog({ open, onClose, layers, id }: Props) {
   }, [layers, ruleName, dialogApi, sendNote]);
 
   return (
-    <Dialog label="Copy keyframes" open={open} onClose={onClose} ref={dialogApi} onSubmit={handleSubmit} id={id}>
+    <Dialog
+      label="Copy keyframes"
+      open={open}
+      onClose={onClose}
+      ref={dialogApi}
+      onSubmit={handleSubmit}
+      id={id}
+      near={near}
+    >
       <DialogBody>
         <label className="stacked-label">
           <span>Rule name</span>

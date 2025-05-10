@@ -87,8 +87,8 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   flex: auto;
 }
 
-.basis-1 {
-  flex-basis: 1px;
+.flex-1 {
+  flex: 1;
 }
 
 .w-full {
@@ -156,6 +156,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   padding-block: 0.5rem;
 }
 
+.pb-4 {
+  padding-block-end: 1rem;
+}
+
 .ml-auto {
   margin-inline-start: auto;
 }
@@ -192,6 +196,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   justify-content: space-between;
 }
 
+.justify-stretch {
+  justify-content: stretch;
+}
+
 .flex-center {
   display: flex;
   justify-content: center;
@@ -204,6 +212,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-help {
+  cursor: help;
 }
 
 .center {

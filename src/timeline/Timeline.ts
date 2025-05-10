@@ -72,7 +72,7 @@ export interface Timeline {
 }
 
 export interface TimelineProps {
-  canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean };
+  canvas: HTMLCanvasElement;
   layers: Layers;
 }
 
@@ -85,19 +85,6 @@ type State = "adding" | "default";
  */
 export function createTimeline({ canvas: _canvas, layers: _layers }: TimelineProps): Timeline {
   let drawTimer: number | null = null;
-
-  enableRetina(_canvas);
-
-  // const Height = _canvas.clientHeight;
-  // const Width = _canvas.clientWidth;
-
-  function height() {
-    return _canvas.clientHeight;
-  }
-
-  function width() {
-    return _canvas.clientWidth;
-  }
 
   const _cx = _canvas.getContext("2d")!;
 
@@ -114,6 +101,18 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   let _state: State = "default";
 
   let _filename = "";
+
+  let _resizeObserver: ResizeObserver | undefined = undefined;
+
+  function height() {
+    return _canvas.clientHeight;
+  }
+
+  function width() {
+    return _canvas.clientWidth;
+  }
+
+  enableRetina(_canvas);
 
   // We save whether focus is "visible" (based on keyboard vs mouse activity) when we focus on the
   // canvas. This lets us maintain the same visible focus state the entire time so we don't Tab in,
@@ -134,9 +133,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
    *   get bigger each time.
    */
   function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean }) {
-    const isScaled = canvas.isScaledForScreenDpi || false;
-    if (isScaled) return;
-
     const cx = canvas.getContext("2d")!;
 
     // Set the internal sizes to the scaled size for the DPI and width
@@ -145,7 +141,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     canvas.height = canvas.height * scale;
 
     cx.scale(scale, scale);
-    canvas.isScaledForScreenDpi = true;
 
     const onResize = throttle((entries: ResizeObserverEntry[]) => {
       const entry = entries[0];
@@ -166,7 +161,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       drawNow(false);
     }, 50);
 
-    new ResizeObserver(onResize).observe(canvas);
+    _resizeObserver = new ResizeObserver(onResize);
+    _resizeObserver.observe(canvas);
   }
 
   function cloneSelectedDot(): UserDot | null {
@@ -419,18 +415,24 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   function drawFilename() {
     if (!_filename) return;
 
-    _cx.font = " 16px Lucida Grande";
+    willDraw(_cx, () => {
+      const bestName = _filename.length > 50 ? _filename.slice(0, 50) + "…" : _filename;
 
-    const r = _cx.measureText(_filename);
+      _cx.font = "bold 16px Lucida Grande";
 
-    const x = (width() - r.width) / 2;
-    const y = InsetY + 20;
+      const r = _cx.measureText(bestName);
 
-    _cx.fillStyle = Colors.White;
-    _cx.fillRect(x, y - 10, r.width, 18);
+      const x = Math.max(InsetX + 2, (width() - r.width) / 2);
+      const y = InsetY * 3;
 
-    _cx.fillStyle = Colors.Gray600;
-    _cx.fillText(_filename, x, y);
+      clipTimeline(10);
+
+      _cx.fillStyle = Colors.White;
+      _cx.fillRect(x, y - 10, r.width, 18);
+
+      _cx.fillStyle = Colors.Gray500;
+      _cx.fillText(bestName, x, y);
+    });
   }
 
   /**
@@ -440,26 +442,28 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   function drawAxisText() {
     if (!_labelYAxis) return;
 
-    _cx.textAlign = "left";
-    _cx.textRendering = "optimizeSpeed";
-    _cx.textBaseline = "middle";
-    _cx.font = "14px sans-serif ";
-    _cx.fillStyle = Colors.Gray500;
+    willDraw(_cx, () => {
+      _cx.textAlign = "left";
+      _cx.textRendering = "optimizeSpeed";
+      _cx.textBaseline = "middle";
+      _cx.font = "14px sans-serif ";
+      _cx.fillStyle = Colors.Gray500;
 
-    const x = 20;
+      const x = 20;
 
-    const minY100 = Math.floor(MinY / 100) * 100;
-    for (let y = minY100; y <= MaxY; y += 100) {
-      const ry = asRealY(y);
-      const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
-      const r = _cx.measureText(text);
+      const minY100 = Math.floor(MinY / 100) * 100;
+      for (let y = minY100; y <= MaxY; y += 100) {
+        const ry = asRealY(y);
+        const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
+        const r = _cx.measureText(text);
 
-      _cx.fillStyle = Colors.White;
-      _cx.fillRect(x, ry - 4, r.width, 8);
+        _cx.fillStyle = Colors.White;
+        _cx.fillRect(x, ry - 4, r.width, 8);
 
-      _cx.fillStyle = Colors.Gray400;
-      _cx.fillText(text, x, ry);
-    }
+        _cx.fillStyle = Colors.Gray400;
+        _cx.fillText(text, x, ry);
+      }
+    });
   }
 
   function drawSamples(color: ColorName) {
@@ -547,10 +551,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
    * Clips the canvas to the timeline area. This is used for most drawing except the dots themselves so they can be
    * dragged more easily near the edges.
    */
-  function clipTimeline() {
-    // return;
+  function clipTimeline(extraInset: number = 0) {
     _cx.beginPath();
-    _cx.rect(InsetX, InsetY, width() - 2 * InsetX, height() - 2 * InsetY);
+    _cx.rect(InsetX + extraInset, InsetY, width() - 2 * InsetX - 2 * extraInset, height() - 2 * InsetY);
     _cx.clip();
   }
 
@@ -749,6 +752,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       cancelAnimationFrame(drawTimer);
       drawTimer = null;
     }
+
+    _resizeObserver?.disconnect();
   }
 
   function updateSelectedDot(d: UserDot) {

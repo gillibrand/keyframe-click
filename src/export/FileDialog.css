@@ -1,0 +1,69 @@
+@keyframes shake-no {
+  0% {
+    translate: 0% 0%;
+  }
+  6.67% {
+    translate: -5.82% 0%;
+  }
+  12% {
+    translate: -7% 0%;
+  }
+  13.33% {
+    translate: -7.06% 0%;
+  }
+  20% {
+    translate: -4.03% 0%;
+  }
+  26.67% {
+    translate: 3.6% 0%;
+  }
+  33.33% {
+    translate: 6.98% 0%;
+  }
+  34% {
+    translate: 7% 0%;
+  }
+  40% {
+    translate: 5.5% 0%;
+  }
+  46.67% {
+    translate: 0.52% 0%;
+  }
+  53.33% {
+    translate: -3.46% 0%;
+  }
+  57% {
+    translate: -4% 0%;
+  }
+  60% {
+    translate: -3.7% 0%;
+  }
+  66.67% {
+    translate: 0.74% 0%;
+  }
+  73.33% {
+    translate: 4.02% 0%;
+  }
+  74% {
+    translate: 4% 0%;
+  }
+  80% {
+    translate: 2.68% 0%;
+  }
+  86.67% {
+    translate: -0.94% 0%;
+  }
+  90% {
+    translate: -2% 0%;
+  }
+  93.33% {
+    translate: -2.31% 0%;
+  }
+  100% {
+    translate: 0% 0%;
+  }
+}
+
+.shake-no {
+  animation: shake-no 400ms;
+}

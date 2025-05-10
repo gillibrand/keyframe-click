@@ -91,6 +91,13 @@ h2,
 h3 {
   margin: 0;
   cursor: default;
+  user-select: none;
+}
+
+button,
+input[type="checkbox"],
+input[type="radio"] {
+  user-select: none;
 }
 
 h1 {
