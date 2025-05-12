@@ -9,6 +9,7 @@ const esbuildTargets = browserslistToEsbuild(browserslist());
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/keyframe-click/",
   build: {
     target: esbuildTargets,
   },

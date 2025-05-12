@@ -28,7 +28,7 @@ export function Banner() {
     e.preventDefault();
     if (route === "/") return;
 
-    history.pushState({ hash: "#/" }, "", "/");
+    history.pushState({ hash: "#/" }, "", import.meta.env.BASE_URL);
     setRoute("/");
   }
 
