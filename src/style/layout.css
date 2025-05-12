@@ -12,3 +12,14 @@
   padding-inline: 1rem;
   margin-inline: auto;
 }
+
+.wrapper-small {
+  /* Need width in case this is nested in a flex-col */
+  width: 100%;
+
+  /* min-width: 500px; */
+  max-width: 90ch;
+
+  padding-inline: 1rem;
+  margin-inline: auto;
+}

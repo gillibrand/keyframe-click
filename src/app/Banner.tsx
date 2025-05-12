@@ -43,12 +43,12 @@ export function Banner() {
           <a className="Banner__link" {...href("#/")} onClick={gotoTimeline}>
             Timeline
           </a>
-          <a className="Banner__link" {...href("#/demos")}>
+          {/* <a className="Banner__link" {...href("#/demos")}>
             Demos
           </a>
           <a className="Banner__link" {...href("#/help")}>
             Help
-          </a>
+          </a> */}
           <a className="Banner__link" {...href("#/about")}>
             About
           </a>

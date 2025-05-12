@@ -85,10 +85,16 @@ button {
   font-size: var(--sz-small);
 }
 
+a,
+a:visited {
+  color: var(--c-body);
+}
 h1,
 h2,
-h3 {
+h3,
+main {
   margin: 0;
+  padding: 0;
 }
 
 h1 {
