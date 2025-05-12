@@ -20,8 +20,8 @@ export default function AboutPage() {
           </p>
 
           <p>
-            Created by <a href="https://www.linkedin.com/in/jay-gillibrand/">Jay Gillibrand</a>. See more or my work on
-            my <a href="https://gillibrand.github.io/projects/">project site</a>.
+            Created by <a href="https://www.linkedin.com/in/jay-gillibrand/">Jay Gillibrand</a>. See more of my work on{" "}
+            <a href="https://gillibrand.github.io/projects/">my project site</a>.
           </p>
         </div>
       </div>
