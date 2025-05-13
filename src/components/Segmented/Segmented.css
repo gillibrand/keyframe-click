@@ -10,7 +10,17 @@
   justify-content: center;
   font-size: var(--sz-small);
 
-  &:not(:has(:focus-visible)) {
+  &.is-disabled {
+    background-color: white;
+    border-color: var(--c-disabled);
+    color: var(--c-disabled);
+
+    & + svg {
+      color: var(--c-disabled);
+    }
+  }
+
+  &:not(:has(:focus-visible)):not(.is-disabled) {
     box-shadow: 2px 2px 0 0 var(--shadow-color);
   }
 
@@ -20,13 +30,34 @@
   }
 }
 
-.Segmented__button {
+.Segmented__button:not(:has(:disabled)) {
   &,
   & > * {
     cursor: pointer;
   }
 
-  &:active:not(:disabled),
+  &:has(:checked) {
+    &,
+    &:has(:checked) + * {
+      border-color: var(--c-neo-blue);
+    }
+    background-color: var(--c-blue-500);
+    color: white;
+  }
+}
+
+.Segmented__button:has(:disabled) {
+  background-color: transparent;
+  color: var(--c-disabled);
+
+  &:has(:checked) {
+    background-color: var(--c-disabled);
+    color: white;
+  }
+}
+
+.Segmented__button {
+  &:active:not(:has(:disabled)),
   &[aria-pressed="true"] {
     filter: brightness(0.9);
   }
@@ -41,16 +72,6 @@
   &:not(:first-child) {
     border-inline-start: solid var(--border-width);
     border-color: inherit;
-  }
-
-  &:has(:checked) {
-    &,
-    &:has(:checked) + * {
-      border-color: var(--c-neo-blue);
-    }
-
-    background-color: var(--c-blue-500);
-    color: white;
   }
 
   & > input {

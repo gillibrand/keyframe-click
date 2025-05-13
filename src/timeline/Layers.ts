@@ -93,6 +93,16 @@ export function loadSavedLayers(activeLayerId: string, onChange: () => void) {
 }
 
 /**
+ * @param name CSS prop to check.
+ * @param units The units we want to use with it--possibly saved with an old layer--but we need to check if it's
+ *   allowed.
+ * @returns Percent if the prop only support percentage values (or unitless, which are basically percentages anyway).
+ *   Otherwise, just the same as teh given unit.
+ */
+function normalizeUnits(name: CssProp, units: Unit) {
+  return CssInfos[name].supportsPx ? units : "%";
+}
+/**
  * Holds all data for the different layers of the timeline. Each layer is a separate CSS property with its own dots.
  * There is one active layer at a time which is what the user can drag around. All layers are used for output.
  */
@@ -163,7 +173,7 @@ export class Layers {
         cssProp: layer.cssProp,
         isFlipped: layer.isFlipped,
         userSamples,
-        units: layer.units,
+        units: normalizeUnits(layer.cssProp, layer.units),
       });
     }
 
@@ -244,12 +254,16 @@ export class Layers {
   }
 
   setUnits(units: Unit) {
-    this.getActiveLayer().units = units;
+    const layer = this.getActiveLayer();
+    if (!CssInfos[layer.cssProp].supportsPx) units = "%";
+
+    layer.units = units;
     this.onChange();
   }
 
   getUnits() {
-    return this.getActiveLayer().units;
+    const layer = this.getActiveLayer();
+    return normalizeUnits(layer.cssProp, layer.units);
   }
 
   setSampleCount(count: number) {

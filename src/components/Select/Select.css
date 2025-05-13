@@ -24,10 +24,11 @@
   }
 
   &:disabled {
-    border-color: gray;
+    border-color: var(--c-disabled);
+    color: var(--c-disabled);
 
     & + svg {
-      color: gray;
+      color: var(--c-disabled);
     }
   }
 }

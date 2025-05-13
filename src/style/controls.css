@@ -50,7 +50,6 @@
   &:not(:disabled) {
     cursor: pointer;
     color: white;
-    color: var(--c-neo-white);
     background-color: var(--c-neo-blue);
 
     &.is-secondary {

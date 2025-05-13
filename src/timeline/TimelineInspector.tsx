@@ -53,6 +53,10 @@ const GlobalSettings = memo(function GlobalSettings({
     }
   }
 
+  function isUnitDisabled(name: CssProp) {
+    return !CssInfos[name].supportsPx;
+  }
+
   return (
     <>
       <h2>
@@ -75,6 +79,7 @@ const GlobalSettings = memo(function GlobalSettings({
             label="Units"
             className="flex-none"
             onChange={(units) => onChangeUnits(units)}
+            disabled={isUnitDisabled(cssProp)}
           >
             <SegmentedButton value="%">%</SegmentedButton>
             <SegmentedButton value="px">px</SegmentedButton>
@@ -121,6 +126,7 @@ export const TimelineInspector = memo(function Inspector({
   onClickAdd,
   onClickDelete,
   isAdding,
+  units,
   ...props
 }: Props) {
   const xId = useId();
@@ -148,7 +154,7 @@ export const TimelineInspector = memo(function Inspector({
 
   return (
     <aside className="inspector stack">
-      <GlobalSettings {...props} />
+      <GlobalSettings units={units} {...props} />
 
       <h2>Point</h2>
 
@@ -204,7 +210,7 @@ export const TimelineInspector = memo(function Inspector({
 
             <label className="stacked-label">
               <span>
-                Value <span className="text-light">%</span>
+                Value <span className="text-light">{units}</span>
               </span>
               <input
                 className="textbox"

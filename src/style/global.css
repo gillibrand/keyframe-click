@@ -33,11 +33,15 @@
   --c-neo-black: #000000;
   --c-neo-white: #f7f7f7;
   --c-neo-white: #f5f5f5;
-  --c-neo-blue: #0273f8;
+  --c-neo-blue: #006dea;
   --c-neo-teal: #4ccdc0;
   --c-neo-pink: #f902eb;
 
+  /* // better contrast */
+  --c-neo-danger: #db2775;
   --c-neo-danger: #ff2583;
+
+  --c-disabled: rgb(119, 119, 119);
 
   --c-blue: #1c7ef3;
   --c-body: var(--c-gray-700);

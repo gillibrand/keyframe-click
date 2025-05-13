@@ -39,6 +39,7 @@ export const Colors = {
   zinc: "oklch(0.37 0.013 285.805)",
 
   NeoBlack: "black",
+  NeoBlue: "#0273f8",
 };
 
 export type ColorName = keyof typeof Colors;

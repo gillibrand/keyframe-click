@@ -22,6 +22,7 @@ export interface CssInfo {
   label: string;
   fn: OutputFn;
   color: ColorName;
+  supportsPx: boolean;
 }
 
 const typedKeys = <K extends string>(object: Record<K, CssInfo>) => object;
@@ -33,30 +34,35 @@ const CssInfos = typedKeys({
       return `scale: ${Math.round(s) / 100};`;
     },
     color: "red",
+    supportsPx: false,
   },
 
   scaleX: {
     label: "Scale X",
     fn: NullPairFn,
     color: "red",
+    supportsPx: false,
   },
 
   scaleY: {
     label: "Scale Y",
     fn: NullPairFn,
     color: "orange",
+    supportsPx: false,
   },
 
   translateX: {
     label: "Translate X",
     fn: NullPairFn,
-    color: "blue",
+    color: "NeoBlue",
+    supportsPx: true,
   },
 
   translateY: {
     label: "Translate Y",
     fn: NullPairFn,
     color: "sky",
+    supportsPx: true,
   },
 
   opacity: {
@@ -65,6 +71,7 @@ const CssInfos = typedKeys({
       return `opacity: ${round2dp(n / 100)};`;
     },
     color: "green",
+    supportsPx: false,
   },
 
   rotate: {
@@ -73,6 +80,7 @@ const CssInfos = typedKeys({
       return `rotate: ${round2dp(n / 100)}turn;`;
     },
     color: "fuchsia",
+    supportsPx: false,
   },
 } as const);
 
