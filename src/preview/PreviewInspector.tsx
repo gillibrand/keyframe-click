@@ -1,11 +1,12 @@
 import { Duration, TimeUnit } from "@app/useSettings";
+import { Checkbox } from "@components/Checkbox/Checkbox";
+import { Select } from "@components/Select";
+import Play from "@images/play.svg?react";
+import Stop from "@images/stop.svg?react";
 import "@style/inspector.css";
 import { Segmented, SegmentedButton } from "../components/Segmented";
 import { Speed } from "./usePreview";
-import { Select } from "@components/Select";
-import { Checkbox } from "@components/Checkbox/Checkbox";
-import Stop from "@images/stop.svg?react";
-import Play from "@images/play.svg?react";
+import { useId } from "react";
 
 interface Props {
   duration: Duration;
@@ -49,6 +50,8 @@ export function PreviewInspector({
       unit: unit as TimeUnit,
     });
   }
+
+  const speedId = useId();
 
   return (
     <aside className="inspector stack">
@@ -107,9 +110,9 @@ export function PreviewInspector({
         </div>
       </label>
 
-      <label className="stacked-label">
-        <span>Speed</span>
-        <Segmented onChange={onChangeSpeed} checkedValue={speed}>
+      <div className="stacked-label">
+        <span id={speedId}>Speed</span>
+        <Segmented onChange={onChangeSpeed} checkedValue={speed} labelledBy={speedId}>
           <SegmentedButton value={1}>
             100<span className="text-small">%</span>
           </SegmentedButton>
@@ -123,7 +126,7 @@ export function PreviewInspector({
             10<span className="text-small">%</span>
           </SegmentedButton>
         </Segmented>
-      </label>
+      </div>
     </aside>
   );
 }

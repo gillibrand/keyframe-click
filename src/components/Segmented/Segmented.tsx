@@ -1,6 +1,7 @@
 import { useUuid } from "@util/hooks";
 import { createContext, memo, PropsWithChildren, Provider, useContext, useId, useMemo } from "react";
 import "./Segmented.css";
+import { cx } from "@util/cx";
 
 /** A type for the radio group properties to pass via context to the radio buttons. */
 interface ContextType<T> {
@@ -18,9 +19,10 @@ const Context = createContext(null as unknown as ContextType<unknown>);
 
 interface Props<T> extends PropsWithChildren {
   label?: string;
+  labelledBy?: string;
   checkedValue: T;
   onChange?: (value: T) => void;
-  ariaLabel?: string;
+  className?: string;
 }
 
 const genericMemo: <T>(component: T) => T = memo;
@@ -33,8 +35,10 @@ const genericMemo: <T>(component: T) => T = memo;
 export const Segmented = genericMemo(function Segmented<T = string>({
   children,
   label,
+  labelledBy,
   checkedValue,
   onChange,
+  className,
 }: Props<T>) {
   // We just need a common name to tie the radio buttons together. This is not seen, so we can use a UUID.
   const groupName = useUuid();
@@ -52,11 +56,11 @@ export const Segmented = genericMemo(function Segmented<T = string>({
   const Provider = Context.Provider as Provider<ContextType<T>>;
 
   const labelId = useId();
-  const maybeLabelId = label ? labelId : undefined;
+  const maybeLabelId = labelledBy ? labelledBy : label ? labelId : undefined;
 
   return (
     // This should be a fieldset, but it has rendering errors with a border radius and overflow in Chrome as of 135.0.7049.96
-    <div className="Segmented" role="radiogroup" aria-labelledby={maybeLabelId}>
+    <div className={cx("Segmented", className)} role="radiogroup" aria-labelledby={maybeLabelId} title={label}>
       <Provider value={contextValue}>{children}</Provider>
       {label && (
         <span className="sr-only" id={labelId}>

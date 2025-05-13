@@ -138,8 +138,8 @@ input[type="checkbox"] {
 }
 
 .stacked-label {
-  display: grid;
-  grid-template-rows: auto auto;
+  display: flex;
+  flex-direction: column;
   gap: 0.4375rem;
 
   & > span {

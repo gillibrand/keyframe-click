@@ -1,5 +1,6 @@
 import { Checkbox } from "@components/Checkbox/Checkbox";
 import { Hint } from "@components/Hint";
+import { Segmented, SegmentedButton } from "@components/Segmented";
 import { Select } from "@components/Select";
 import "@style/inspector.css";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
@@ -7,6 +8,7 @@ import { DotType, moveDot, UserDot } from "@timeline/point";
 import { cx } from "@util/cx";
 import { round3dp } from "@util/index";
 import { memo, useId } from "react";
+import { Unit } from "./Layers";
 
 interface GlobalProps {
   isFlipped: boolean;
@@ -16,6 +18,8 @@ interface GlobalProps {
   onChangeSampleCount: (count: number) => void;
   onChangeCssProp: (property: CssProp) => void;
   disabledCssProps: Set<CssProp>;
+  units: Unit;
+  onChangeUnits: (units: Unit) => unknown;
 }
 
 interface Props extends GlobalProps {
@@ -34,6 +38,8 @@ const GlobalSettings = memo(function GlobalSettings({
   onChangeSampleCount,
   onChangeCssProp,
   disabledCssProps,
+  units,
+  onChangeUnits,
 }: GlobalProps) {
   const samplesId = useId();
 
@@ -52,16 +58,30 @@ const GlobalSettings = memo(function GlobalSettings({
       <h2>
         Property <span className="sr-only">Inspector</span>
       </h2>
+
       <label className="stacked-label">
         <span className="sr-only">Property name</span>
-        <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
-          {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
-            <option key={otherCssProp} value={otherCssProp} disabled={isCssPropDisabled(otherCssProp as CssProp)}>
-              {namedFn.label}
-            </option>
-          ))}
-        </Select>
+        <div className="col-2-auto gap-2">
+          <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
+            {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
+              <option key={otherCssProp} value={otherCssProp} disabled={isCssPropDisabled(otherCssProp as CssProp)}>
+                {namedFn.label}
+              </option>
+            ))}
+          </Select>
+
+          <Segmented
+            checkedValue={units}
+            label="Units"
+            className="flex-none"
+            onChange={(units) => onChangeUnits(units)}
+          >
+            <SegmentedButton value="%">%</SegmentedButton>
+            <SegmentedButton value="px">px</SegmentedButton>
+          </Segmented>
+        </div>
       </label>
+
       <label className="stacked-label">
         <span>Extra frames</span>
         <div className="flex gap-4">
@@ -79,6 +99,7 @@ const GlobalSettings = memo(function GlobalSettings({
           <output htmlFor={samplesId}>{sampleCount}</output>
         </div>
       </label>
+
       <Checkbox label="Flip values" checked={isFlipped} onChange={(e) => onChangeIsFlipped(e.target.checked)} />
     </>
   );

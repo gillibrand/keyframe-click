@@ -11,6 +11,10 @@
   flex-grow: 1;
 }
 
+.flex-none {
+  flex: none;
+}
+
 .shrink {
   flex-shrink: 1;
 }
@@ -47,6 +51,14 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 .col-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+
+.col-2-auto {
+  display: flex;
+
+  & > *:not(.flex-none) {
+    flex-grow: 1;
+  }
 }
 
 .truncate {

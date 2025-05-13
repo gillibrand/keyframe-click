@@ -1,5 +1,5 @@
 import { CssInfos, CssProp } from "@timeline/CssInfo";
-import { Layers } from "@timeline/Layers";
+import { Layers, Unit } from "@timeline/Layers";
 import { Point } from "@timeline/point";
 import { round2dp } from "@util";
 import { ColorName, Colors } from "@util/Colors";
@@ -65,6 +65,7 @@ type PairProp = keyof typeof PairProps;
 interface SamplePlus extends Point {
   cssProp: CssProp;
   isFlipped: boolean;
+  units: Unit;
 }
 
 /**
@@ -161,12 +162,13 @@ export function genCssKeyframeList(layers: Layers, asHtml?: boolean): string {
         const { shorthandProp, xProp, yProp } = pairInfo;
         handledPairs.add(xProp).add(yProp);
 
-        const [xValue, yValue] = getXyForPair(slice, xProp, yProp);
+        const { xValue, xUnits: xPx, yValue, yUnits: yPx } = getXyForPair(slice, xProp, yProp);
+
         if (asHtml) {
           const color = Colors[pairInfo.color];
-          parts.push(`  <span style="color: ${color}">${shorthandProp}: ${xValue}% ${yValue}%;</span>`);
+          parts.push(`  <span style="color: ${color}">${shorthandProp}: ${xValue}${xPx} ${yValue}${yPx};</span>`);
         } else {
-          parts.push(`  ${shorthandProp}: ${xValue}% ${yValue}%;`);
+          parts.push(`  ${shorthandProp}: ${xValue}${xPx} ${yValue}${yPx};`);
         }
       } else {
         const cssInfo = CssInfos[sample.cssProp];
@@ -202,7 +204,14 @@ function getXyForPair(slice: TimeSlice, xProp: CssProp, yProp: CssProp) {
   const xSample = slice.props.get(xProp) ?? interpolateValue(slice, xProp);
   const ySample = slice.props.get(yProp) ?? interpolateValue(slice, yProp);
 
-  return [xSample.isFlipped ? -xSample.y : xSample.y, ySample.isFlipped ? -ySample.y : ySample.y] as const;
+  // return [xSample.isFlipped ? -xSample.y : xSample.y, ySample.isFlipped ? -ySample.y : ySample.y] as const;
+
+  return {
+    xValue: xSample.isFlipped ? -xSample.y : xSample.y,
+    xUnits: xSample.units,
+    yValue: ySample.isFlipped ? -ySample.y : ySample.y,
+    yUnits: ySample.units,
+  } as const;
 }
 
 /**
@@ -244,6 +253,7 @@ function createTimeSlices(layers: Layers) {
       const samplePlus: SamplePlus = {
         cssProp: layer.cssProp,
         isFlipped: layer.isFlipped,
+        units: layer.units,
         x: x,
         y: round2dp(sample.y),
       };
@@ -344,6 +354,8 @@ function interpolateValue(slice: TimeSlice, cssProp: CssProp): SamplePlus {
     const defaultValue = PairProps[cssProp as PairProp]?.defaultValue ?? 0;
     return {
       cssProp,
+      // FIXME: why don't we know these values from the layer?
+      units: "%",
       isFlipped: false,
       x: slice.x,
       y: defaultValue,
@@ -365,6 +377,7 @@ function interpolateValue(slice: TimeSlice, cssProp: CssProp): SamplePlus {
   return {
     cssProp,
     isFlipped: (prev?.isFlipped ?? next?.isFlipped)!,
+    units: (prev?.units ?? next?.units)!,
     x: slice.x,
     y: round2dp(y),
   };

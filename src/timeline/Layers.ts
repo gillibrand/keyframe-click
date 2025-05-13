@@ -2,6 +2,8 @@ import { Colors } from "@util/Colors";
 import { CssInfos, CssProp } from "./CssInfo";
 import { findYForX, Point, UserDot } from "./point";
 
+export type Unit = "px" | "%";
+
 /**
  * A single animatable property and it's complete state. A timeline is built of multiple property layers to produce the
  * final animation.
@@ -12,6 +14,7 @@ interface RealLayer {
 
   // Inspector
   cssProp: CssProp;
+  units: Unit;
   isFlipped: boolean;
   sampleCount: number;
 
@@ -20,7 +23,7 @@ interface RealLayer {
 }
 
 export type BackgroundLayer = Pick<RealLayer, "cssProp" | "dots">;
-export type SampleLayer = Pick<RealLayer, "cssProp" | "isFlipped"> & { userSamples: Point[] };
+export type SampleLayer = Pick<RealLayer, "cssProp" | "isFlipped" | "units"> & { userSamples: Point[] };
 
 const SaveStorageKey = "kc.layers";
 
@@ -32,6 +35,7 @@ function createDefaultLayer(): RealLayer {
     sampleCount: 0,
     samples: null,
     id: newId(),
+    units: "%",
   };
 }
 
@@ -159,6 +163,7 @@ export class Layers {
         cssProp: layer.cssProp,
         isFlipped: layer.isFlipped,
         userSamples,
+        units: layer.units,
       });
     }
 
@@ -191,6 +196,7 @@ export class Layers {
       sampleCount: 0,
       samples: null,
       id: id,
+      units: "%",
     });
     this.activeId = id;
     this.onChange();
@@ -234,8 +240,16 @@ export class Layers {
 
   setCssProp(prop: CssProp) {
     this.getActiveLayer().cssProp = prop;
-
     this.onChange();
+  }
+
+  setUnits(units: Unit) {
+    this.getActiveLayer().units = units;
+    this.onChange();
+  }
+
+  getUnits() {
+    return this.getActiveLayer().units;
   }
 
   setSampleCount(count: number) {

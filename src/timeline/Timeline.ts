@@ -427,10 +427,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     const x = 20;
 
+    const units = _layers.getUnits();
+
     const minY100 = Math.floor(MinY / 100) * 100;
     for (let y = minY100; y <= MaxY; y += 100) {
       const ry = asRealY(y);
-      const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}%` : `${y}%`;
+      const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}${units}` : `${y}${units}`;
       const r = _cx.measureText(text);
 
       _cx.fillStyle = Colors.White;

@@ -18,7 +18,7 @@ import { ExportDialog } from "@export/ExportDialog";
 import { copyToClipboard, genCssKeyframeList } from "@export/output";
 import Copy from "@images/copy.svg?react";
 import Gear from "@images/gear.svg?react";
-import { loadSavedLayers } from "@timeline/Layers";
+import { loadSavedLayers, Unit } from "@timeline/Layers";
 import { useForceRender, useLiveState } from "@util/hooks";
 import { cx } from "@util/cx";
 
@@ -214,7 +214,6 @@ export function TimelinePage() {
   useEffect(
     function addEventListenersOnMount() {
       function handleKeyDown(e: KeyboardEvent) {
-        console.info(">>> sh");
         switch (e.key) {
           case "Shift": {
             if (timelineRef.current && canvasRef.current && !getIsExporting()) {
@@ -373,6 +372,13 @@ export function TimelinePage() {
     [layers]
   );
 
+  const setUnits = useCallback(
+    (units: Unit) => {
+      layers.setUnits(units);
+    },
+    [layers]
+  );
+
   const setIsFlipped = useCallback(
     (isFlipped: boolean) => {
       layers.setIsFlipped(isFlipped);
@@ -480,6 +486,8 @@ export function TimelinePage() {
               onChangeCssProp={setCssProp}
               sampleCount={layers.getSampleCount()}
               onChangeSampleCount={setSampleCount}
+              units={layers.getUnits()}
+              onChangeUnits={setUnits}
               isFlipped={layers.getIsFlipped()}
               onChangeIsFlipped={setIsFlipped}
               selected={selectedDot}
