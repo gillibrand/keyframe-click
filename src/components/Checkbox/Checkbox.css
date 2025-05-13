@@ -12,7 +12,7 @@
   }
 
   &:not(:is(.is-active, :disabled)) {
-    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+    box-shadow: 2px 2px 0 0 var(--shadow-color);
   }
 }
 

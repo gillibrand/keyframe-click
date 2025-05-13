@@ -87,9 +87,9 @@
   border: solid var(--border-width) var(--border-color);
 
   box-shadow:
-    0.125rem 0.125rem 0 0 var(--c-neo-black),
-    0 0 0 0.5px white,
-    0.125rem 0.125rem 0 0.5px white,
+    2px 2px 0 0 var(--c-neo-black),
+    0 0 0 1px white,
+    2px 2px 0 1px white,
     0 0 50px rgba(0 0 0 / 0.2);
 
   list-style-type: none;

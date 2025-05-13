@@ -29,7 +29,7 @@
   }
 
   &:not(:active) {
-    box-shadow: 0.125rem 0.125rem 0 0 var(--c-neo-black);
+    box-shadow: 2px 2px 0 0 var(--c-neo-black);
   }
 
   &:hover,
@@ -40,7 +40,7 @@
   &:active {
     transition: box-shadow 100ms;
     filter: brightness(0.9);
-    box-shadow: 0.0675rem 0.0675rem 0 0 var(--c-neo-black);
+    box-shadow: 1px 1px 0 0 var(--c-neo-black);
   }
 
   &:enabled {
@@ -48,8 +48,8 @@
   }
 
   &:focus-visible {
-    outline: solid 0.125rem white;
-    outline-offset: -0.25rem;
+    outline: solid 2px white;
+    outline-offset: -4px;
   }
 
   &:first-child {

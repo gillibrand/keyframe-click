@@ -136,11 +136,15 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   margin-block-start: 0 !important;
 }
 
-.ptb-4 {
+.py-4 {
   padding-block: 1rem;
 }
 
-.ptb-2 {
+.pb-4 {
+  padding-block-end: 1rem;
+}
+
+.py-2 {
   padding-block: 0.5rem;
 }
 

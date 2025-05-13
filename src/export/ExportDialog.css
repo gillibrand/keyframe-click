@@ -7,7 +7,7 @@
   inset-inline-start: auto;
   inset-inline-end: 5rem;
   border: solid 2px var(--export-border-color);
-  border-radius: 1rem;
+  border-radius: 16px;
   padding: 0rem;
 
   /* This is needed for the tail */
@@ -50,8 +50,8 @@
 .ExportDialog__footer {
   background-color: var(--c-neo-white);
   /* border-top: solid 2px black; */
-  border-end-start-radius: 1rem;
-  border-end-end-radius: 1rem;
+  border-end-start-radius: 16px;
+  border-end-end-radius: 16px;
 }
 
 .ExportDialog__form {

@@ -4,15 +4,11 @@
 }
 
 .Banner__nav {
-  /* position: relative; */
-  /* inset-block-start: 0.125rem; */
-  /* overflow: hidden; */
   padding-inline: 0.125rem;
 }
 
 .Banner__title {
   color: var(--c-neo-black);
-
   padding-block: 0.5rem;
 }
 
@@ -25,9 +21,9 @@
   padding-block-end: 0.5rem;
 
   border: solid transparent;
-  border-start-start-radius: 0.75rem;
-  border-start-end-radius: 0.75rem;
-  border-width: 0.175rem 0.175rem 0 0.175rem;
+  border-start-start-radius: 10px;
+  border-start-end-radius: 10px;
+  border-width: 2px 2px 0 2px;
 
   position: relative;
 
@@ -35,14 +31,17 @@
     color: var(--c-neo-black);
     background-color: var(--c-neo-orange);
     border-color: var(--c-neo-black);
-    box-shadow: 0.125rem 0.125rem 0 0 var(--c-neo-black);
+    box-shadow: 2px 2px 0 0 var(--c-neo-black);
     display: block;
 
+    /* Obscure the bottom border sow that tab appears on top. We could move it and size it to the
+    same as the border, but at some scaling factors a bit might show through, so make it a bit
+    larger. */
     &:not(:focus-visible)::after {
       content: "";
       inset-inline: 0;
-      bottom: -2px;
-      height: 2px;
+      bottom: -3px;
+      height: 4px;
       width: 100%;
       position: absolute;
       background-color: var(--c-neo-orange);

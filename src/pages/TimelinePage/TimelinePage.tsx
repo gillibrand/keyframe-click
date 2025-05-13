@@ -471,8 +471,6 @@ export function TimelinePage() {
               ref={canvasRef}
               tabIndex={0}
             />
-
-            {/* {isAdding && showMessage && <div className="timeline-message">Click timeline to add</div>} */}
           </div>
 
           {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}

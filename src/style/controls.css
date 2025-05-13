@@ -1,11 +1,11 @@
 :root {
   --outline-color: var(--c-neo-black);
   --outline-color: var(--c-neo-blue);
-  --outline-width: 0.1875rem;
-  --outline-offset: 0.125rem;
+  --outline-width: 3px;
+  --outline-offset: 2px;
 
   --border-color: var(--c-neo-black);
-  --border-width: 0.125rem;
+  --border-width: 2px;
 
   --shadow-color: var(--border-color);
 }
@@ -23,11 +23,11 @@
   transition: box-shadow 100ms;
 
   &:not(:disabled) {
-    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+    box-shadow: 2px 2px 0 0 var(--shadow-color);
   }
 
   &:not(:disabled):is(:active, [aria-pressed="true"]) {
-    box-shadow: 0.0625rem 0.0625rem 0 0 var(--shadow-color);
+    box-shadow: 1px 1px 0 0 var(--shadow-color);
   }
 
   &:disabled {
@@ -77,7 +77,7 @@
     &:focus-visible {
       outline: solid var(--outline-width) var(--outline-color);
       outline-offset: var(--outline-offset);
-      box-shadow: 0 0 0 0.125rem white;
+      box-shadow: 0 0 0 2px white;
       border-color: transparent;
       transition: none;
     }
@@ -93,8 +93,8 @@
   appearance: none;
   border: solid var(--border-width) var(--border-color);
   padding: calc(0.25rem);
-  border-top-width: 0.1875rem;
-  border-left-width: 0.1875rem;
+  border-top-width: 3px;
+  border-left-width: 3px;
 
   &:not(:disabled) {
     &:focus-visible {

@@ -11,19 +11,17 @@
 }
 
 .RadioTabGroup__tabs {
-  border-radius: 0.5rem;
-  /* border-end-start-radius: 0; */
-  /* border-end-end-radius: 0; */
+  border-radius: 8px;
   overflow: hidden;
   border: solid 2px var(--c-neo-black);
 
   background-color: white;
-  box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+  box-shadow: 2px 2px 0 0 var(--shadow-color);
 
   &:has(:focus-visible) {
     outline: solid var(--outline-width) var(--outline-color);
     outline-offset: var(--outline-offset);
-    box-shadow: 0 0 0 0.125rem white;
+    box-shadow: 0 0 0 2px white;
     /* border-color: transparent; */
     z-index: 1;
   }

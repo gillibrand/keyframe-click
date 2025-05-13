@@ -16,14 +16,14 @@
 
     padding: 0.5rem 1rem;
 
-    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+    box-shadow: 2px 2px 0 0 var(--shadow-color);
 
     box-shadow:
-      0.25rem 0.25rem 0 0 var(--c-neo-black),
+      2px 2px 0 0 var(--c-neo-black),
       0 0 75px rgba(0 0 0 / 0.25);
 
-    border-radius: 0.5rem;
-    border: solid 2px var(--c-neo-black);
+    border-radius: 8px;
+    border: solid var(--border-width) var(--c-neo-black);
 
     background-color: var(--c-neo-teal);
     color: var(--c-neo-black);

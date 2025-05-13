@@ -3,7 +3,7 @@
   padding: 0;
   border: solid var(--border-width) var(--border-color);
   display: flex;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   background-color: white;
   overflow: hidden;
   justify-items: center;
@@ -11,7 +11,7 @@
   font-size: var(--sz-small);
 
   &:not(:has(:focus-visible)) {
-    box-shadow: 0.125rem 0.125rem 0 0 var(--shadow-color);
+    box-shadow: 2px 2px 0 0 var(--shadow-color);
   }
 
   &:has(:focus-visible) {
