@@ -68,6 +68,7 @@ export interface Timeline {
 
   set onDraw(onChangeCallback: (() => void) | undefined);
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
+  set onMoving(onMovingCallback: ((isMoving: boolean) => void) | undefined);
 
   beginAddingDot(at?: Point): void;
 
@@ -116,6 +117,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
   let _onDidDraw: (() => void) | undefined;
   let _onIsAdding: ((adding: boolean) => void) | undefined;
+  let _onIsMoving: ((moving: boolean) => void) | undefined;
 
   let _state: State = "default";
 
@@ -337,12 +339,14 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     isPastThreshold = createThreshold({ x: asRealX(x), y: asRealY(y) }, 2);
     document.addEventListener("mousemove", onMouseMoveDrag);
     document.addEventListener("mouseup", onMouseUpDrag);
+    if (_onIsMoving) _onIsMoving(true);
   }
 
   function endDrag() {
     document.removeEventListener("mousemove", onMouseMoveDrag);
     document.removeEventListener("mouseup", onMouseUpDrag);
     _dragging = null;
+    if (_onIsMoving) _onIsMoving(false);
   }
 
   /**
@@ -925,6 +929,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     },
     set onAdding(onAddCallback: ((isAdding: boolean) => void) | undefined) {
       _onIsAdding = onAddCallback;
+    },
+    set onMoving(onMovingCallback: ((isMoving: boolean) => void) | undefined) {
+      _onIsMoving = onMovingCallback;
     },
     beginAddingDot,
     deleteSelectedDot,

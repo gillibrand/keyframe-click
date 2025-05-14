@@ -44,6 +44,7 @@ export function TimelinePage() {
   const [selectedDot, setSelectedDot] = useState<UserDot | null>(null);
   const [isDataDirty, setIsDataDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
 
   // Timeline global settings
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
@@ -118,6 +119,10 @@ export function TimelinePage() {
 
       timeline.onAdding = (adding: boolean) => {
         setIsAdding(adding);
+      };
+
+      timeline.onMoving = (moving: boolean) => {
+        setIsMoving(moving);
       };
 
       timelineRef.current = timeline;
@@ -210,8 +215,11 @@ export function TimelinePage() {
 
   useEffect(() => {
     document.body.classList.toggle("is-adding", isAdding);
-    return () => document.body.classList.remove("is-adding");
-  }, [isAdding]);
+    document.body.classList.toggle("is-moving", isMoving);
+    return () => {
+      document.body.classList.remove("is-adding", "is-moving");
+    };
+  }, [isAdding, isMoving]);
 
   const {
     preview,

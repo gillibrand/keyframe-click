@@ -50,6 +50,10 @@
   opacity: 1;
   transition: opacity 100ms;
 
+  .is-moving &:hover {
+    opacity: 0;
+  }
+
   .is-adding & {
     pointer-events: none;
     opacity: 0;
