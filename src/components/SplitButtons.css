@@ -3,14 +3,10 @@
   --sb-radius: 0.5rem;
   --sb-radius: 999px;
 
-  --sb-bg-color: #ff69b4;
-  --sb-bg-color: var(--c-neo-pink);
-  --sb-bg-color: var(--c-neo-teal);
   --sb-bg-color: var(--c-neo-blue);
 
-  --sb-color: var(--c-neutral-100);
-  --sb-color: var(--c-neo-black);
   --sb-color: var(--c-neo-white);
+  --sb-color: white;
 
   /* min-width: 18rem; */
 }
@@ -25,10 +21,11 @@
   &.is-secondary {
     color: var(--c-neo-black);
     background-color: white;
+    background-color: var(--c-neo-white);
   }
 
   &.is-small {
-    padding: 0.125rem 0.75rem;
+    padding: 0.25rem 0.75rem;
   }
 
   border: 2px solid var(--c-neo-black);

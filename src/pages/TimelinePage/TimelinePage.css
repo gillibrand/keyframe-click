@@ -47,4 +47,11 @@
   position: absolute;
   inset-block-end: 36px;
   inset-inline-end: 36px;
+  opacity: 1;
+  transition: opacity 100ms;
+
+  .is-adding & {
+    pointer-events: none;
+    opacity: 0;
+  }
 }

@@ -18,6 +18,8 @@ import { ExportDialog } from "@export/ExportDialog";
 import { copyToClipboard, genCssKeyframeList } from "@export/output";
 import Copy from "@images/copy.svg?react";
 import Gear from "@images/gear.svg?react";
+import ZoomIn from "@images/zoom-in.svg?react";
+import ZoomOut from "@images/zoom-out.svg?react";
 import { loadSavedLayers, Unit } from "@timeline/Layers";
 import { useForceRender, useLiveState } from "@util/hooks";
 import { cx } from "@util/cx";
@@ -480,7 +482,7 @@ export function TimelinePage() {
               onClick={handleExport}
               className={cx("grow", { "is-pressed": isExporting })}
             >
-              Copy...
+              Copy…
             </button>
             <button
               title="Copy keyframes with current options"
@@ -510,10 +512,12 @@ export function TimelinePage() {
 
             <SplitButtons className="zoom-buttons">
               <button className="is-secondary is-small text-large font-bold" title="Zoom out values" onClick={zoomOut}>
-                <span className="sr-only">zoom out values</span>–
+                <ZoomOut />
+                <span className="sr-only">zoom out values</span>
               </button>
               <button className="is-secondary is-small text-large font-bold" title="Zoom in values" onClick={zoomIn}>
-                <span className="sr-only">zoom in values</span>+
+                <ZoomIn />
+                <span className="sr-only">zoom in values</span>
               </button>
             </SplitButtons>
           </div>
