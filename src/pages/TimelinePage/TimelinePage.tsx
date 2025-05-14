@@ -1,28 +1,25 @@
-import { MenuButton, MenuItem } from "@components/menu";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot } from "@timeline/point";
-import { Timeline, createTimeline } from "@timeline/Timeline";
+import { createTimeline, Timeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import "./TimelinePage.css";
 import { useSetting } from "../../app/useSettings";
+import "./TimelinePage.css";
 
-import { MenuProvider } from "@components/menu/MenuContext";
 import { NoteList, useNoteApi } from "@components/note";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { ExportDialog } from "@export/ExportDialog";
 import { copyToClipboard, genCssKeyframeList } from "@export/output";
 import Copy from "@images/copy.svg?react";
-import Gear from "@images/gear.svg?react";
 import ZoomIn from "@images/zoom-in.svg?react";
 import ZoomOut from "@images/zoom-out.svg?react";
 import { loadSavedLayers, Unit } from "@timeline/Layers";
-import { useForceRender, useLiveState } from "@util/hooks";
 import { cx } from "@util/cx";
+import { useForceRender, useLiveState } from "@util/hooks";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -47,8 +44,6 @@ export function TimelinePage() {
   const [isMoving, setIsMoving] = useState(false);
 
   // Timeline global settings
-  const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
-  const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
   const [savedMaxY, setSavedMaxY] = useSetting("maxY", 110);
   const [getCurrentMaxY, setCurrentMaxY] = useLiveState(savedMaxY);
@@ -135,16 +130,16 @@ export function TimelinePage() {
     [layers, saveLayers, fireKeyframeTextChange, getCurrentMaxY]
   );
 
-  useEffect(
-    function pushSettingsToTimeline() {
-      const timeline = timelineRef.current;
-      if (!timeline) return;
+  // useEffect(
+  //   function pushSettingsToTimeline() {
+  //     const timeline = timelineRef.current;
+  //     if (!timeline) return;
 
-      timeline.setSnapToGrid(snapToGrid);
-      timeline.setLabelYAxis(labelYAxis);
-    },
-    [labelYAxis, snapToGrid]
-  );
+  //     timeline.setSnapToGrid(snapToGrid);
+  //     timeline.setLabelYAxis(labelYAxis);
+  //   },
+  //   [labelYAxis, snapToGrid]
+  // );
 
   useEffect(
     /**
@@ -284,29 +279,6 @@ export function TimelinePage() {
     },
     [togglePreview, getIsExporting]
   );
-
-  const items: MenuItem[] = [
-    {
-      type: "label",
-      label: "Timeline settings",
-    },
-    {
-      type: "toggle",
-      label: "Snap to grid",
-      isChecked: snapToGrid,
-      onClick: () => {
-        setSnapToGrid(!snapToGrid);
-      },
-    },
-    {
-      type: "toggle",
-      label: "Show value labels",
-      isChecked: labelYAxis,
-      onClick: () => {
-        setLabelYAxis(!labelYAxis);
-      },
-    },
-  ];
 
   /**
    * A checksum of the current visible tab state. This reflects the number of tabs, what CSS props they are for, and the
@@ -470,19 +442,6 @@ export function TimelinePage() {
             checkedId={layers.getActiveLayer().id}
             onChange={changeTab}
           />
-
-          <MenuProvider items={items}>
-            <MenuButton
-              style={{
-                // TODO: standard icon colors
-                color: "var(--c-neo-black)",
-                marginInlineStart: "auto",
-              }}
-              title="Settings"
-            >
-              <Gear />
-            </MenuButton>
-          </MenuProvider>
 
           <SplitButtons>
             <button
