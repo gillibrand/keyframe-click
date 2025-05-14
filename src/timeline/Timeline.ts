@@ -12,10 +12,14 @@ import {
   InsetY,
   OffsetX,
   offsetY,
-  MaxY,
-  MinY,
+  getMaxY,
+  getMinY,
   setUserPxWidth,
   setUserPxHeight,
+  getYRange,
+  zoomInY,
+  zoomOutY,
+  setMaxY,
 } from "./convert";
 import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, diamond, ex, willDraw } from "./drawing";
@@ -56,6 +60,9 @@ export interface Timeline {
 
   draw: () => void;
 
+  zoomOut: () => number;
+  zoomIn: () => number;
+
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
 
@@ -71,8 +78,9 @@ export interface Timeline {
 }
 
 export interface TimelineProps {
-  canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean };
+  canvas: HTMLCanvasElement;
   layers: Layers;
+  maxY?: number;
 }
 
 type State = "adding" | "default";
@@ -82,11 +90,10 @@ type State = "adding" | "default";
  *
  * @returns Controller to interact with the graph.
  */
-export function createTimeline({ canvas: _canvas, layers: _layers }: TimelineProps): Timeline {
+export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initialMaxY }: TimelineProps): Timeline {
   let drawTimer: number | null = null;
 
-  enableRetina(_canvas);
-
+  if (initialMaxY) setMaxY(initialMaxY);
   // const Height = _canvas.clientHeight;
   // const Width = _canvas.clientWidth;
 
@@ -112,6 +119,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
   let _state: State = "default";
 
+  let _resizeObserver: ResizeObserver | undefined;
+
   // We save whether focus is "visible" (based on keyboard vs mouse activity) when we focus on the
   // canvas. This lets us maintain the same visible focus state the entire time so we don't Tab in,
   // then click a dot and have the border disappear. Similarly, if we click with the mouse first, we
@@ -123,6 +132,32 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   let _isFocusVisible = false;
 
   /**
+   * Call after a zoom or resize. This calcs the correct logical pixel sizes and re-centers the timeline. Without this,
+   * the canvas will be distorted. Will redraw automatically.
+   *
+   * @param borderBoxWidthPx Width of the canvas.
+   * @param borderBoxHeightPx Height of the canvas.
+   */
+  function rescale(borderBoxWidthPx: number, borderBoxHeightPx: number) {
+    // Set the internal sizes to the scaled size for the DPI and width
+    const scale = window.devicePixelRatio || 1;
+
+    // Logical sizes so we can draw at higher DPIs
+    const newWidth = borderBoxWidthPx * scale;
+    const newHeight = borderBoxHeightPx * scale;
+
+    setUserPxWidth((newWidth - InsetX * 2 * scale) / (100 * scale));
+    setUserPxHeight((newHeight - InsetY * 2 * scale) / (getYRange() * scale));
+
+    _canvas.width = newWidth;
+    _canvas.height = newHeight;
+
+    // Need to reset DPI scale after each width change
+    _cx.scale(scale, scale);
+    drawNow(false);
+  }
+
+  /**
    * Applies scaling to match the retina screen resolution. This will increase the actual canvas element size, but scale
    * it down again with CSS. The result is a crisp hi-res canvas at the same size.
    *
@@ -130,40 +165,17 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
    *   dev since React will pass the same element it init each time and if we scale it based on the current size it will
    *   get bigger each time.
    */
-  function enableRetina(canvas: HTMLCanvasElement & { isScaledForScreenDpi?: boolean }) {
-    const isScaled = canvas.isScaledForScreenDpi || false;
-    if (isScaled) return;
-
-    const cx = canvas.getContext("2d")!;
-
-    // Set the internal sizes to the scaled size for the DPI and width
-    const scale = window.devicePixelRatio || 1;
-    canvas.width = canvas.width * scale;
-    canvas.height = canvas.height * scale;
-
-    cx.scale(scale, scale);
-    canvas.isScaledForScreenDpi = true;
-
+  function connectResizeObserver(canvas: HTMLCanvasElement) {
     const onResize = throttle((entries: ResizeObserverEntry[]) => {
       const entry = entries[0];
       if (!entry) return;
 
-      const newWidth = entry.borderBoxSize[0].inlineSize * scale;
-      const newHeight = entry.borderBoxSize[0].blockSize * scale;
-      // if (canvas.width === newWidth) return;
-
-      setUserPxWidth((newWidth - InsetX * 2 * scale) / (100 * scale));
-      setUserPxHeight((newHeight - InsetY * 2 * scale) / (320 * scale));
-
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-
-      // Need to reset DPI scale after each width change
-      cx.scale(scale, scale);
-      drawNow(false);
+      rescale(entry.borderBoxSize[0].inlineSize, entry.borderBoxSize[0].blockSize);
     }, 50);
 
-    new ResizeObserver(onResize).observe(canvas);
+    if (_resizeObserver) _resizeObserver.disconnect();
+    _resizeObserver = new ResizeObserver(onResize);
+    _resizeObserver.observe(canvas);
   }
 
   function cloneSelectedDot(): UserDot | null {
@@ -343,7 +355,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     // above 100% gray
     _cx.fillStyle = Colors.Gray50;
 
-    const fullDiffReal = asRealY(MinY) - asRealY(MaxY);
+    const fullDiffReal = asRealY(getMinY()) - asRealY(getMaxY());
 
     _cx.fillStyle = Colors.White;
     _cx.fillRect(InsetX, InsetY, width() - 2 * InsetX, fullDiffReal);
@@ -359,10 +371,13 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.stroke();
     }
 
-    const minY100 = Math.floor(MinY / 100) * 100;
+    const minY100 = Math.floor(getMinY() / 100) * 100;
+
+    const range = getYRange();
+    const tick = range >= 1400 ? 50 : range >= 900 ? 25 : range >= 80 ? 10 : 1;
 
     // horizontal lines
-    for (let y = minY100; y <= MaxY; y += 10) {
+    for (let y = minY100; y <= getMaxY(); y += tick) {
       _cx.beginPath();
       const py = asRealY(y);
       _cx.moveTo(InsetX, py);
@@ -376,6 +391,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.lineTo(width() - InsetX, py);
       _cx.stroke();
     }
+
+    drawAxisText();
 
     // border
     _cx.lineWidth = 2;
@@ -408,8 +425,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       _cx.strokeStyle = "white";
       _cx.strokeRect(InsetX - 1, InsetY - 1, width() - 2 * InsetX - 1 + 2, fullDiffReal + 2);
     }
-
-    drawAxisText();
   }
 
   /**
@@ -419,28 +434,35 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
   function drawAxisText() {
     if (!_labelYAxis) return;
 
-    _cx.textAlign = "left";
-    _cx.textRendering = "optimizeSpeed";
-    _cx.textBaseline = "middle";
-    _cx.font = "14px sans-serif ";
-    _cx.fillStyle = Colors.Gray500;
+    willDraw(_cx, () => {
+      clipTimeline();
 
-    const x = 20;
+      _cx.textAlign = "left";
+      _cx.textRendering = "optimizeSpeed";
+      _cx.textBaseline = "middle";
+      _cx.font = "14px sans-serif ";
+      _cx.fillStyle = Colors.Gray500;
 
-    const units = _layers.getUnits();
+      const x = 20;
 
-    const minY100 = Math.floor(MinY / 100) * 100;
-    for (let y = minY100; y <= MaxY; y += 100) {
-      const ry = asRealY(y);
-      const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}${units}` : `${y}${units}`;
-      const r = _cx.measureText(text);
+      const units = _layers.getUnits();
 
-      _cx.fillStyle = Colors.White;
-      _cx.fillRect(x, ry - 4, r.width, 8);
+      const range = getYRange();
+      const tick = range <= 40 ? 5 : range <= 200 ? 10 : 100;
 
-      _cx.fillStyle = Colors.Gray400;
-      _cx.fillText(text, x, ry);
-    }
+      const minY100 = Math.floor(getMinY() / tick) * tick;
+      for (let y = minY100; y <= getMaxY(); y += tick) {
+        const ry = asRealY(y);
+        const text = y === 0 ? "0" : y < 0 ? ` -${Math.abs(y)}${units}` : `${y}${units}`;
+        const r = _cx.measureText(text);
+
+        _cx.fillStyle = Colors.White;
+        _cx.fillRect(x, ry - 4, r.width, 8);
+
+        _cx.fillStyle = Colors.Gray400;
+        _cx.fillText(text, x, ry);
+      }
+    });
   }
 
   function drawSamples(color: ColorName) {
@@ -529,7 +551,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
    * dragged more easily near the edges.
    */
   function clipTimeline() {
-    // return;
     _cx.beginPath();
     _cx.rect(InsetX, InsetY, width() - 2 * InsetX, height() - 2 * InsetY);
     _cx.clip();
@@ -730,6 +751,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
       cancelAnimationFrame(drawTimer);
       drawTimer = null;
     }
+
+    if (_resizeObserver) _resizeObserver.disconnect();
   }
 
   function updateSelectedDot(d: UserDot) {
@@ -874,7 +897,22 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
     endAddingDot();
   }
 
+  function zoomIn() {
+    const maxY = zoomInY();
+    const { width, height } = _canvas.getBoundingClientRect();
+    rescale(width, height);
+    return maxY;
+  }
+
+  function zoomOut() {
+    const maxY = zoomOutY();
+    const { width, height } = _canvas.getBoundingClientRect();
+    rescale(width, height);
+    return maxY;
+  }
+
   // initial render
+  connectResizeObserver(_canvas);
   draw();
 
   // type Timeline
@@ -894,6 +932,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers }: TimelinePro
 
     setSnapToGrid,
     setLabelYAxis,
+
+    zoomIn,
+    zoomOut,
 
     draw,
   };

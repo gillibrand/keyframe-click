@@ -42,3 +42,9 @@
 #root .is-dialog-open :where(button, label, .RadioTab) {
   filter: grayscale(0.75);
 }
+
+.zoom-buttons {
+  position: absolute;
+  inset-block-end: 36px;
+  inset-inline-end: 36px;
+}

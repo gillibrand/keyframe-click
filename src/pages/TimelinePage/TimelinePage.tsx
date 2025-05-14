@@ -47,6 +47,24 @@ export function TimelinePage() {
   const [snapToGrid, setSnapToGrid] = useSetting("isSnapToGrid", true);
   const [labelYAxis, setLabelYAxis] = useSetting("isLabelYAxis", true);
 
+  const [savedMaxY, setSavedMaxY] = useSetting("maxY", 110);
+  const [getCurrentMaxY, setCurrentMaxY] = useLiveState(savedMaxY);
+
+  /**
+   * Sets the max-y value to save it in settings, but also make it available as a ref when creating a timeline. This
+   * seems overly complex, but we don't want to fire the "setup" function again after changing this. This should work
+   * more like `snapToGrid` probably to be a little cleaner.
+   *
+   * Max-y is essentially the zoom level.
+   */
+  const setMaxY = useCallback(
+    (y: number) => {
+      setSavedMaxY(y);
+      setCurrentMaxY(y);
+    },
+    [setSavedMaxY, setCurrentMaxY]
+  );
+
   const { sendNote } = useNoteApi();
 
   useEffect(
@@ -79,7 +97,7 @@ export function TimelinePage() {
         return;
       }
 
-      const timeline = createTimeline({ canvas, layers: layers });
+      const timeline = createTimeline({ canvas, layers: layers, maxY: getCurrentMaxY() });
 
       const saveLayersDebounced = debounce(saveLayers, 2000);
 
@@ -107,7 +125,7 @@ export function TimelinePage() {
         timelineRef.current = null;
       };
     },
-    [layers, saveLayers, fireKeyframeTextChange]
+    [layers, saveLayers, fireKeyframeTextChange, getCurrentMaxY]
   );
 
   useEffect(
@@ -408,6 +426,18 @@ export function TimelinePage() {
   const isExporting = getIsExporting();
   const activeExportId = isExporting ? exportDialogId : undefined;
 
+  const zoomIn = useCallback(() => {
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+    setMaxY(timeline.zoomIn());
+  }, [setMaxY]);
+
+  const zoomOut = useCallback(() => {
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+    setMaxY(timeline.zoomOut());
+  }, [setMaxY]);
+
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
@@ -477,6 +507,15 @@ export function TimelinePage() {
               ref={canvasRef}
               tabIndex={0}
             />
+
+            <SplitButtons className="zoom-buttons">
+              <button className="is-secondary is-small text-large font-bold" title="Zoom out values" onClick={zoomOut}>
+                <span className="sr-only">zoom out values</span>–
+              </button>
+              <button className="is-secondary is-small text-large font-bold" title="Zoom in values" onClick={zoomIn}>
+                <span className="sr-only">zoom in values</span>+
+              </button>
+            </SplitButtons>
           </div>
 
           {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}

@@ -184,45 +184,44 @@ export const TimelineInspector = memo(function Inspector({
         </Hint>
       </div>
 
-      {selected && (
-        <>
+      {/* Hide this so it take the same space hidden or not and doesn't shift the height around on selection */}
+      <div className={cx("stack", { hidden: !selected })}>
+        <label className="stacked-label">
+          <span>Style</span>
+          <Select onChange={(e) => handleTypeChange(e.target.value)} value={selected?.type ?? ""}>
+            <option value="square">Square</option>
+            <option value="round">Round</option>
+          </Select>
+        </label>
+
+        <div className="col-2 gap-2">
           <label className="stacked-label">
-            <span>Style</span>
-            <Select onChange={(e) => handleTypeChange(e.target.value)} value={selected.type}>
-              <option value="square">Square</option>
-              <option value="round">Round</option>
-            </Select>
+            <span>
+              Time <span className="text-light">%</span>
+            </span>
+            <input
+              className="textbox"
+              type="number"
+              id={xId}
+              value={normalX(selected?.x ?? 0)}
+              onChange={(e) => handleChangeX(parseFloat(e.target.value))}
+            />
           </label>
 
-          <div className="col-2 gap-2">
-            <label className="stacked-label">
-              <span>
-                Offset <span className="text-light">%</span>
-              </span>
-              <input
-                className="textbox"
-                type="number"
-                id={xId}
-                value={normalX(selected.x)}
-                onChange={(e) => handleChangeX(parseFloat(e.target.value))}
-              />
-            </label>
-
-            <label className="stacked-label">
-              <span>
-                Value <span className="text-light">{units}</span>
-              </span>
-              <input
-                className="textbox"
-                id={yId}
-                value={normalY(selected.y)}
-                type="number"
-                onChange={(e) => handleChangeY(parseFloat(e.target.value))}
-              />
-            </label>
-          </div>
-        </>
-      )}
+          <label className="stacked-label">
+            <span>
+              Value <span className="text-light">{units}</span>
+            </span>
+            <input
+              className="textbox"
+              id={yId}
+              value={normalY(selected?.y || 0)}
+              type="number"
+              onChange={(e) => handleChangeY(parseFloat(e.target.value))}
+            />
+          </label>
+        </div>
+      </div>
     </aside>
   );
 });

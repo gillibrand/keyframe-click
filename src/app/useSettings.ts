@@ -24,6 +24,7 @@ interface Settings {
   previewSpeed: Speed;
 
   ruleName: string;
+  maxY: number;
 }
 
 type SettingName = keyof Settings;
@@ -40,6 +41,9 @@ function validate<K extends SettingName>(name: K, value: Settings[K]) {
   switch (name) {
     case "previewDurationTime":
       return typeof value === "number" && value > 0;
+
+    case "maxY":
+      return typeof value === "number" && value > 10 && value < 10000;
 
     case "previewDurationUnit":
       return TimeUnits.findIndex((unit) => unit === value) !== -1;

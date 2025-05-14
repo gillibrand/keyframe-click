@@ -127,6 +127,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   justify-content: end;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 .overflow-hidden {
   overflow: hidden;
 }

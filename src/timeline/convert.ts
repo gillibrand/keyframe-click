@@ -31,14 +31,71 @@ export function setUserPxHeight(w: number) {
 export const InsetX = 10;
 export const InsetY = 10;
 
-export const MaxY = 210;
-export const MinY = -110;
+const DefaultMaxY = 110;
+
+let maxY = DefaultMaxY;
+
+export function setMaxY(y: number) {
+  maxY = y;
+}
+
+export function getMaxY() {
+  return maxY;
+}
+
+export function getMinY() {
+  return -maxY;
+}
+
+export function getYRange() {
+  return 2 * maxY;
+}
+
+/**
+ * Gets the change in the zoom level based on the current zoom level. When zoomed in, this is smaller.
+ *
+ * @param dir Which way we're zooming.
+ * @returns The number to change the max/min-Y by.
+ */
+function getZoomChange(dir: "in" | "out") {
+  const range = getYRange();
+
+  if (dir === "in") {
+    if (range <= 40) {
+      return 0;
+    } else if (range <= 120) {
+      return 10;
+    } else {
+      return 50;
+    }
+  } else {
+    if (range < 120) {
+      return 10;
+    } else if (range >= 2000) {
+      return 0;
+    } else {
+      return 50;
+    }
+  }
+}
+
+export function zoomInY() {
+  const zoomChange = getZoomChange("in");
+  maxY -= zoomChange;
+  return maxY;
+}
+
+export function zoomOutY() {
+  const zoomChange = getZoomChange("out");
+  maxY += zoomChange;
+  return maxY;
+}
 
 // Offset in real px in order for the 0,0 origin to it in a logical place for user dots.
 export const OffsetX = 0 + InsetX;
 
 export function offsetY() {
-  return MaxY * pxHeight + InsetY;
+  return maxY * pxHeight + InsetY;
 }
 
 export function asRealPoint(user: Point): Point {

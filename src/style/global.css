@@ -73,6 +73,14 @@
   font-size: var(--sz-x-small);
 }
 
+.text-large {
+  font-size: var(--sz-large);
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
 body {
   color: var(--c-body);
   background-color: white;
