@@ -1,8 +1,12 @@
-import { ComponentType, PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { ComponentType, PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { RouterContext } from "./useRouter";
 
-export type Routes = Record<string, ComponentType>;
+export type LazyComponentType = ComponentType & {
+  preload?: () => void;
+};
+
+export type Routes = Record<string, LazyComponentType>;
 
 interface Props extends PropsWithChildren {
   routes: Routes;
@@ -32,13 +36,22 @@ export function RouterProvider({ routes, children }: Props) {
     return () => window.removeEventListener("hashchange", updateRoute);
   }, [routes]);
 
+  const preloadRoute = useCallback(
+    (route: string) => {
+      const Page = routes[route];
+      if (Page && Page.preload) Page.preload();
+    },
+    [routes]
+  );
+
   const value = useMemo(
     () => ({
       route,
       setRoute,
+      preloadRoute,
       Page,
     }),
-    [route, Page]
+    [route, Page, preloadRoute]
   );
 
   return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;

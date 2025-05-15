@@ -2,21 +2,32 @@ import { useRouter } from "@router/useRouter";
 import "./Banner.css";
 
 export function Banner() {
-  const { route, setRoute } = useRouter();
+  const { route, setRoute, preloadRoute } = useRouter();
 
   /**
    * @param href The HREF path to return. This should be a #/path to the current router.
+   * @param preload If true, will add mouse and focus event to preload the load.
    * @returns A const object of the given HREF, plus the aria attributes to mark this as the current page if it matches
    *   the current route. Spread this into an anchor.
    */
-  function href(href: string) {
-    const isCurrent = route === href.slice(1);
+  function href(href: string, preload?: boolean) {
+    const normalHref = href.slice(1);
+    const isCurrent = route === normalHref;
+
+    const preloadIfNeeded = !preload
+      ? undefined
+      : () => {
+          preloadRoute(normalHref);
+        };
 
     return {
       href,
       "aria-current": isCurrent ? "page" : undefined,
+      onMouseEnter: preloadIfNeeded,
+      onFocus: preloadIfNeeded,
     } as const;
   }
+
   /**
    * Goes to the home timeline page. We manually call `setRoute` so that we can make a clean URL without a hash in it.
    * If we just go to path / then a full page reload would happen. This manually changes the URL with `pushState` then
@@ -49,7 +60,7 @@ export function Banner() {
           <a className="Banner__link" {...href("#/help")}>
             Help
           </a> */}
-          <a className="Banner__link" {...href("#/about")}>
+          <a className="Banner__link" {...href("#/about", true)}>
             About
           </a>
         </nav>
