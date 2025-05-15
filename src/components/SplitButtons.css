@@ -21,7 +21,6 @@
   &.is-secondary {
     color: var(--c-neo-black);
     background-color: white;
-    background-color: var(--c-neo-white);
   }
 
   &.is-small {
@@ -36,6 +35,11 @@
 
   &:not(:active) {
     box-shadow: 2px 2px 0 0 var(--c-neo-black);
+  }
+
+  /* This is a bit of a hack since this is only used for the zoom buttons for now, that I want a little smaller */
+  &:not(:active).is-secondary {
+    box-shadow: 1px 1px 0 0 var(--c-neo-black);
   }
 
   &:hover,
