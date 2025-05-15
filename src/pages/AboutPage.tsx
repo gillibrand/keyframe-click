@@ -1,6 +1,6 @@
 export default function AboutPage() {
   return (
-    <main>
+    <main className="large-page">
       <div className="wrapper-small">
         <div className="tile">
           <h2>About Keyframe Click</h2>

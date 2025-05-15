@@ -1,5 +1,5 @@
 .Banner {
-  background-color: #f7f7f7;
+  background-color: #fff;
   border-block-end: solid 2px var(--c-neo-black);
 }
 
@@ -29,7 +29,7 @@
 
   &[aria-current="page"] {
     color: var(--c-neo-black);
-    background-color: var(--c-neo-orange);
+    background-color: var(--c-bg);
     border-color: var(--c-neo-black);
     box-shadow: 2px 2px 0 0 var(--c-neo-black);
     display: block;
@@ -44,7 +44,7 @@
       height: 4px;
       width: 100%;
       position: absolute;
-      background-color: var(--c-neo-orange);
+      background-color: var(--c-bg);
     }
   }
 
