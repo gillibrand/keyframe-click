@@ -114,8 +114,8 @@ button {
 
 a,
 a:visited {
-  color: var(--c-body);
-  text-decoration-thickness: px;
+  color: inherit;
+  text-decoration-thickness: 2px;
 }
 
 h1,
@@ -204,4 +204,12 @@ code {
 
 textarea {
   resize: vertical;
+}
+
+ul {
+  list-style-type: square;
+}
+
+p {
+  line-height: 1.5;
 }

@@ -5,21 +5,19 @@ export default function AboutPage() {
         <div className="tile">
           <h2>About Keyframe Click</h2>
           <p>
-            Keyframe Click is a visual way to create CSS animation keyframes. Add CSS properties. Create a curve to
-            change their values over time. Add extra keyframes for smoother curves.
-          </p>
-          <p>
-            It's fun now, but a work-in-progress, so check back soon.{" "}
-            <a href="https://github.com/gillibrand/keyframe-click">Find it on GitHub</a>.
-          </p>
-          <p>
-            This started from a much simpler <a href="https://github.com/gillibrand/keyframe-gen">Keyframe Generator</a>{" "}
-            that ran against a bitmap image.
+            Keyframe Click is a visual way to create CSS animation keyframes.
+            <ul>
+              <li>Add CSS properties.</li>
+              <li>Create a curve to change their values over time.</li>
+              <li>Add extra keyframes for smoother animation.</li>
+              <li>Copy the keyframes to use in your own projects.</li>
+            </ul>
           </p>
 
           <p>
-            Created by <a href="https://www.linkedin.com/in/jay-gillibrand/">Jay Gillibrand</a>. See more of my work on{" "}
-            <a href="https://gillibrand.github.io/projects/">my project site</a>.
+            Created by <a href="https://www.linkedin.com/in/jay-gillibrand/">Jay Gillibrand</a>. Find{" "}
+            <a href="https://github.com/gillibrand/keyframe-click">this project on GitHub</a> or see more of{" "}
+            <a href="https://gillibrand.github.io/projects/">my projects</a>.
           </p>
         </div>
       </div>

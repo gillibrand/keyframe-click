@@ -1,5 +1,6 @@
 import { useRouter } from "@router/useRouter";
 import "./Banner.css";
+import Github from "@images/github-mark.svg?react";
 
 export function Banner() {
   const { route, setRoute, preloadRoute } = useRouter();
@@ -64,6 +65,15 @@ export function Banner() {
             About
           </a>
         </nav>
+
+        <div className="ml-auto py-2 text-light flex gap-4 items-center">
+          <span>
+            by <a href="https://gillibrand.github.io/projects/">Jay Gillibrand</a>{" "}
+          </span>
+          <a href="https://github.com/gillibrand/keyframe-click" title="Available on GitHub">
+            <Github className="github" />
+          </a>
+        </div>
       </div>
     </header>
   );
