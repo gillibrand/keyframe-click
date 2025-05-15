@@ -76,7 +76,7 @@
     &:focus-visible {
       outline: solid var(--outline-width) var(--outline-color);
       outline-offset: var(--outline-offset);
-      box-shadow: 0 0 0 2px white;
+      box-shadow: 0 0 0 2px var(--c-neo-white);
       border-color: transparent;
       transition: none;
     }

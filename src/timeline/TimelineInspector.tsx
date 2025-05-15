@@ -88,7 +88,7 @@ const GlobalSettings = memo(function GlobalSettings({
       </label>
 
       <label className="stacked-label">
-        <span>Extra frames</span>
+        <span>More keyframes</span>
         <div className="flex gap-4">
           <input
             type="range"

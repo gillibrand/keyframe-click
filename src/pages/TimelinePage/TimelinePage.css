@@ -54,7 +54,7 @@
     opacity: 0;
   }
 
-  .is-adding & {
+  .is-adding &:not(:has(:focus-visible)) {
     pointer-events: none;
     opacity: 0;
   }

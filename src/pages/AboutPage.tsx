@@ -5,8 +5,8 @@ export default function AboutPage() {
         <div className="tile">
           <h2>About Keyframe Click</h2>
           <p>
-            Keyframe Click is a visual way to create CSS animation keyframes. Add CSS properties to different layers.
-            Create a curve to change the values over time. Add extra keyframes for smoother curves.
+            Keyframe Click is a visual way to create CSS animation keyframes. Add CSS properties. Create a curve to
+            change their values over time. Add extra keyframes for smoother curves.
           </p>
           <p>
             It's fun now, but a work-in-progress, so check back soon.{" "}

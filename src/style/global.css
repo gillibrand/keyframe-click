@@ -58,6 +58,8 @@
   --c-bg: var(--c-neo-yellow2);
   --c-bg: var(--c-neo-orange);
 
+  --c-bg2: white;
+
   --c-sky-100: oklch(0.951 0.026 236.824);
   --c-sky-50: oklch(0.977 0.013 236.62);
   --c-sky-200: oklch(0.901 0.058 230.902);
