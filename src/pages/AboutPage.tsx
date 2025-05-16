@@ -8,8 +8,8 @@ export default function AboutPage() {
             Keyframe Click is a visual way to create CSS animation keyframes.
             <ul>
               <li>Add CSS properties.</li>
-              <li>Create a curve to change their values over time.</li>
-              <li>Add extra keyframes for smoother animation.</li>
+              <li>Create lines or curves to change their values over time.</li>
+              <li>Add more keyframes for smoother curves.</li>
               <li>Copy the keyframes to use in your own projects.</li>
             </ul>
           </p>
