@@ -85,12 +85,12 @@ export function PreviewInspector({
 
       <hr />
 
-      <label className="stacked-label">
+      {/* <label className="stacked-label">
         <span>Image</span>
         <Select value="ball" disabled>
           <option value="ball">Ball</option>
         </Select>
-      </label>
+      </label> */}
 
       <label className="stacked-label">
         <span>Duration</span>
