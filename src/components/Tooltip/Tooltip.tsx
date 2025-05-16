@@ -7,7 +7,7 @@ interface Props extends PropsWithChildren {
   target: HTMLElement | null;
 }
 
-const HeightOffset = 2;
+const HeightMargin = 2;
 const FromEdge = 18;
 
 export function Tooltip({ children, target }: Props) {
@@ -23,9 +23,12 @@ export function Tooltip({ children, target }: Props) {
     const targetRect = target.getBoundingClientRect();
     const tooltipRect = tooltipRef.current.getBoundingClientRect();
 
-    const top = targetRect.top - tooltipRect.height - HeightOffset;
-    let left = targetRect.left + targetRect.width / 2 - tooltipRect.width / 2;
+    let top = targetRect.top - tooltipRect.height - HeightMargin + window.scrollY;
+    if (top < window.scrollY) {
+      top = targetRect.top + targetRect.height + HeightMargin + window.scrollY;
+    }
 
+    let left = targetRect.left + targetRect.width / 2 - tooltipRect.width / 2 + window.scrollX;
     const right = left + tooltipRect.width;
     const rightDiff = right - window.innerWidth + FromEdge;
 
