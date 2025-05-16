@@ -4,15 +4,14 @@ export default function AboutPage() {
       <div className="wrapper-small">
         <div className="tile">
           <h2>About Keyframe Click</h2>
-          <p>
-            Keyframe Click is a visual way to create CSS animation keyframes.
-            <ul>
-              <li>Add CSS properties.</li>
-              <li>Create lines or curves to change their values over time.</li>
-              <li>Add more keyframes for smoother curves.</li>
-              <li>Copy the keyframes to use in your own projects.</li>
-            </ul>
-          </p>
+
+          <p>Keyframe Click is a visual way to create CSS animation keyframes.</p>
+          <ul>
+            <li>Add CSS properties.</li>
+            <li>Create smooth curves to change their values over time.</li>
+            <li>Add more keyframes for smoother animations.</li>
+            <li>Copy the keyframes to use in your own projects.</li>
+          </ul>
 
           <p>
             Created by <a href="https://www.linkedin.com/in/jay-gillibrand/">Jay Gillibrand</a>. Find{" "}
