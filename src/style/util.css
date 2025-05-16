@@ -152,12 +152,20 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   padding: 1rem;
 }
 
+.mx-4 {
+  margin-inline: 1rem;
+}
+
 .mt-0 {
   margin-block-start: 0 !important;
 }
 
 .py-4 {
   padding-block: 1rem;
+}
+
+.px-4 {
+  padding-inline: 1rem;
 }
 
 .pb-4 {

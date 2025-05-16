@@ -12,15 +12,16 @@ import "./TimelinePage.css";
 import { NoteList, useNoteApi } from "@components/note";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
+import { useTooltip } from "@components/Tooltip";
 import { ExportDialog } from "@export/ExportDialog";
 import { copyToClipboard, genCssKeyframeList } from "@export/output";
 import Copy from "@images/copy.svg?react";
+import Down from "@images/down.svg?react";
 import ZoomIn from "@images/zoom-in.svg?react";
 import ZoomOut from "@images/zoom-out.svg?react";
 import { loadSavedLayers, Unit } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
-import { useTooltip } from "@components/Tooltip";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -233,14 +234,14 @@ export function TimelinePage() {
     keyframeText,
   });
 
-  const [getIsExporting, setIsExporting] = useLiveState(false);
+  const [getIsExportOpen, setIsExportOpen] = useLiveState(false);
 
   useEffect(
     function addEventListenersOnMount() {
       function handleKeyDown(e: KeyboardEvent) {
         switch (e.key) {
           case "Shift": {
-            if (timelineRef.current && canvasRef.current && !getIsExporting()) {
+            if (timelineRef.current && canvasRef.current && !getIsExportOpen()) {
               const rect = canvasRef.current.getBoundingClientRect();
               const at = {
                 x: lastMouseRef.current.x - rect.x,
@@ -278,7 +279,7 @@ export function TimelinePage() {
         window.addEventListener("mousemove", handleMouseMove);
       };
     },
-    [togglePreview, getIsExporting]
+    [togglePreview, getIsExportOpen]
   );
 
   /**
@@ -394,9 +395,11 @@ export function TimelinePage() {
     [layers]
   );
 
-  const handleExport = useCallback(() => {
-    setIsExporting(true);
-  }, [setIsExporting]);
+  const startExport = useCallback(() => {
+    setIsExportOpen(true);
+  }, [setIsExportOpen]);
+
+  const stopExporting = useCallback(() => setIsExportOpen(false), [setIsExportOpen]);
 
   const [ruleName] = useSetting("ruleName", "my-anim");
 
@@ -406,7 +409,7 @@ export function TimelinePage() {
   }
 
   const exportDialogId = useId();
-  const isExporting = getIsExporting();
+  const isExporting = getIsExportOpen();
   const activeExportId = isExporting ? exportDialogId : undefined;
 
   const zoomIn = useCallback(() => {
@@ -423,10 +426,18 @@ export function TimelinePage() {
 
   const { tooltip: copyTooltip, ...copyTooltipProps } = useTooltip<HTMLButtonElement>("Copy ");
 
+  const copyButtonRef = useRef<HTMLButtonElement>(null);
+
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
-        <ExportDialog open={true} onClose={() => setIsExporting(false)} layers={layers} id={exportDialogId} />
+        <ExportDialog
+          open={true}
+          onClose={stopExporting}
+          layers={layers}
+          id={exportDialogId}
+          near={copyButtonRef.current ?? undefined}
+        />
       )}
 
       <NoteList />
@@ -449,10 +460,13 @@ export function TimelinePage() {
           <SplitButtons>
             <button
               title="Set options and copy keyframes"
-              onClick={handleExport}
-              className={cx("grow", { "is-pressed": isExporting })}
+              onClick={startExport}
+              className={cx("grow  flex-center gap-2 is-icon", { "is-pressed": isExporting })}
+              ref={copyButtonRef}
+              aria-haspopup="dialog"
+              aria-controls={activeExportId}
             >
-              Copy…
+              Copy <Down />
             </button>
 
             <button
