@@ -99,5 +99,5 @@
   padding: 0;
   margin: 0;
   background-color: var(--c-neutral-50);
-  z-index: 1;
+  z-index: var(--z-menu);
 }

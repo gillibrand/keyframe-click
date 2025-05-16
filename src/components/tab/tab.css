@@ -22,8 +22,6 @@
     outline: solid var(--outline-width) var(--outline-color);
     outline-offset: var(--outline-offset);
     box-shadow: 0 0 0 2px white;
-    /* border-color: transparent; */
-    z-index: 1;
   }
 }
 
@@ -42,8 +40,10 @@
   &:has(:checked) {
     color: white;
     background-color: var(--default-tab-bg-color);
-    z-index: 1;
+
+    /* if tabs get really small they can overlap. Ensure the checked is on top.  */
     position: relative;
+    z-index: var(--z-bump);
   }
 
   &:not(:disabled) {

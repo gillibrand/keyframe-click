@@ -1,0 +1,32 @@
+.Tooltip {
+  --tooltip-border-color: rgba(255 255 255 / 0.9);
+  --tooltip-bg: rgba(0 0 0 / 0.77);
+
+  position: absolute;
+  z-index: var(--z-tooltip);
+
+  background-color: var(--tooltip-bg);
+  color: var(--c-neo-white);
+  border-radius: 0.5rem;
+
+  /* border: solid 1px white; */
+
+  padding: 0.325rem 0.75rem;
+  font-size: var(--sz-x-small);
+  white-space: nowrap;
+
+  pointer-events: none;
+  user-select: none;
+
+  transition-property: opacity, transform;
+  transition-duration: 100ms;
+  transition-delay: var(--tooltip-delay, 500ms);
+
+  opacity: 0;
+  transform: translateY(10%);
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -66,7 +66,7 @@
     outline-offset: var(--outline-offset);
     box-shadow: 0 0 0 2px rgba(255 255 255 / 0.7);
     box-shadow: 0 0 0 2px var(--c-neo-white);
-    z-index: 1;
+    z-index: var(--z-bump);
     border-color: transparent;
   }
 
@@ -74,7 +74,6 @@
     outline: solid var(--outline-width) var(--outline-color);
     outline-offset: 2px !important;
     box-shadow: 0 0 0 2px white !important;
-    z-index: 1;
     border-color: black;
   }
 

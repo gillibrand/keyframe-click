@@ -1,6 +1,6 @@
+import Github from "@images/github-mark.svg?react";
 import { useRouter } from "@router/useRouter";
 import "./Banner.css";
-import Github from "@images/github-mark.svg?react";
 
 export function Banner() {
   const { route, setRoute, preloadRoute } = useRouter();

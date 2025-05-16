@@ -90,7 +90,7 @@ export const RadioTab = memo(function RadioTab({
 
       <button
         className="RadioTab__button"
-        title="close"
+        title="Close"
         onClick={promptToDelete}
         tabIndex={-1} // no focus; use Del key to invoke instead
         onFocus={() => inputRef.current?.focus()}

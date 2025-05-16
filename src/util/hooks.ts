@@ -125,3 +125,25 @@ export function useLiveState<T>(initialState: T | (() => T)) {
 
   return [getValue, setValueAndRef] as const;
 }
+
+/**
+ * Merges multiple refs into a single on. This is needed since a component can only accept a single ref, but different
+ * hooks might all need their own. This lets you gather all the refs you need and just pass the merged ref into a
+ * component and get them all updated.
+ *
+ * @param refs Refs to merge.
+ * @returns A single ref that wil update all the given refs.
+ */
+export function useMergeRefs<T>(...refs: React.Ref<T>[]): React.RefCallback<T> {
+  return useCallback((value: T) => {
+    for (let i = 0; i < refs.length; i++) {
+      const ref = refs[i];
+      if (typeof ref === "function") {
+        ref(value);
+      } else if (ref && "current" in ref) {
+        (ref as React.MutableRefObject<T>).current = value;
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, refs);
+}

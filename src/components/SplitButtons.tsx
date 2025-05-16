@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { forwardRef, PropsWithChildren } from "react";
 import "./SplitButtons.css";
 import { cx } from "@util/cx";
 
@@ -10,6 +10,10 @@ interface Props extends PropsWithChildren {
  * Buttons that are closely related to appear attached visually. To use, just add normal HTML `button` as children. This
  * effectively just styles them.
  */
-export function SplitButtons({ children, className }: Props) {
-  return <div className={cx("SplitButtons flex flex-nowrap items-stretch", className)}>{children}</div>;
-}
+export const SplitButtons = forwardRef<HTMLDivElement, Props>(function SplitButtons({ children, className }, ref) {
+  return (
+    <div className={cx("SplitButtons flex flex-nowrap items-stretch", className)} ref={ref}>
+      {children}
+    </div>
+  );
+});

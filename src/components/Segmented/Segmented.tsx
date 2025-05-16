@@ -2,6 +2,7 @@ import { useUuid } from "@util/hooks";
 import { createContext, memo, PropsWithChildren, Provider, useContext, useId, useMemo } from "react";
 import "./Segmented.css";
 import { cx } from "@util/cx";
+import { useTooltip } from "@components/Tooltip";
 
 /** A type for the radio group properties to pass via context to the radio buttons. */
 interface SegmentedContextType<T> {
@@ -62,14 +63,17 @@ export const Segmented = genericMemo(function Segmented<T = string>({
   const labelId = useId();
   const maybeLabelId = labelledBy ? labelledBy : label ? labelId : undefined;
 
+  const { tooltip, ...tooltipProps } = useTooltip<HTMLDivElement>(label);
+
   return (
     // This should be a fieldset, but it has rendering errors with a border radius and overflow in Chrome as of 135.0.7049.96
     <div
       className={cx("Segmented", className, { "is-disabled": disabled })}
       role="radiogroup"
       aria-labelledby={maybeLabelId}
-      title={label}
+      {...tooltipProps}
     >
+      {tooltip}
       <Provider value={contextValue}>{children}</Provider>
       {label && (
         <span className="sr-only" id={labelId}>

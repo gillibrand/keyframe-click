@@ -20,6 +20,7 @@ import ZoomOut from "@images/zoom-out.svg?react";
 import { loadSavedLayers, Unit } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
+import { useTooltip } from "@components/Tooltip";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -420,6 +421,8 @@ export function TimelinePage() {
     setMaxY(timeline.zoomOut());
   }, [setMaxY]);
 
+  const { tooltip: copyTooltip, ...copyTooltipProps } = useTooltip<HTMLButtonElement>("Copy ");
+
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
@@ -451,16 +454,18 @@ export function TimelinePage() {
             >
               Copy…
             </button>
+
             <button
-              title="Copy keyframes with current options"
               aria-haspopup="dialog"
               aria-expanded={isExporting}
               aria-controls={activeExportId}
               onClick={handleCopyNow}
               className="center"
+              {...copyTooltipProps}
             >
               <Copy />
-              <span className="sr-only">Copy keyframes to clipboard with current options</span>
+              <span className="sr-only">Copy with current options</span>
+              {copyTooltip}
             </button>
           </SplitButtons>
         </section>

@@ -1,10 +1,11 @@
+import { useTooltip } from "@components/Tooltip";
 import Plus from "@images/plus.svg?react";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
+import { cx } from "@util/cx";
 import { useChildAnimator } from "@util/useChildAnimator";
 import { useCallback, useId } from "react";
 import { RadioTab } from "./RadioTab";
 import "./tab.css";
-import { cx } from "@util/cx";
 
 export interface TabData {
   cssProp: CssProp;
@@ -62,6 +63,10 @@ export function RadioTabGroup({
 
   const labelId = useId();
 
+  const { tooltip: addTooltip, ...addTooltipProps } = useTooltip<HTMLButtonElement>(
+    !canAddNew ? undefined : "Add property"
+  );
+
   return (
     <div className={cx("RadioTabGroup gap-4", className)}>
       <span id={labelId} className="sr-only">
@@ -91,11 +96,13 @@ export function RadioTabGroup({
         ))}
       </div>
 
+      {addTooltip}
       <button
         className="button is-secondary is-round"
         onClick={onAddNew}
         disabled={!canAddNew}
-        title={!canAddNew ? "All properties are already being used" : "Add property"}
+        title={!canAddNew ? "All properties are already being used" : undefined}
+        {...addTooltipProps}
       >
         <span className="sr-only">Add Property</span>
         <Plus />
