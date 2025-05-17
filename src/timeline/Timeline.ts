@@ -779,7 +779,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     _addingAtUserPoint = null;
     _state = "default";
 
-    window.removeEventListener("keydown", onKeyDownCancel);
+    window.removeEventListener("keydown", onKeyDownAdding);
     _canvas.removeEventListener("mouseleave", onMouseLeaveAdding);
     _canvas.removeEventListener("mousedown", onMouseDownAdding);
     _canvas.removeEventListener("mousemove", onMouseMoveAdding);
@@ -791,7 +791,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   function onMouseMoveAdding(e: MouseEvent) {
-    _addingAtUserPoint = { x: asUserX(e.offsetX), y: asUserY(e.offsetY) };
+    _addingAtUserPoint = { x: Math.max(0, Math.min(asUserX(e.offsetX), 100)), y: asUserY(e.offsetY) };
     draw(false);
   }
 
@@ -848,7 +848,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     endAddingDot();
   }
 
-  function onKeyDownCancel(e: KeyboardEvent) {
+  function onKeyDownAdding(e: KeyboardEvent) {
     if (e.key === "Escape") {
       endAddingDot();
       endDrag();
@@ -874,7 +874,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     _canvas.addEventListener("mousemove", onMouseMoveAdding);
     _canvas.addEventListener("mousedown", onMouseDownAdding);
     _canvas.addEventListener("mouseleave", onMouseLeaveAdding);
-    window.addEventListener("keydown", onKeyDownCancel);
+    window.addEventListener("keydown", onKeyDownAdding);
 
     draw();
 
