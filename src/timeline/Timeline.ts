@@ -283,6 +283,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
     let x = asUserX(Math.max(InsetX, Math.min(e.pageX - window.scrollX - rect.x, width() - InsetX)));
     const y = asUserY(Math.max(InsetY, Math.min(e.pageY - window.scrollY - rect.y, height() - InsetY)));
+
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
     } else {
@@ -667,6 +668,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   function onKeyDown(e: KeyboardEvent) {
     const dots = _layers.getDots();
     const dot = _selectedIndex === null ? null : dots[_selectedIndex];
+    const i = _selectedIndex;
 
     switch (e.key) {
       case "Delete":
@@ -705,14 +707,24 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
         if (dot) moveDot(dot, dot.x, dot.y - 1);
         e.preventDefault();
         break;
-      case "ArrowLeft":
-        if (dot) moveDot(dot, dot.x - 1, dot.y);
+
+      case "ArrowLeft": {
+        if (dot && i !== null) {
+          const minX = i > 0 ? dots[i - 1].x : 0;
+          moveDot(dot, Math.max(minX, dot.x - 1), dot.y);
+        }
         e.preventDefault();
         break;
-      case "ArrowRight":
-        if (dot) moveDot(dot, dot.x + 1, dot.y);
+      }
+
+      case "ArrowRight": {
+        if (dot && i !== null) {
+          const maxX = dots[i + 1] ? dots[i + 1].x : 100;
+          moveDot(dot, Math.min(dot.x + 1, maxX), dot.y);
+        }
         e.preventDefault();
         break;
+      }
 
       default:
         // bail without redrawing
