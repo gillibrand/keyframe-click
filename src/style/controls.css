@@ -20,8 +20,6 @@
 
   min-width: 12ch;
 
-  transition: box-shadow 100ms;
-
   &:not(:disabled) {
     box-shadow: 2px 2px 0 0 var(--shadow-color);
   }
@@ -78,7 +76,6 @@
       outline-offset: var(--outline-offset);
       box-shadow: 0 0 0 2px var(--c-neo-white);
       border-color: transparent;
-      transition: none;
     }
 
     &:active:not(:disabled),

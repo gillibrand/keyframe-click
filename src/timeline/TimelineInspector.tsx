@@ -61,9 +61,9 @@ const GlobalSettings = memo(function GlobalSettings({
         Property <span className="sr-only">Inspector</span>
       </h2>
 
-      <label className="stacked-label">
-        <span className="sr-only">Property name</span>
-        <div className="col-2-auto gap-2">
+      <div className="col-2-auto gap-2">
+        <label className="stacked-label">
+          <span className="sr-only">Property name</span>
           <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
             {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
               <option key={otherCssProp} value={otherCssProp} disabled={isCssPropDisabled(otherCssProp as CssProp)}>
@@ -71,19 +71,19 @@ const GlobalSettings = memo(function GlobalSettings({
               </option>
             ))}
           </Select>
+        </label>
 
-          <Segmented
-            checkedValue={units}
-            label={!supportsPx ? "This property requires percent units" : "Units"}
-            className="flex-none"
-            onChange={(units) => onChangeUnits(units)}
-            disabled={!supportsPx}
-          >
-            <SegmentedButton value="%">%</SegmentedButton>
-            <SegmentedButton value="px">px</SegmentedButton>
-          </Segmented>
-        </div>
-      </label>
+        <Segmented
+          checkedValue={units}
+          label={!supportsPx ? "This property requires percent units" : "Units"}
+          className="flex-none"
+          onChange={(units) => onChangeUnits(units)}
+          disabled={!supportsPx}
+        >
+          <SegmentedButton value="%">%</SegmentedButton>
+          <SegmentedButton value="px">px</SegmentedButton>
+        </Segmented>
+      </div>
 
       <label className="stacked-label">
         <span>More keyframes</span>
