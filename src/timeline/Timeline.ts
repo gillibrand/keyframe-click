@@ -281,8 +281,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
     const rect = _canvas.getBoundingClientRect();
 
-    let x = asUserX(Math.max(InsetX, Math.min(e.pageX - rect.x, width() - InsetX)));
-    const y = asUserY(Math.max(InsetY, Math.min(e.pageY - rect.y, height() - InsetY)));
+    let x = asUserX(Math.max(InsetX, Math.min(e.pageX - window.scrollX - rect.x, width() - InsetX)));
+    const y = asUserY(Math.max(InsetY, Math.min(e.pageY - window.scrollY - rect.y, height() - InsetY)));
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
     } else {
