@@ -670,6 +670,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     const dot = _selectedIndex === null ? null : dots[_selectedIndex];
     const i = _selectedIndex;
 
+    const increment = e.altKey ? 10 : 1;
+
     switch (e.key) {
       case "Delete":
       case "Backspace":
@@ -700,18 +702,18 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
         break;
 
       case "ArrowUp":
-        if (dot) moveDot(dot, dot.x, dot.y + 1);
+        if (dot) moveDot(dot, dot.x, dot.y + increment);
         e.preventDefault();
         break;
       case "ArrowDown":
-        if (dot) moveDot(dot, dot.x, dot.y - 1);
+        if (dot) moveDot(dot, dot.x, dot.y - increment);
         e.preventDefault();
         break;
 
       case "ArrowLeft": {
         if (dot && i !== null) {
           const minX = i > 0 ? dots[i - 1].x : 0;
-          moveDot(dot, Math.max(minX, dot.x - 1), dot.y);
+          moveDot(dot, Math.max(minX, dot.x - increment), dot.y);
         }
         e.preventDefault();
         break;
@@ -720,7 +722,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
       case "ArrowRight": {
         if (dot && i !== null) {
           const maxX = dots[i + 1] ? dots[i + 1].x : 100;
-          moveDot(dot, Math.min(dot.x + 1, maxX), dot.y);
+          moveDot(dot, Math.min(dot.x + increment, maxX), dot.y);
         }
         e.preventDefault();
         break;
