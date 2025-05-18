@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import svgr from "vite-plugin-svgr";
 import browserslistToEsbuild from "browserslist-to-esbuild";
 import browserslist from "browserslist";
+import mdx from "@mdx-js/rollup";
 
 const esbuildTargets = browserslistToEsbuild(browserslist());
 
@@ -13,7 +14,7 @@ export default defineConfig({
   build: {
     target: esbuildTargets,
   },
-  plugins: [svgr(), react(), tsconfigPaths()],
+  plugins: [svgr(), react(), mdx(), tsconfigPaths()],
   resolve: {
     alias: {
       "@components": "/src/components",

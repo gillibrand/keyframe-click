@@ -6,7 +6,7 @@ export function App() {
   const { Page } = useRouter();
 
   return (
-    <div className="flex-col min-h-screen stack-large">
+    <div className="flex-col min-h-screen stack">
       <Banner />
       <Suspense fallback={"..."}>
         <Page />

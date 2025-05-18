@@ -68,7 +68,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
 
         <div className="stacked-label flex-col min-h-px  ">
           <span id={previewLabelId}>Preview</span>
-          <code className="ExportDialog__output" aria-labelledby={previewLabelId}>
+          <code className="code ExportDialog__output" aria-labelledby={previewLabelId}>
             <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>
           </code>
         </div>

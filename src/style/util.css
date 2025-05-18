@@ -172,6 +172,15 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   padding-block-end: 1rem;
 }
 
+.mb-stack,
+.mb-1\.5 {
+  margin-block-end: 1.125rem;
+}
+
+.mb-4 {
+  margin-block-end: 1rem;
+}
+
 .py-2 {
   padding-block: 0.5rem;
 }

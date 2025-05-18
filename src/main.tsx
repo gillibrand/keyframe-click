@@ -1,6 +1,6 @@
 import { App } from "@app/App";
 import { NoteProvider } from "@components/note";
-import AboutPage from "@pages/AboutPage";
+import { AboutPage } from "@pages/AboutPage";
 import { TimelinePage } from "@pages/TimelinePage";
 import { RouterProvider, Routes } from "@router/RouterProvider";
 import "@style/colors.css";

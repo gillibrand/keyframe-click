@@ -1,6 +1,6 @@
 # Keyframe Click
 
-A web app that lets you **place and edit Bezier curves on a timeline** to represent CSS property animations. The tool visualizes the motion path of CSS properties and generates the corresponding `@keyframes` syntax for easy copy-paste into your stylesheets.
+A web app that lets you **place and edit bezier curves on a timeline** to represent **CSS property animations**. The tool visualizes the motion path of CSS properties and generates the corresponding `@keyframes` syntax for easy copy-paste into your stylesheets.
 
 Perfect for developers and designers who want experiment visually with CSS animations.
 
@@ -14,11 +14,18 @@ Perfect for developers and designers who want experiment visually with CSS anima
 ## 🧰 Tech Stack
 
 - React; no other runtime dependencies
-- Plain-old CSS, but with native nesting
+- Vanilla CSS, but with native nesting
 - Vite for development and bundling
-- Custom UI components
+- Bold, tactile UI components
 - HTML5 `<canvas>` for rendering and interaction
 
 ## 🧪 Live Demo
 
-Check it out at [https://gillibrand.github.io/keyframe-click](https://gillibrand.github.io/keyframe-click/)
+Try it at [https://gillibrand.github.io/keyframe-click](https://gillibrand.github.io/keyframe-click/)
+
+## 📋 Future enhancements
+
+- Mobile version
+- More preview images
+- Additional properties
+  - This handles the most common GPU accelerated properties, but there are uses for other ones.
