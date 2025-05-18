@@ -197,6 +197,28 @@ export class Layers {
     return this.getActiveLayer();
   }
 
+  /** Sets the active layer to the next one in the list. This is used for keyboard navigation. */
+  nextLayer() {
+    const i = this.findLayerIndex(this.activeId);
+    if (i === null) return;
+
+    const next = this.layers[i + 1];
+    if (next) this.setActiveLayer(next.id);
+  }
+
+  /** Sets the active layer to the previous one in the list. This is used for keyboard navigation. */
+  prevLayer() {
+    const i = this.findLayerIndex(this.activeId);
+    if (i === null) return;
+    const prev = this.layers[i - 1];
+    if (prev) this.setActiveLayer(prev.id);
+  }
+
+  /**
+   * Adds a new layer to the timeline.
+   *
+   * @param cssProp The CSS property to use for the new layer. There should be at most one layer per CSS property.
+   */
   addNewLayer(cssProp: CssProp) {
     const id = newId();
     this.layers.push({

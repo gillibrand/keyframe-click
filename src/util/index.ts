@@ -79,31 +79,6 @@ export function isEl(node: unknown): node is HTMLElement {
   return node instanceof HTMLElement;
 }
 
-function isVisible(el: HTMLElement): boolean {
-  return el.offsetParent !== null || getComputedStyle(el).visibility !== "hidden";
-}
-
-export function getFirstFocusableElement(parent: HTMLElement, andFocus: boolean = false): HTMLElement | null {
-  const focusableSelectors = [
-    "a[href]",
-    "area[href]",
-    "input:not([disabled])",
-    "select:not([disabled])",
-    "textarea:not([disabled])",
-    "button:not([disabled])",
-    "iframe",
-    "object",
-    "embed",
-    '[tabindex]:not([tabindex="-1"])',
-    '[contenteditable]:not([contenteditable="false"])',
-  ];
-
-  const focusable = parent.querySelectorAll<HTMLElement>(focusableSelectors.join(","));
-  const firstVisible = Array.from(focusable).find((el) => isVisible(el)) || null;
-  if (firstVisible && andFocus) firstVisible.focus();
-  return firstVisible;
-}
-
 /**
  * Gets a value from the map, or sets and return an initial value if the key is not already set.
  *
@@ -121,17 +96,39 @@ export function getOrInit<K, V>(map: Map<K, V>, key: K, dflt: V) {
 }
 
 /** @returns True if the app is running in development mode. Otherwise this is production. */
-export function isDevMode() {
-  // This is specific to Vite.
-  return import.meta.env.MODE === "development";
-}
+export const isDevMode = import.meta.env.MODE === "development"; // This is specific to Vite.
 
+/**
+ * Checks if the element natively handles space bar events. This is used to ignore space bar events on elements that
+ * natively handle them, like input, textarea, and select elements instead of handling them with global handlers. This
+ * is more elements than just a `isKeyboardHandler`.
+ *
+ * @param el Element to check.
+ * @returns True if the element is a space bar handler. This is true for input, textarea, and select elements. This is
+ *   used to check if the element is a space bar handler, so that we can prevent the default behavior of
+ */
 export function isSpaceBarHandler(el: HTMLElement | EventTarget | null): boolean {
   if (!isEl(el)) return false;
   return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.tagName === "BUTTON";
 }
 
+/**
+ * Checks if the element natively handles keyboard events. This is used to ignore keyboard events on elements that
+ * natively handle them, like input, textarea, and select elements instead of handling them with global handlers.
+ *
+ * @param el Element to check.
+ * @returns True if the element is a keyboard handler. This is true for input, textarea, and select elements. This is
+ *   used to check if the element is a keyboard handler, so that we can prevent the default behavior of
+ */
 export function isKeyboardHandler(el: HTMLElement | EventTarget | null): boolean {
   if (!isEl(el)) return false;
   return el.tagName === "INPUT" || el.tagName === "TEXTAREA";
 }
+
+/** @returns True if the current platform is a Mac. This is based on the navigator.platform value. */
+export const isMac =
+  typeof navigator === "undefined"
+    ? true
+    : typeof navigator.platform !== "string"
+      ? true
+      : navigator.platform.toUpperCase().indexOf("MAC") >= 0;

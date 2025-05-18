@@ -4,7 +4,7 @@ import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot } from "@timeline/point";
 import { createTimeline, Timeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
-import { debounce, isSpaceBarHandler, throttle } from "@util";
+import { debounce, isMac, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSetting } from "../../app/useSettings";
 import "./TimelinePage.css";
@@ -22,6 +22,7 @@ import ZoomOut from "@images/zoom-out.svg?react";
 import { loadSavedLayers, Unit } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
+import { useGlobalShortcuts } from "./useGlobalShortcuts";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -403,10 +404,10 @@ export function TimelinePage() {
 
   const [ruleName] = useSetting("ruleName", "my-anim");
 
-  function handleCopyNow() {
+  const copyNow = useCallback(() => {
     const note = copyToClipboard(layers, ruleName);
     sendNote(note);
-  }
+  }, [layers, ruleName, sendNote]);
 
   const exportDialogId = useId();
   const isExporting = getIsExportOpen();
@@ -424,9 +425,12 @@ export function TimelinePage() {
     setMaxY(timeline.zoomOut());
   }, [setMaxY]);
 
-  const { tooltip: copyTooltip, ...copyTooltipProps } = useTooltip<HTMLButtonElement>("Copy ");
-
+  const { tooltip: copyTooltip, ...copyTooltipProps } = useTooltip<HTMLButtonElement>(
+    isMac ? "Copy - ⌘C" : "Copy - Ctrl+C"
+  );
   const copyButtonRef = useRef<HTMLButtonElement>(null);
+
+  useGlobalShortcuts({ layers, zoomIn, zoomOut, copyNow: isExporting ? null : copyNow });
 
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
@@ -473,7 +477,7 @@ export function TimelinePage() {
               aria-haspopup="dialog"
               aria-expanded={isExporting}
               aria-controls={activeExportId}
-              onClick={handleCopyNow}
+              onClick={copyNow}
               className="center"
               {...copyTooltipProps}
             >

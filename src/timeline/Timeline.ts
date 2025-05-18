@@ -686,6 +686,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
       }
 
       case ".":
+      case "d":
         if (_selectedIndex === null) {
           _selectedIndex = 0;
         } else if (_selectedIndex < dots.length - 1) {
@@ -694,6 +695,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
         break;
 
       case ",":
+      case "a":
         if (_selectedIndex === null) {
           _selectedIndex = dots.length - 1;
         } else if (_selectedIndex > 0) {

@@ -10,7 +10,7 @@ type OutputFn = (n: number) => string;
  */
 const NullPairFn: OutputFn = () => {
   const error = "Outputting a paired property (like translate-x, translate-y) on its own. It must done as a pair.";
-  if (isDevMode()) {
+  if (isDevMode) {
     throw error;
   } else {
     console.error(error);
