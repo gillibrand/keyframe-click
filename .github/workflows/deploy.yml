@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-gh-pages:
+  Build-and-push-to-gh-pages-branch:
     runs-on: ubuntu-latest
     permissions:
       contents: write
