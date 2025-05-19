@@ -1,4 +1,4 @@
-import Close from "@images/close.svg?react";
+import { CloseButton } from "@components/CloseButton";
 import { Callback, isMac } from "@util";
 import { useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -64,9 +64,7 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
     <dialog className="HelpPanel" ref={dialogRef} onClose={didClose} onTransitionEnd={handleTransitionEnd}>
       <header className="flex items-center gap-4 justify-between">
         <h1>Keyboard shortcuts</h1>
-        <button className="close-button" onClick={handleCloseButton}>
-          <Close />
-        </button>
+        <CloseButton onClick={handleCloseButton} />
       </header>
 
       <dl className="mt-8 row-gap-4 col-gap-8">

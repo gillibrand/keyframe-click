@@ -7,8 +7,11 @@
   /* box-shadow: 2px 2px 0 black; */
   box-shadow: 0 0 0 1px white;
   position: fixed;
-  inset-block-start: 30vh;
+  inset-block-start: 50vh;
+  translate: 0 -50%;
   /* min-width: 40ch; */
+
+  z-index: var(--z-popover);
 
   h1 {
     font-size: var(--sz-large);
@@ -38,7 +41,6 @@
   dl {
     display: grid;
     grid-template-columns: auto auto;
-    /* justify-content: space-between; */
   }
 
   dt {

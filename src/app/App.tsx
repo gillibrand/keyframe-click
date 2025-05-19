@@ -1,7 +1,7 @@
+import { HelpPanel } from "@components/HelpPanel";
+import { useRouter } from "@router/useRouter";
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { useRouter } from "../router/useRouter";
 import { Banner } from "./Banner";
-import { HelpPanel } from "@components/HelpPanel/HelpPanel";
 
 export function App() {
   const { Page } = useRouter();

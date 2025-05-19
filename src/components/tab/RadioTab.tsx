@@ -1,4 +1,4 @@
-import Close from "@images/close.svg?react";
+import { CloseButton } from "@components/CloseButton";
 import { ColorName, Colors } from "@util/Colors";
 import { cx } from "@util/cx";
 import { CSSProperties, memo, useId, useMemo, useRef } from "react";
@@ -88,15 +88,7 @@ export const RadioTab = memo(function RadioTab({
         }}
       />
 
-      <button
-        className="close-button"
-        title="Close"
-        onClick={promptToDelete}
-        tabIndex={-1} // no focus; use Del key to invoke instead
-        onFocus={() => inputRef.current?.focus()}
-      >
-        <Close />
-      </button>
+      <CloseButton onClick={promptToDelete} tabIndex={-1} onFocus={() => inputRef.current?.focus()} />
     </div>
   );
 });

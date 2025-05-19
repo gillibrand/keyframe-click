@@ -66,36 +66,9 @@
 
   &:not(.can-delete),
   &:not(:has(:checked)) {
-    .close-button {
+    .CloseButton {
       visibility: hidden;
       flex-shrink: 100;
     }
-  }
-}
-
-.close-button {
-  appearance: none;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  padding: 0;
-  line-height: 1;
-
-  border: none;
-
-  background-color: var(--c-neo-white);
-  color: #444;
-  cursor: pointer;
-
-  &:hover {
-    filter: brightness(0.9);
-  }
-
-  &:active {
-    filter: brightness(0.8);
   }
 }
