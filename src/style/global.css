@@ -224,6 +224,7 @@ ds {
   line-height: 1.5;
 }
 
+code,
 kbd {
   font-family: "SF Mono", "Roboto Mono", "Consolas", "Liberation Mono", "Menlo", monospace;
   padding: 0.125em 0.25em;
