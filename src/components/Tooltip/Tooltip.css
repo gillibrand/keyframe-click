@@ -1,6 +1,5 @@
 .Tooltip {
-  --tooltip-border-color: rgba(255 255 255 / 0.9);
-  --tooltip-bg: rgba(0 0 0 / 0.77);
+  --tooltip-bg: #111;
 
   position: absolute;
   z-index: var(--z-tooltip);
@@ -8,8 +7,6 @@
   background-color: var(--tooltip-bg);
   color: var(--c-neo-white);
   border-radius: 0.5rem;
-
-  /* border: solid 1px white; */
 
   padding: 0.325rem 0.75rem;
   font-size: var(--sz-x-small);

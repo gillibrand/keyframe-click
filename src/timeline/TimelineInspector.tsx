@@ -175,7 +175,7 @@ export const TimelineInspector = memo(function Inspector({
               <>Click timeline to place the point</>
             ) : (
               <>
-                Hold <kbd>Shift</kbd> over timeline to add quickly
+                Hold <kbd className="is-plain">Shift</kbd> over timeline to add quickly
               </>
             )}
           </div>
