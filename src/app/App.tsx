@@ -2,6 +2,7 @@ import { HelpPanel } from "@components/HelpPanel";
 import { useRouter } from "@router/useRouter";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { Banner } from "./Banner";
+import { isKeyboardHandler } from "@util";
 
 export function App() {
   const { Page } = useRouter();
@@ -21,6 +22,8 @@ export function App() {
     function toggleHelp(e: KeyboardEvent) {
       switch (e.key) {
         case "?":
+          if (isKeyboardHandler(e.target)) return;
+
           setIsHelpOpen((prevOpen) => {
             if (prevOpen === true) {
               return false;

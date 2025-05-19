@@ -215,6 +215,7 @@ ul,
 li,
 ds {
   line-height: 1.5;
+  text-wrap: pretty;
 }
 
 code,
@@ -224,4 +225,8 @@ kbd {
   border-radius: 4px;
   background-color: rgba(0 0 0 / 0.05);
   box-shadow: 0 0 0 1px rgba(0 0 0 / 0.1);
+
+  &.is-plain {
+    padding-block: 0;
+  }
 }

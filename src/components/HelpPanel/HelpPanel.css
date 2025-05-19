@@ -13,8 +13,15 @@
 
   z-index: var(--z-popover);
 
+  max-height: 100vh;
+  overflow: auto;
+
   h1 {
     font-size: var(--sz-large);
+  }
+
+  h2 {
+    font-size: var(--sz-body);
   }
 
   transition-property: opacity, transform;
@@ -48,6 +55,6 @@
   }
   dt,
   dd {
-    margin: 0;
+    margin-inline: 0;
   }
 }

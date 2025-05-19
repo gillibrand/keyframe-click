@@ -61,44 +61,47 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
   }
 
   return createPortal(
-    <dialog className="HelpPanel" ref={dialogRef} onClose={didClose} onTransitionEnd={handleTransitionEnd}>
+    <dialog className="HelpPanel stack" ref={dialogRef} onClose={didClose} onTransitionEnd={handleTransitionEnd}>
       <header className="flex items-center gap-4 justify-between">
         <h1>Keyboard shortcuts</h1>
         <CloseButton onClick={handleCloseButton} />
       </header>
 
-      <dl className="mt-8 row-gap-4 col-gap-8">
-        <dt>Previous/next property tab</dt>
+      <dl className="row-gap-4 col-gap-8">
+        <dt>Add point</dt>
         <dd>
-          <kbd>[</kbd> / <kbd>]</kbd>
-        </dd>
-
-        <dt>Close property tab (when focused)</dt>
-        <dd>
-          <kbd>Delete</kbd>
+          <kbd>Shift</kbd>-click
         </dd>
 
         <dt>Select previous/next point</dt>
         <dd>
           <kbd>A</kbd> / <kbd>D</kbd>
-          <span className="p-4">or</span>
-          <kbd>,</kbd> / <kbd>.</kbd>
         </dd>
 
         <dt>Move selected point</dt>
         <dd>arrow keys</dd>
 
         <dt>Move faster</dt>
-        <dd>{Option} + arrow keys</dd>
+        <dd>{Option}-arrow keys</dd>
 
-        <dt>Change selected point style</dt>
+        <dt>Change selected point style </dt>
         <dd>
           <kbd>C</kbd> <span className="p-4">or</span> {Option}-click
         </dd>
 
-        <dt>Add point</dt>
+        <dt>Delete selected point</dt>
         <dd>
-          <kbd>Shift</kbd>-click
+          <kbd>Backspace</kbd>
+        </dd>
+
+        <dt className="mt-8">Previous/next property tab</dt>
+        <dd className="mt-8">
+          <kbd>[</kbd> / <kbd>]</kbd>
+        </dd>
+
+        <dt>Play preview</dt>
+        <dd>
+          <kbd>Space bar</kbd>
         </dd>
 
         <dt>Zoom out/in </dt>
@@ -111,6 +114,11 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
         <dt>Copy keyframes</dt>
         <dd>
           <kbd>{CmdC}</kbd>
+        </dd>
+
+        <dt>Close focused property tab</dt>
+        <dd>
+          <kbd>Backspace</kbd>
         </dd>
 
         <dt>Toggle this help</dt>
