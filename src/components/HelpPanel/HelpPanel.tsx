@@ -84,6 +84,11 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
         <dt>Move faster</dt>
         <dd>{Option}-arrow keys</dd>
 
+        <dt>Move to value 0 / 100</dt>
+        <dd>
+          <kbd>0</kbd> / <kbd>1</kbd>
+        </dd>
+
         <dt>Change selected point style </dt>
         <dd>
           <kbd>C</kbd> <span className="p-4">or</span> {Option}-click

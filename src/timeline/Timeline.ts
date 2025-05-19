@@ -27,20 +27,31 @@ import { Layers } from "./Layers";
 import { diffPt, findYForXInCurve, nearPt, Point, togglePt, UserDot } from "./point";
 import { isFocusVisible } from "@util/focusVisible";
 
+/** Point being actively dragged. */
 type DraggingPoint = {
   point: UserDot;
   minX: number;
   maxX: number;
 };
 
+/** Handle being actively dragged. */
 type DraggingHandle = {
   point: UserDot;
   handle: Point;
   otherHandle: Point;
 };
 
+/** Point or handle being dragged. */
 type Dragging = DraggingPoint | DraggingHandle;
 
+/**
+ * Creates a stateful function that detects if the mouse has moved past a threshold. Used to ignore "drags" or very
+ * short distances that are probably just sloppy clicks.
+ *
+ * @returns A function that returns true if the mouse has moved past the threshold.
+ * @realOrigin The starting point of the drag in real coordinates.
+ * @threshold The distance in pixels to consider a drag.
+ */
 function createThreshold(realOrigin: Point, threshold: number) {
   let passed = false;
 
@@ -55,30 +66,83 @@ function createThreshold(realOrigin: Point, threshold: number) {
   };
 }
 
+/** The API to interact with the timeline. The React world calls into an instance of this.. */
 export interface Timeline {
+  /** Destroys the timeline and removes all event listeners. Must call when done. */
   destroy: () => void;
 
+  /**
+   * Draws the timeline soon. This is called automatically when changing the timeline with this API, but external
+   * changes to layers are not automatically drawn. Call this to force a redraw.
+   */
   draw: () => void;
 
+  /**
+   * Zooms out of the Y-axis of the timeline.
+   *
+   * @returns New max Y value.
+   */
   zoomOut: () => number;
+
+  /**
+   * Zooms in on the Y-axis of the timeline.
+   *
+   * @returns New max Y value.
+   */
   zoomIn: () => number;
 
   setSnapToGrid: (snapToGrid: boolean) => void;
   setLabelYAxis: (setLabelYAxis: boolean) => void;
 
+  /**
+   * Sets the callback to call when the timeline is drawn. This is called after the draw() method is called and the
+   * canvas is drawn. Since a draw normally only happens when the data changes, the listener can assume there is a data
+   * change (of the dots probably) that needs to be saved. Also called when the selected dot changes. The listener
+   * should be fast or throttled since this is called a lot on window resize now.
+   */
   set onDraw(onChangeCallback: (() => void) | undefined);
+
+  /**
+   * Sets the callback to call when the timeline is in "adding" mode or not. This is called when the user clicks the Add
+   * Point button and starts adding a point or cancels or finishes that.
+   */
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
+
+  /**
+   * Sets the callback to call when the timeline is in "moving" mode or not. This is called when the user starts moving
+   * a point or handle and when they stop moving it.
+   */
   set onMoving(onMovingCallback: ((isMoving: boolean) => void) | undefined);
 
+  /**
+   * Move the timeline into "adding" mode. This is used for using external shortcuts to start an add.
+   *
+   * @param at Point to start adding a dot at. If not provided, the dot will be added at a default location on the
+   *   right, which assumes the "Add point" button is near.
+   */
   beginAddingDot(at?: Point): void;
 
+  /** @returns The selected dot if any. Used by the sidebar. */
   getSelectedDot(): UserDot | null;
+
+  /**
+   * Updates properties of the selected dot. This is used by the sidebar to update the selected dot.
+   *
+   * @param d The new dot to set.
+   */
   updateSelectedDot: (d: UserDot) => void;
+
+  /** Deletes the selected dot. This is used by the sidebar to delete the selected dot. */
   deleteSelectedDot: () => void;
+
+  /**
+   * Cancels any mode the timeline is in. This is used to cancel adding or moving a dot based on user clicks and
+   * keyboard events.
+   */
   cancel: () => void;
 }
 
-export interface TimelineProps {
+export interface InitTimelineProps {
   canvas: HTMLCanvasElement;
   layers: Layers;
   maxY?: number;
@@ -91,12 +155,10 @@ type State = "adding" | "default";
  *
  * @returns Controller to interact with the graph.
  */
-export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initialMaxY }: TimelineProps): Timeline {
+export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initialMaxY }: InitTimelineProps): Timeline {
   let drawTimer: number | null = null;
 
   if (initialMaxY) setMaxY(initialMaxY);
-  // const Height = _canvas.clientHeight;
-  // const Width = _canvas.clientWidth;
 
   function height() {
     return _canvas.clientHeight;
@@ -707,6 +769,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
         if (dot) moveDot(dot, dot.x, dot.y + increment);
         e.preventDefault();
         break;
+
       case "ArrowDown":
         if (dot) moveDot(dot, dot.x, dot.y - increment);
         e.preventDefault();
@@ -726,6 +789,15 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
           const maxX = dots[i + 1] ? dots[i + 1].x : 100;
           moveDot(dot, Math.min(dot.x + increment, maxX), dot.y);
         }
+        e.preventDefault();
+        break;
+      }
+
+      case "0":
+      case "1":
+      case "2": {
+        const num = parseInt(e.key, 10);
+        if (dot) moveDot(dot, dot.x, num * 100);
         e.preventDefault();
         break;
       }
