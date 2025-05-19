@@ -148,12 +148,17 @@ export interface InitTimelineProps {
   maxY?: number;
 }
 
+/**
+ * Modes the timeline can be in.
+ *
+ * XXX: Honestly this isn't as used as I imagined it would be. Investigate if really needed sometime.
+ */
 type State = "adding" | "default";
 
 /**
  * Wraps an existing canvas element with logic to draw a timeline.
  *
- * @returns Controller to interact with the graph.
+ * @returns Controller to interact with the timeline.
  */
 export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initialMaxY }: InitTimelineProps): Timeline {
   let drawTimer: number | null = null;
@@ -173,8 +178,13 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   let _snapToGrid = true;
   let _labelYAxis = true;
 
+  /** While adding a new point, this is set to the possible position of that new point. */
   let _addingAtUserPoint: Point | null = null;
+
+  /** 0 based index of the selected dot, or null. */
   let _selectedIndex: number | null = null;
+
+  /** The point or handle being dragged. */
   let _dragging: Dragging | null = null;
 
   let _onDidDraw: (() => void) | undefined;
@@ -183,6 +193,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
   let _state: State = "default";
 
+  /** Watches the canvas ro resizes and updates and redraws it if needed. */
   let _resizeObserver: ResizeObserver | undefined;
 
   // We save whether focus is "visible" (based on keyboard vs mouse activity) when we focus on the
@@ -242,6 +253,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     _resizeObserver.observe(canvas);
   }
 
+  /**
+   * Clones the selected dot. This is used to copy the dot to the clipboard or to create a new dot based on the selected
+   * one.
+   *
+   * @returns Copy of selected dot.
+   */
   function cloneSelectedDot(): UserDot | null {
     // XXX: shallow clone. Good enough for React to notice a diff
     const dots = _layers.getDots();
@@ -367,6 +384,13 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     draw();
   }
 
+  /**
+   * Updates the given dot in place with a new position and redraws.
+   *
+   * @param d Dot to update.
+   * @param toUserX New x position in user coordinates.
+   * @param toUserY New y position in user coordinates.
+   */
   function moveDot(d: UserDot, toUserX: number, toUserY: number) {
     const origin = { ...d };
 
@@ -398,6 +422,12 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     endDrag();
   }
 
+  /**
+   * Starts a possible drag. Nothing will happen visually until the mouse moves past a threshold.
+   *
+   * @param x Initial x position in user coordinates.
+   * @param y Initial y position in user coordinates.
+   */
   function startDrag(x: number, y: number) {
     isPastThreshold = createThreshold({ x: asRealX(x), y: asRealY(y) }, 2);
     document.addEventListener("mousemove", onMouseMoveDrag);
@@ -405,6 +435,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     if (_onIsMoving) _onIsMoving(true);
   }
 
+  /**
+   * Ends the drag and cleans up the event listeners. This is called when the mouse is released or moved outside the\
+   * Canvas.
+   */
   function endDrag() {
     document.removeEventListener("mousemove", onMouseMoveDrag);
     document.removeEventListener("mouseup", onMouseUpDrag);
@@ -413,8 +447,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   /**
-   * Draw the border and grid behind the graph. Includes the focus ring if the canvas is focused. The border is inset by
-   * the... inset in the `convert` module.
+   * Draw the border and grid behind the graph. Includes the focus ring if the canvas is focused. The border is inset a
+   * bit to have room to draw dots a little outside the border without cutting them off when they are very near the
+   * edge.
    */
   function drawGrid() {
     _cx.lineWidth = 1;
