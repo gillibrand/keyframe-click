@@ -66,14 +66,14 @@
 
   &:not(.can-delete),
   &:not(:has(:checked)) {
-    .RadioTab__button {
+    .close-button {
       visibility: hidden;
       flex-shrink: 100;
     }
   }
 }
 
-.RadioTab__button {
+.close-button {
   appearance: none;
   display: grid;
   place-items: center;

@@ -91,6 +91,14 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
   gap: 1rem;
 }
 
+.row-gap-4 {
+  row-gap: 1rem;
+}
+
+.col-gap-8 {
+  column-gap: 2rem;
+}
+
 .gap-6 {
   gap: 1.5rem;
 }
@@ -158,6 +166,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .mt-0 {
   margin-block-start: 0 !important;
+}
+
+.mt-8 {
+  margin-block-start: 2rem;
 }
 
 .py-4 {

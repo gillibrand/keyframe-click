@@ -1,9 +1,48 @@
-import { Suspense } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter } from "../router/useRouter";
 import { Banner } from "./Banner";
+import { HelpPanel } from "@components/HelpPanel/HelpPanel";
 
 export function App() {
   const { Page } = useRouter();
+
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isHelpRendered, setIsHelpRendered] = useState(false);
+
+  const handleWillCloseHelp = useCallback(() => {
+    setIsHelpOpen(false);
+  }, []);
+
+  const handleDidCloseHelp = useCallback(() => {
+    setIsHelpRendered(false);
+  }, []);
+
+  useEffect(() => {
+    function toggleHelp(e: KeyboardEvent) {
+      switch (e.key) {
+        case "?":
+          setIsHelpOpen((prevOpen) => {
+            if (prevOpen === true) {
+              return false;
+            } else {
+              setIsHelpRendered(true);
+              return true;
+            }
+          });
+          break;
+
+        case "Escape":
+          setIsHelpOpen(false);
+          break;
+      }
+    }
+
+    document.body.addEventListener("keydown", toggleHelp);
+
+    return () => {
+      document.body.removeEventListener("keydown", toggleHelp);
+    };
+  }, []);
 
   return (
     <div className="flex-col min-h-screen stack">
@@ -11,6 +50,7 @@ export function App() {
       <Suspense fallback={"..."}>
         <Page />
       </Suspense>
+      {isHelpRendered && <HelpPanel open={isHelpOpen} willClose={handleWillCloseHelp} didClose={handleDidCloseHelp} />}
     </div>
   );
 }
