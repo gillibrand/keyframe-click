@@ -1,7 +1,7 @@
 import AboutDoc from "./AboutDoc.mdx";
 import CreatedBy from "./CreatedBy.mdx";
 
-export function AboutPage() {
+export default function AboutPage() {
   return (
     <main className="large-page grow flex-col">
       <div className="wrapper-small grow flex-col">
