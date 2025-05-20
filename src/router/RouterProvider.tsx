@@ -1,5 +1,5 @@
 import { ComponentType, PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
-import { NotFoundPage } from "../pages/NotFoundPage";
+import { NotFoundPage } from "@pages/NotFoundPage";
 import { RouterContext } from "./useRouter";
 
 export type LazyComponentType = ComponentType & {

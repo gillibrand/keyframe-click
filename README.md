@@ -17,6 +17,7 @@ Perfect for developers and designers who want experiment visually with CSS anima
 - Vanilla CSS native nesting
 - Vite for development and bundling
 - HTML5 `<canvas>` for timeline rendering
+- GitHub Actions and Pages for deployment and hosting
 - Bold, tactile UI components
 
 ## 🧪 Live Demo

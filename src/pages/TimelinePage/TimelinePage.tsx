@@ -6,7 +6,7 @@ import { createTimeline, Timeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isMac, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { useSetting } from "../../app/useSettings";
+import { useSetting } from "@app/useSettings";
 import "./TimelinePage.css";
 
 import { useNoteApi } from "@components/note";

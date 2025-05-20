@@ -4,7 +4,7 @@ import { Select } from "@components/Select";
 import Play from "@images/play.svg?react";
 import Stop from "@images/stop.svg?react";
 import "@style/inspector.css";
-import { Segmented, SegmentedButton } from "../components/Segmented";
+import { Segmented, SegmentedButton } from "@components/Segmented";
 import { Speed } from "./usePreview";
 import { useId } from "react";
 
@@ -70,27 +70,15 @@ export function PreviewInspector({
       </div>
 
       <div className="stack-small">
-        {/* <label className="block-label">
-          <input type="checkbox" onChange={(e) => onChangeIsRepeat(e.target.checked)} checked={isRepeat} />
-          <span>Repeat</span>
-        </label> */}
-
-        <CheckedInput label="Loop" checked={isRepeat} onChange={(e) => onChangeIsRepeat(e.target.checked)} />
-
-        {/* <label className="block-label">
-          <input type="checkbox" checked={isAutoPlay} onChange={(e) => onChangeAutoPlay(e.target.checked)} />
-          <span>Play after each change</span>
-        </label> */}
+        <CheckedInput
+          type="checkbox"
+          label="Loop"
+          checked={isRepeat}
+          onChange={(e) => onChangeIsRepeat(e.target.checked)}
+        />
       </div>
 
       <hr />
-
-      {/* <label className="stacked-label">
-        <span>Image</span>
-        <Select value="ball" disabled>
-          <option value="ball">Ball</option>
-        </Select>
-      </label> */}
 
       <label className="stacked-label">
         <span>Duration</span>
