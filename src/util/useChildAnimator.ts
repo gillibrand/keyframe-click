@@ -36,7 +36,6 @@ export async function wipeInHeight(node: HTMLElement) {
     return await node.animate(
       {
         height: ["0", `${node.offsetHeight}px`],
-        opacity: [0, 1],
       },
       {
         duration: 200,
@@ -55,7 +54,6 @@ export async function wipeOutHeight(node: HTMLElement) {
     return await node.animate(
       {
         height: [`${node.offsetHeight}px`, "0"],
-        opacity: [1, 0],
       },
       {
         duration: 200,

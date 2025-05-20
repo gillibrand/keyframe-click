@@ -9,7 +9,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import { useSetting } from "../../app/useSettings";
 import "./TimelinePage.css";
 
-import { NoteList, useNoteApi } from "@components/note";
+import { useNoteApi } from "@components/note";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { useTooltip } from "@components/Tooltip";
@@ -445,8 +445,6 @@ export function TimelinePage() {
           near={copyButtonRef.current ?? undefined}
         />
       )}
-
-      <NoteList />
 
       <div className="flex-col grow [ stack stack--trail ]">
         {/* TABS and SETTINGS at top */}

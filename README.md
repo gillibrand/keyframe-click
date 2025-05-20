@@ -9,15 +9,15 @@ Perfect for developers and designers who want experiment visually with CSS anima
 - Interactive **HTML canvas** editor with draggable Bezier handles
 - Timeline-based layout for property value changes
 - Real-time CSS animation preview
-- Auto-generated `@keyframes` output
+- Auto-generated CSS `@keyframes` or JavaScript output
 
 ## 🧰 Tech Stack
 
 - React; no other runtime dependencies
-- Vanilla CSS, but with native nesting
+- Vanilla CSS native nesting
 - Vite for development and bundling
+- HTML5 `<canvas>` for timeline rendering
 - Bold, tactile UI components
-- HTML5 `<canvas>` for rendering and interaction
 
 ## 🧪 Live Demo
 

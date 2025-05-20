@@ -3,6 +3,7 @@ import { useRouter } from "@router/useRouter";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { Banner } from "./Banner";
 import { isKeyboardHandler } from "@util";
+import { NoteList } from "@components/note";
 
 export function App() {
   const { Page } = useRouter();
@@ -50,6 +51,7 @@ export function App() {
   return (
     <div className="flex-col min-h-screen stack">
       <Banner />
+      <NoteList />
       <Suspense fallback={"..."}>
         <Page />
       </Suspense>
