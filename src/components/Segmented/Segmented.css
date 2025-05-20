@@ -4,11 +4,14 @@
   border: solid var(--border-width) var(--border-color);
   display: flex;
   border-radius: 8px;
-  background-color: white;
   overflow: hidden;
   justify-items: center;
   justify-content: center;
   font-size: var(--sz-small);
+
+  /* This works around a subpixel rendering problem in Chrome where the background can bleed through
+  sometimes below the element. If that background is white, its's very obvious. This seems to always look good. */
+  background-color: var(--c-neo-blue);
 
   &.is-disabled {
     background-color: white;
@@ -41,7 +44,7 @@
     &:has(:checked) + * {
       border-color: var(--c-neo-blue);
     }
-    background-color: var(--c-blue-500);
+    background-color: var(--c-neo-blue);
     color: white;
   }
 }
@@ -57,6 +60,7 @@
 }
 
 .Segmented__button {
+  min-height: 100%;
   &:active:not(:has(:disabled)),
   &[aria-pressed="true"] {
     filter: brightness(0.9);
