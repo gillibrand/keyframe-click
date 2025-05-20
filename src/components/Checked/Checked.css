@@ -1,0 +1,64 @@
+.Checked__box,
+.Checked__dot {
+  border: solid var(--border-width) var(--border-color);
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  background-color: white;
+  color: white;
+
+  &:not(:is(.is-active, :disabled)) {
+    box-shadow: 2px 2px 0 0 var(--shadow-color);
+  }
+}
+
+.Checked__dot {
+  border-radius: 50%;
+}
+
+input:checked {
+  & + .Checked__box {
+    background-color: var(--c-neo-blue);
+  }
+
+  & + .Checked__dot {
+    background-color: var(--c-neo-blue);
+    background-color: white;
+
+    &::after {
+      content: "";
+      background-color: var(--c-neo-blue);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+  }
+}
+
+.Checked:not(:has(:disabled)) {
+  cursor: pointer;
+
+  &:hover {
+    .Checked__box,
+    .Checked__dot {
+      filter: brightness(0.97);
+    }
+  }
+
+  &:active {
+    .Checked__box,
+    .Checked__dot {
+      filter: brightness(0.9);
+    }
+  }
+
+  &:has(:focus-visible) {
+    .Checked__box,
+    .Checked__dot {
+      outline: solid var(--outline-width) var(--outline-color);
+      outline-offset: var(--outline-offset);
+      box-shadow: none;
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { Duration, TimeUnit } from "@app/useSettings";
-import { Checkbox } from "@components/Checkbox/Checkbox";
+import { CheckedInput } from "@components/Checked/Checked";
 import { Select } from "@components/Select";
 import Play from "@images/play.svg?react";
 import Stop from "@images/stop.svg?react";
@@ -75,7 +75,7 @@ export function PreviewInspector({
           <span>Repeat</span>
         </label> */}
 
-        <Checkbox label="Loop" checked={isRepeat} onChange={(e) => onChangeIsRepeat(e.target.checked)} />
+        <CheckedInput label="Loop" checked={isRepeat} onChange={(e) => onChangeIsRepeat(e.target.checked)} />
 
         {/* <label className="block-label">
           <input type="checkbox" checked={isAutoPlay} onChange={(e) => onChangeAutoPlay(e.target.checked)} />

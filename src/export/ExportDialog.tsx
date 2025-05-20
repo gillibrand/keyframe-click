@@ -1,5 +1,5 @@
 import { useSetting } from "@app/useSettings";
-import { Checkbox } from "@components/Checkbox/Checkbox";
+import { CheckedInput } from "@components/Checked";
 import { Hint } from "@components/Hint";
 import { useNoteApi } from "@components/note/_NoteContext";
 import { Layers } from "@timeline/Layers";
@@ -64,7 +64,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
       <DialogBody>
         <div className="stacked-label">
           <span>Format</span>
-          <Checkbox
+          <CheckedInput
             label="CSS"
             type="radio"
             name="export-format"
@@ -72,7 +72,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
             checked={format === "css"}
             onChange={handleFormatChange}
           />
-          <Checkbox
+          <CheckedInput
             label="JavaScript"
             type="radio"
             name="export-format"

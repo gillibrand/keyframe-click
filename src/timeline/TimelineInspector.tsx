@@ -1,4 +1,4 @@
-import { Checkbox } from "@components/Checkbox/Checkbox";
+import { CheckedInput } from "@components/Checked/Checked";
 import { Hint } from "@components/Hint";
 import { Segmented, SegmentedButton } from "@components/Segmented";
 import { Select } from "@components/Select";
@@ -103,7 +103,7 @@ const GlobalSettings = memo(function GlobalSettings({
         </div>
       </label>
 
-      <Checkbox label="Flip values" checked={isFlipped} onChange={(e) => onChangeIsFlipped(e.target.checked)} />
+      <CheckedInput label="Flip values" checked={isFlipped} onChange={(e) => onChangeIsFlipped(e.target.checked)} />
     </>
   );
 });
