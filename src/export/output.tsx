@@ -400,3 +400,20 @@ export function normalizeAtRuleName(proposed: string) {
 
   return IllegalNames.has(secondsPass) ? secondsPass + "-" : secondsPass;
 }
+
+/**
+ * Normalizes a string to a known export format.
+ *
+ * @param format Any string, but should be an export format.
+ * @returns The given export format or 'css' if not a match.
+ */
+export function normalizeFormat(format: string) {
+  switch (format) {
+    case "css":
+    case "js":
+      return format;
+
+    default:
+      return "css";
+  }
+}

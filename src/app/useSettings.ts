@@ -24,6 +24,7 @@ interface Settings {
   previewSpeed: Speed;
 
   ruleName: string;
+  format: "css" | "js";
   maxY: number;
 }
 
@@ -59,6 +60,9 @@ function validate<K extends SettingName>(name: K, value: Settings[K]) {
 
     case "previewSpeed":
       return typeof value === "number" && Speeds.includes(value as Speed);
+
+    case "format":
+      return value === "css" || value === "js";
 
     default: {
       // XXX: this should never happen unless we change setting names. This this will throw cause

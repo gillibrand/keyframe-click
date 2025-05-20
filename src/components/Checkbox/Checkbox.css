@@ -1,38 +1,64 @@
-.Checkbox_box {
+.Checkbox__box,
+.Checkbox__dot {
   border: solid var(--border-width) var(--border-color);
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 18px;
+  height: 18px;
   display: inline-grid;
   place-items: center;
   background-color: white;
   color: white;
+}
 
-  .Checkbox.is-checked & {
-    background-color: var(--c-neo-blue);
-  }
+.Checkbox__box:not(:is(.is-active, :disabled)) {
+  box-shadow: 2px 2px 0 0 var(--shadow-color);
+}
 
+.Checkbox__dot {
   &:not(:is(.is-active, :disabled)) {
-    box-shadow: 2px 2px 0 0 var(--shadow-color);
+    box-shadow: 1px 1px 0 0 var(--shadow-color);
   }
+}
+
+.Checkbox.is-checked .Checkbox__box {
+  background-color: var(--c-neo-blue);
+}
+
+.Checkbox.is-checked .Checkbox__dot {
+  background-color: var(--c-neo-blue);
+  background-color: white;
+
+  &::after {
+    content: "";
+    background-color: var(--c-neo-blue);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+}
+
+.Checkbox__dot {
+  border-radius: 50%;
 }
 
 .Checkbox:hover {
-  .Checkbox_box {
-    filter: brightness(0.95);
+  .Checkbox__box,
+  .Checkbox__dot {
+    filter: brightness(0.97);
   }
 }
 
-.Checkbox.is-checked:hover {
-  .Checkbox_box {
-    filter: brightness(1.1);
+.Checkbox:active {
+  .Checkbox__box,
+  .Checkbox__dot {
+    filter: brightness(0.9);
   }
 }
 
 .Checkbox:has(:focus-visible) {
-  .Checkbox_box {
+  .Checkbox__box,
+  .Checkbox__dot {
     outline: solid var(--outline-width) var(--outline-color);
     outline-offset: var(--outline-offset);
-    box-shadow: 1px 1px 0 0 var(--shadow-color);
     box-shadow: none;
   }
 }

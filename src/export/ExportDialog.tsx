@@ -1,11 +1,12 @@
 import { useSetting } from "@app/useSettings";
+import { Checkbox } from "@components/Checkbox/Checkbox";
 import { Hint } from "@components/Hint";
 import { useNoteApi } from "@components/note/_NoteContext";
 import { Layers } from "@timeline/Layers";
 import { useCallback, useId, useMemo, useRef } from "react";
 import { Dialog, DialogApi, DialogBody, DialogFooter } from "./Dialog";
 import "./ExportDialog.css";
-import { copyToClipboard, genCssKeyframeList, generateCssAtRule, normalizeAtRuleName } from "./output";
+import { copyToClipboard, genCssKeyframeList, generateCssAtRule, normalizeAtRuleName, normalizeFormat } from "./output";
 
 interface Props {
   open: boolean;
@@ -19,6 +20,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
   const dialogApi = useRef<DialogApi>(null);
 
   const [ruleName, setRuleName] = useSetting("ruleName", "my-animation");
+  const [format, setFormat] = useSetting("format", "css");
 
   const keyframesHtml = useMemo(() => genCssKeyframeList(layers, true), [layers]);
   const keyframesAtRuleHtml = useMemo(() => generateCssAtRule(keyframesHtml, ruleName), [ruleName, keyframesHtml]);
@@ -33,6 +35,13 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
     const proposed = e.target.value;
     setRuleName(normalizeAtRuleName(proposed));
   }
+
+  const handleFormatChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormat(normalizeFormat(e.target.value));
+    },
+    [setFormat]
+  );
 
   const { sendNote } = useNoteApi();
 
@@ -53,6 +62,26 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
       near={near}
     >
       <DialogBody>
+        <div className="stacked-label">
+          <span>Format</span>
+          <Checkbox
+            label="CSS"
+            type="radio"
+            name="export-format"
+            value={"css"}
+            checked={format === "css"}
+            onChange={handleFormatChange}
+          />
+          <Checkbox
+            label="JavaScript"
+            type="radio"
+            name="export-format"
+            value="js"
+            checked={format === "js"}
+            onChange={handleFormatChange}
+          />
+        </div>
+
         <label className="stacked-label">
           <span>Rule name</span>
           <input
