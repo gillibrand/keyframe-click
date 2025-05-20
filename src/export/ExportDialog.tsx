@@ -1,8 +1,9 @@
 import { useSetting } from "@app/useSettings";
-import { CheckedInput } from "@components/Checked";
 import { Hint } from "@components/Hint";
 import { useNoteApi } from "@components/note/_NoteContext";
+import { Segmented, SegmentedButton } from "@components/Segmented";
 import { Layers } from "@timeline/Layers";
+import { useChildAnimator, wipeInHeight, wipeOutHeight } from "@util/useChildAnimator";
 import { useCallback, useId, useMemo, useRef } from "react";
 import { Dialog, DialogApi, DialogBody, DialogFooter } from "./Dialog";
 import "./ExportDialog.css";
@@ -37,8 +38,8 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
   }
 
   const handleFormatChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormat(normalizeFormat(e.target.value));
+    (newFormat: string) => {
+      setFormat(normalizeFormat(newFormat));
     },
     [setFormat]
   );
@@ -51,6 +52,11 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
     sendNote(note);
   }, [layers, ruleName, dialogApi, sendNote]);
 
+  const { parentRef } = useChildAnimator<HTMLDivElement>("both", {
+    animateIn: wipeInHeight,
+    animateOut: wipeOutHeight,
+  });
+
   return (
     <Dialog
       label="Copy keyframes"
@@ -61,39 +67,36 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
       id={id}
       near={near}
     >
-      <DialogBody>
+      <DialogBody ref={parentRef}>
         <div className="stacked-label">
           <span>Format</span>
-          <CheckedInput
-            label="CSS"
-            type="radio"
-            name="export-format"
-            value={"css"}
-            checked={format === "css"}
-            onChange={handleFormatChange}
-          />
-          <CheckedInput
-            label="JavaScript"
-            type="radio"
-            name="export-format"
-            value="js"
-            checked={format === "js"}
-            onChange={handleFormatChange}
-          />
+
+          <Segmented checkedValue={format} onChange={handleFormatChange}>
+            <SegmentedButton value="css" className="basis-1">
+              CSS
+            </SegmentedButton>
+            <SegmentedButton value="js" className="basis-1">
+              JavaScript
+            </SegmentedButton>
+          </Segmented>
         </div>
 
-        <label className="stacked-label">
-          <span>Rule name</span>
-          <input
-            className="textbox"
-            type="text"
-            value={ruleName}
-            onChange={handleNameChange}
-            autoFocus
-            spellCheck={false}
-          />
-          <Hint>Leave empty for bare keyframes</Hint>
-        </label>
+        {format === "css" && (
+          <div className="mt-0">
+            <label className="stacked-label mt-stack">
+              <span>Rule name</span>
+              <input
+                className="textbox"
+                type="text"
+                value={ruleName}
+                onChange={handleNameChange}
+                // autoFocus
+                spellCheck={false}
+              />
+              <Hint>Leave empty for bare keyframes</Hint>
+            </label>
+          </div>
+        )}
 
         <div className="stacked-label flex-col min-h-px  ">
           <span id={previewLabelId}>Preview</span>

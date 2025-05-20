@@ -27,7 +27,9 @@
   margin-block-start: 1.75rem;
 }
 
-.stack > * + * {
+/** Basic layout util of stack the contents with consistent spacing. Note that a child can opt out
+ * of this if it's mt-0, usually for animation purposes.*/
+.stack > * + *:not(.mt-0) {
   margin-block-start: 1.125rem;
 }
 
@@ -35,11 +37,13 @@
   margin-block-start: 0.5rem;
 }
 
-/* Usually a stack just has space between the children. If you add this, the last item gets
-*padding* below too. That's needed full height pages there the padding on the page will not be
-scrolled into view if it overflow, so we need padding on the last layout item to add that space.
-Still using this instead of margin on top and bottom to ensure it works even when margin collapse is
-prevented, plus margins will NOT be scrolled to in an overflow of the page. */
+/**
+ * Usually a stack just has space between the children. If you add this, the last item gets padding
+ * below too. That's needed full height pages there the padding on the page will not be scrolled
+ * into view if it overflow, so we need padding on the last layout item to add that space. Still
+ * using this instead of margin on top and bottom to ensure it works even when margin collapse is
+ * prevented, plus margins will NOT be scrolled to in an overflow of the page.
+ */
 .stack--trail > *:last-child {
   padding-block-end: 1.125rem;
 }
@@ -162,6 +166,10 @@ prevented, plus margins will NOT be scrolled to in an overflow of the page. */
 
 .mx-4 {
   margin-inline: 1rem;
+}
+
+.mt-stack {
+  margin-block-start: 1.125rem;
 }
 
 .mt-0 {

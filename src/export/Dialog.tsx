@@ -177,9 +177,16 @@ interface DialogBodyProps extends PropsWithChildren {
 }
 
 /** A body element to use in a dialog. */
-export function DialogBody({ children, className }: DialogBodyProps) {
-  return <div className={cx("mx-4 flex-col min-h-px stack", className)}>{children}</div>;
-}
+export const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(function DialogBody(
+  { children, className },
+  ref
+) {
+  return (
+    <div ref={ref} className={cx("mx-4 flex-col min-h-px stack", className)}>
+      {children}
+    </div>
+  );
+});
 
 /** A footer component to use in a dialog. */
 export function DialogFooter({ children }: PropsWithChildren) {

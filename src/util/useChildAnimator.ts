@@ -28,6 +28,46 @@ export function wipeOutWidth(node: HTMLElement) {
   ).finished;
 }
 
+export async function wipeInHeight(node: HTMLElement) {
+  const oldOverflow = node.style.overflow;
+  node.style.overflow = "hidden";
+
+  try {
+    return await node.animate(
+      {
+        height: ["0", `${node.offsetHeight}px`],
+        opacity: [0, 1],
+      },
+      {
+        duration: 200,
+        easing: "ease-in-out",
+      }
+    );
+  } finally {
+    node.style.overflow = oldOverflow;
+  }
+}
+
+export async function wipeOutHeight(node: HTMLElement) {
+  const oldOverflow = node.style.overflow;
+  node.style.overflow = "hidden";
+  try {
+    return await node.animate(
+      {
+        height: [`${node.offsetHeight}px`, "0"],
+        opacity: [1, 0],
+      },
+      {
+        duration: 200,
+        easing: "ease-in-out",
+        fill: "forwards",
+      }
+    ).finished;
+  } finally {
+    node.style.overflow = oldOverflow;
+  }
+}
+
 export function dropIn(node: HTMLElement) {
   // This takes up flow space immediately, so it only useful when adding the the end of list.
   return node.animate(
