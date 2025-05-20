@@ -31,7 +31,7 @@ const CssInfos = typedKeys({
   scale: {
     label: "Scale",
     fn: (s) => {
-      return `scale: ${Math.round(s) / 100};`;
+      return `${round2dp(s / 100)}`;
     },
     color: "red",
     supportsPx: false,
@@ -68,7 +68,7 @@ const CssInfos = typedKeys({
   opacity: {
     label: "Opacity",
     fn: (n) => {
-      return `opacity: ${round2dp(n / 100)};`;
+      return `${round2dp(n / 100)}`;
     },
     color: "green",
     supportsPx: false,
@@ -77,7 +77,7 @@ const CssInfos = typedKeys({
   rotate: {
     label: "Rotate",
     fn: (n) => {
-      return `rotate: ${round2dp(n / 100)}turn;`;
+      return `${round2dp(n / 100)}turn`;
     },
     color: "fuchsia",
     supportsPx: false,

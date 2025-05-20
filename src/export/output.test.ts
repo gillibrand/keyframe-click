@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { normalizeAtRuleName } from "./output";
+import { asJsValue, normalizeAtRuleName } from "./output";
 
 describe("normalizeAtRuleName", () => {
   test("unchanged names", () => {
@@ -35,5 +35,27 @@ describe("normalizeAtRuleName", () => {
     expect(normalizeAtRuleName("initial")).toBe("initial-");
     expect(normalizeAtRuleName("inherit")).toBe("inherit-");
     expect(normalizeAtRuleName("none")).toBe("none-");
+  });
+});
+
+describe("asJsValue", () => {
+  test("numbers", () => {
+    expect(asJsValue("0")).toBe("0");
+    expect(asJsValue("123")).toBe("123");
+    expect(asJsValue("-1")).toBe("-1");
+  });
+
+  test("whitespace", () => {
+    expect(asJsValue("0 1")).toBe('"0 1"');
+    expect(asJsValue(" 1")).toBe(" 1");
+    expect(asJsValue("123 456")).toBe('"123 456"');
+    expect(asJsValue("")).toBe('""');
+    expect(asJsValue(" ")).toBe('" "');
+  });
+
+  test("units", () => {
+    expect(asJsValue("1turn")).toBe('"1turn"');
+    expect(asJsValue("12.3px")).toBe('"12.3px"');
+    expect(asJsValue("12.3px")).toBe('"12.3px"');
   });
 });

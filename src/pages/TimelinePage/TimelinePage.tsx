@@ -14,7 +14,7 @@ import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { useTooltip } from "@components/Tooltip";
 import { ExportDialog } from "@export/ExportDialog";
-import { copyToClipboard, genCssKeyframeList } from "@export/output";
+import { copyToClipboard, genKeyframeText } from "@export/output";
 import Copy from "@images/copy.svg?react";
 import Down from "@images/down.svg?react";
 import ZoomIn from "@images/zoom-in.svg?react";
@@ -50,6 +50,10 @@ export function TimelinePage() {
 
   const [savedMaxY, setSavedMaxY] = useSetting("maxY", 110);
   const [getCurrentMaxY, setCurrentMaxY] = useLiveState(savedMaxY);
+
+  // Output settings
+  const [ruleName] = useSetting("ruleName", "my-anim");
+  const [format] = useSetting("format", "css");
 
   /**
    * Sets the max-y value to save it in settings, but also make it available as a ref when creating a timeline. This
@@ -206,9 +210,9 @@ export function TimelinePage() {
     setSelectedDot(dot);
   }, []);
 
-  const keyframeText = useMemo(() => {
+  const cssKeyframeText = useMemo(() => {
     void keyframeTextNeedsRender;
-    return genCssKeyframeList(layers);
+    return genKeyframeText(layers, "css");
   }, [layers, keyframeTextNeedsRender]);
 
   useEffect(() => {
@@ -232,7 +236,7 @@ export function TimelinePage() {
     speed,
     setSpeed,
   } = usePreview({
-    keyframeText,
+    keyframeText: cssKeyframeText,
   });
 
   const [getIsExportOpen, setIsExportOpen] = useLiveState(false);
@@ -402,12 +406,10 @@ export function TimelinePage() {
 
   const stopExporting = useCallback(() => setIsExportOpen(false), [setIsExportOpen]);
 
-  const [ruleName] = useSetting("ruleName", "my-anim");
-
   const copyNow = useCallback(() => {
-    const note = copyToClipboard(layers, ruleName);
+    const note = copyToClipboard(layers, format, ruleName);
     sendNote(note);
-  }, [layers, ruleName, sendNote]);
+  }, [layers, format, ruleName, sendNote]);
 
   const exportDialogId = useId();
   const isExporting = getIsExportOpen();

@@ -1,3 +1,4 @@
+import { Format } from "@export/output";
 import { getOrInit, unreachable, Callback } from "@util";
 import { useCallback, useSyncExternalStore } from "react";
 
@@ -24,7 +25,7 @@ interface Settings {
   previewSpeed: Speed;
 
   ruleName: string;
-  format: "css" | "js";
+  format: Format;
   maxY: number;
 }
 

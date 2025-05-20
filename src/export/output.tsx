@@ -1,9 +1,11 @@
+import Check from "@images/check.svg?react";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Layers, Unit } from "@timeline/Layers";
 import { Point } from "@timeline/point";
-import { round2dp } from "@util";
+import { round2dp, unreachable } from "@util";
 import { ColorName, Colors } from "@util/Colors";
-import Check from "@images/check.svg?react";
+
+export type Format = "js" | "css";
 
 /**
  * Details about a CSS property that can be used on its own, but usually needs to be combined with a pair prop in a
@@ -86,6 +88,36 @@ interface TimeSlice {
 }
 
 /**
+ * A format agnostic intermediate format for keyframe output. It's the offset and all the name-value rule pairs for that
+ * time. The values might be paired values, like for translate-x and y as a single translate value.
+ */
+interface KeyframeEntry {
+  offset: number;
+  rules: EntryRule[];
+}
+
+/** A single CSS property rule in a keyframe entry. */
+interface EntryRule {
+  /** The color to show this property in in the preview. */
+  color: string;
+
+  /**
+   * The name of the property. This can be a combined pair property like "translate" if both translate-x and y were
+   * used.
+   */
+  name: string;
+
+  /**
+   * This CSS value of the property at this offset. This was supposed to be format agnostic, but JavaScript requires
+   * non-numeric values to be wrapped in quotes to be a string. That would have been better to already handle here, but
+   * that's not how it is currently so the JavaScript outout need to check if this value needs quotes or not.
+   * (Technically all JavaScript values can be strings, but it's cleaner in the preview is we can avoid them
+   * sometimes.)
+   */
+  value: string;
+}
+
+/**
  * CSS--or any text--with newlines in it. Each line will be indented by 2 spaces.
  *
  * @param css
@@ -103,12 +135,15 @@ function indent(css: string) {
  * @returns A message about the success that should be shown in a notification. This function doesn't do that for you
  *   since sometime we want to animate a dialog closed first.
  */
-export function copyToClipboard(layers: Layers, ruleName: string) {
-  navigator.clipboard.writeText(generateCssAtRule(genCssKeyframeList(layers), ruleName));
+export function copyToClipboard(layers: Layers, format: Format, ruleName: string) {
+  const keyframeText = genKeyframeText(layers, format);
+  navigator.clipboard.writeText(generateCssAtRule(keyframeText, format, ruleName));
+
+  const message = format === "js" ? "Copied JavaScript" : ruleName ? `Copied "${ruleName}" CSS` : "Copied CSS";
 
   return (
     <span className="flex items-center gap-2">
-      <Check /> {ruleName ? `Copied "${ruleName}"` : "Copied keyframes"}
+      <Check /> {message}
     </span>
   );
 }
@@ -120,12 +155,12 @@ export function copyToClipboard(layers: Layers, ruleName: string) {
  * @param ruleName Optional name of the keyframes at-rule. The user might leave this blank.
  * @returns Keyframe at-rule or the same keyframe list if no name was given.
  */
-export function generateCssAtRule(keyframes: string | Layers, ruleName?: string): string {
+export function generateCssAtRule(keyframes: string | Layers, format: Format, ruleName?: string): string {
   if (typeof keyframes !== "string") {
-    keyframes = genCssKeyframeList(keyframes);
+    keyframes = genKeyframeText(keyframes, format);
   }
 
-  if (!ruleName || ruleName.trim().length === 0) {
+  if (!ruleName || ruleName.trim().length === 0 || format === "js") {
     return keyframes;
   } else {
     return `@keyframes ${normalizeAtRuleName(ruleName)} {\n${indent(keyframes)}\n}`;
@@ -137,16 +172,107 @@ export function generateCssAtRule(keyframes: string | Layers, ruleName?: string)
  * all samples. If multiple layers have samples at the same time, they are merged into a single entry. Entries that are
  * missing a CSS prop are interpolated by the browser automatically.
  */
-export function genCssKeyframeList(layers: Layers, asHtml?: boolean): string {
-  const timeSlices = createTimeSlices(layers);
+export function genKeyframeText(layers: Layers, format: Format, asHtml?: boolean): string {
+  const entries = genKeyframeEntries(layers);
 
+  switch (format) {
+    case "css":
+      return genCss(entries, asHtml);
+
+    case "js":
+      return genJavaScript(entries, asHtml);
+
+    default:
+      throw unreachable(format);
+  }
+}
+
+function genCss(entries: KeyframeEntry[], asHtml?: boolean): string {
   // Collect all keyframe text in an array of lines we'll join later
   const parts: string[] = [];
 
-  for (const x of timeSlices.keys()) {
+  for (const entry of entries) {
     // Start keyframe at this percent
+    parts.push(`${entry.offset}% {`);
+
+    for (const r of entry.rules) {
+      if (asHtml) {
+        parts.push(`  <span style="color: ${r.color}">${r.name}: ${r.value};</span>`);
+      } else {
+        parts.push(`  ${r.name}: ${r.value};`);
+      }
+    }
+
+    parts.push("}");
+  }
+
+  return parts.join("\n");
+}
+
+function asJsOffset(num: number) {
+  switch (num) {
+    case 0:
+      return "0";
+
+    case 100:
+      return "1";
+
+    default:
+      return String(round2dp(num / 100));
+  }
+}
+
+/**
+ * Takes value string for the property and essentially adds quote marks around it if needed. If the value represents a
+ * number then it can be used as-is as a JavaScript object literal values. If not, we need to quote it and treat it like
+ * a string.
+ *
+ * Technically we could wrap all values in quotes, but I assume it's slightly faster to have the output already be
+ * numbers when possible at the expense of doing it now. An mainly, it looks cleaner to human eyes.
+ *
+ * @param value A value for the CSS property. It might be a number (as a string) or something with units or whitespace
+ *   in it.
+ * @returns A string that can be used as a JavaScript object literal value.
+ */
+export function asJsValue(value: string) {
+  const isNumeric = !isNaN(value as unknown as number) && value.trim() !== "";
+  return isNumeric ? value : `"${value}"`;
+}
+
+function genJavaScript(entries: KeyframeEntry[], asHtml?: boolean): string {
+  // Collect all keyframe text in an array of lines we'll join later
+  const chunks: string[] = [];
+
+  for (const entry of entries) {
+    const chunk: string[] = [`  {`];
+
+    const lines: string[] = [];
+    lines.push(`    offset: ${asJsOffset(entry.offset)}`);
+
+    for (const r of entry.rules) {
+      if (asHtml) {
+        lines.push(`    <span style="color: ${r.color}">${r.name}: ${asJsValue(r.value)}</span>`);
+      } else {
+        lines.push(`    ${r.name}: ${asJsValue(r.value)}`);
+      }
+    }
+
+    chunk.push(lines.join(",\n"));
+    chunk.push("  }");
+    chunks.push(chunk.join("\n"));
+  }
+
+  return "[\n" + chunks.join(",\n") + "\n]";
+}
+
+function genKeyframeEntries(layers: Layers): KeyframeEntry[] {
+  const timeSlices = createTimeSlices(layers);
+
+  const entries: KeyframeEntry[] = [];
+
+  for (const x of timeSlices.keys()) {
     const timePercent = round2dp(x);
-    parts.push(`${timePercent}% {`);
+    const rules: EntryRule[] = [];
 
     const slice = timeSlices.get(x)!;
 
@@ -161,32 +287,24 @@ export function genCssKeyframeList(layers: Layers, asHtml?: boolean): string {
         if (handledPairs.has(cssProp)) continue;
         const { shorthandProp, xProp, yProp } = pairInfo;
         handledPairs.add(xProp).add(yProp);
-
+        const color = Colors[pairInfo.color];
         const { xValue, xUnits: xPx, yValue, yUnits: yPx } = getXyForPair(slice, xProp, yProp);
-
-        if (asHtml) {
-          const color = Colors[pairInfo.color];
-          parts.push(`  <span style="color: ${color}">${shorthandProp}: ${xValue}${xPx} ${yValue}${yPx};</span>`);
-        } else {
-          parts.push(`  ${shorthandProp}: ${xValue}${xPx} ${yValue}${yPx};`);
-        }
+        rules.push({ name: shorthandProp, value: `${xValue}${xPx} ${yValue}${yPx}`, color });
       } else {
         const cssInfo = CssInfos[sample.cssProp];
         const fn = cssInfo.fn;
         const value = sample.isFlipped ? -sample.y : sample.y;
-        if (asHtml) {
-          const color = Colors[cssInfo.color];
-          parts.push(`  <span style="color: ${color}">${fn(value)}</span>`);
-        } else {
-          parts.push(`  ${fn(value)}`);
-        }
+        rules.push({ name: sample.cssProp, value: fn(value), color: cssInfo.color });
       }
     }
 
-    parts.push("}");
+    entries.push({
+      offset: timePercent,
+      rules,
+    });
   }
 
-  return parts.join("\n");
+  return entries;
 }
 
 /**
@@ -196,8 +314,8 @@ export function genCssKeyframeList(layers: Layers, asHtml?: boolean): string {
  * @param layers Layers to generate from.
  * @returns A full named `@keyframes` entry.
  */
-export function getCssKeyframeAnimation(name: string, layers: Layers) {
-  return `@keyframes ${name} {\n` + genCssKeyframeList(layers) + "}";
+export function getCssKeyframeAnimation(name: string, format: Format, layers: Layers) {
+  return `@keyframes ${name} {\n` + genKeyframeText(layers, format) + "}";
 }
 
 function getXyForPair(slice: TimeSlice, xProp: CssProp, yProp: CssProp) {

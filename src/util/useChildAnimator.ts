@@ -42,7 +42,7 @@ export async function wipeInHeight(node: HTMLElement) {
         duration: 200,
         easing: "ease-in-out",
       }
-    );
+    ).finished;
   } finally {
     node.style.overflow = oldOverflow;
   }

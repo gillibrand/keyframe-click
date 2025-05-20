@@ -7,7 +7,7 @@ import { useChildAnimator, wipeInHeight, wipeOutHeight } from "@util/useChildAni
 import { useCallback, useId, useMemo, useRef } from "react";
 import { Dialog, DialogApi, DialogBody, DialogFooter } from "./Dialog";
 import "./ExportDialog.css";
-import { copyToClipboard, genCssKeyframeList, generateCssAtRule, normalizeAtRuleName, normalizeFormat } from "./output";
+import { copyToClipboard, genKeyframeText, generateCssAtRule, normalizeAtRuleName, normalizeFormat } from "./output";
 
 interface Props {
   open: boolean;
@@ -23,8 +23,11 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
   const [ruleName, setRuleName] = useSetting("ruleName", "my-animation");
   const [format, setFormat] = useSetting("format", "css");
 
-  const keyframesHtml = useMemo(() => genCssKeyframeList(layers, true), [layers]);
-  const keyframesAtRuleHtml = useMemo(() => generateCssAtRule(keyframesHtml, ruleName), [ruleName, keyframesHtml]);
+  const keyframeText = useMemo(() => genKeyframeText(layers, format, true), [layers, format]);
+  const keyframesAtRuleHtml = useMemo(
+    () => generateCssAtRule(keyframeText, format, ruleName),
+    [ruleName, format, keyframeText]
+  );
 
   function handleCancel() {
     dialogApi.current?.animateClose();
@@ -47,10 +50,10 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
   const { sendNote } = useNoteApi();
 
   const handleSubmit = useCallback(async () => {
-    const note = copyToClipboard(layers, ruleName);
+    const note = copyToClipboard(layers, format, ruleName);
     await dialogApi.current?.animateClose();
     sendNote(note);
-  }, [layers, ruleName, dialogApi, sendNote]);
+  }, [layers, format, ruleName, dialogApi, sendNote]);
 
   const { parentRef } = useChildAnimator<HTMLDivElement>("both", {
     animateIn: wipeInHeight,
