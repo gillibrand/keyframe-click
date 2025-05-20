@@ -103,7 +103,12 @@ const GlobalSettings = memo(function GlobalSettings({
         </div>
       </label>
 
-      <CheckedInput label="Flip values" checked={isFlipped} onChange={(e) => onChangeIsFlipped(e.target.checked)} />
+      <CheckedInput
+        type="checkbox"
+        label="Flip values"
+        checked={isFlipped}
+        onChange={(e) => onChangeIsFlipped(e.target.checked)}
+      />
     </>
   );
 });
