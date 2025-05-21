@@ -11,11 +11,33 @@
   }
 }
 
-.Preview__content {
-  aspect-ratio: 1;
-  /* width: 5rem; */
+.Preview__frame {
   position: relative;
-  border: dashed 1px gray;
+  border: dashed 1px #ddd;
+}
+
+.Preview__graphic {
+  &.is-animate {
+    animation: var(--duration, 1000ms) linear preview-anim1 forwards var(--repeat, 1);
+  }
+}
+
+.Preview__progressBar {
+  position: absolute;
+  bottom: 0;
+  inset: 0;
+}
+
+.Preview__astro {
+  width: 66px;
+  height: 106px;
+  image-rendering: pixelated;
+}
+
+.Preview__heart {
+  width: 99px;
+  height: 90px;
+  image-rendering: pixelated;
 }
 
 .Preview__ball {
@@ -35,23 +57,4 @@
     top: 1rem;
     left: 1rem;
   }
-}
-
-.Preview__ball,
-.Preview__astro {
-  &.is-animate {
-    animation: var(--duration, 1000ms) linear preview-anim1 forwards var(--repeat, 1);
-  }
-}
-
-.Preview__astro {
-  background-image: url("@images/astronaut.png");
-  width: 99px;
-  height: 159px;
-}
-
-.Preview__progressBar {
-  position: absolute;
-  bottom: 0;
-  inset: 0;
 }

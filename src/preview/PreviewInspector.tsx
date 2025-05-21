@@ -1,12 +1,13 @@
-import { Duration, TimeUnit } from "@app/useSettings";
+import { Duration, TimeUnit, useSetting } from "@app/useSettings";
 import { CheckedInput } from "@components/Checked/Checked";
+import { Segmented, SegmentedButton } from "@components/Segmented";
 import { Select } from "@components/Select";
 import Play from "@images/play.svg?react";
 import Stop from "@images/stop.svg?react";
 import "@style/inspector.css";
-import { Segmented, SegmentedButton } from "@components/Segmented";
+import { memo, useId } from "react";
+import { Graphic } from "./previewTypes";
 import { Speed } from "./usePreview";
-import { useId } from "react";
 
 interface Props {
   duration: Duration;
@@ -23,7 +24,7 @@ interface Props {
   onChangeSpeed: (speed: Speed) => void;
 }
 
-export function PreviewInspector({
+export const PreviewInspector = memo(function PreviewInspector({
   isPlaying,
   onClickPlay,
   onClickStop,
@@ -50,6 +51,8 @@ export function PreviewInspector({
       unit: unit as TimeUnit,
     });
   }
+
+  const [graphic, setGraphic] = useSetting("previewGraphic", "astro");
 
   const speedId = useId();
 
@@ -79,6 +82,15 @@ export function PreviewInspector({
       </div>
 
       <hr />
+
+      <label className="stacked-label">
+        <span>Image</span>
+        <Select value={graphic} onChange={(e) => setGraphic(e.target.value as Graphic)}>
+          <option value="astro">Astronaut</option>
+          <option value="ball">Ball</option>
+          <option value="heart">Heart</option>
+        </Select>
+      </label>
 
       <label className="stacked-label">
         <span>Duration</span>
@@ -117,4 +129,4 @@ export function PreviewInspector({
       </div>
     </aside>
   );
-}
+});

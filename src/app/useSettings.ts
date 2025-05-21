@@ -1,5 +1,6 @@
 import { Format } from "@export/output";
-import { getOrInit, unreachable, Callback } from "@util";
+import { AllGraphics, Graphic } from "@preview/previewTypes";
+import { Callback, getOrInit, unreachable } from "@util";
 import { useCallback, useSyncExternalStore } from "react";
 
 const TimeUnits = ["ms", "s"] as const;
@@ -23,6 +24,7 @@ interface Settings {
   previewDurationTime: number;
   previewDurationUnit: TimeUnit;
   previewSpeed: Speed;
+  previewGraphic: Graphic;
 
   ruleName: string;
   format: Format;
@@ -64,6 +66,9 @@ function validate<K extends SettingName>(name: K, value: Settings[K]) {
 
     case "format":
       return value === "css" || value === "js";
+
+    case "previewGraphic":
+      return AllGraphics.includes(value as Graphic);
 
     default: {
       // XXX: this should never happen unless we change setting names. This this will throw cause
