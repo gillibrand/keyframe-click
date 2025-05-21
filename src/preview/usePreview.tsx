@@ -4,6 +4,8 @@ import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 
 import "./Preview.css";
 import { ProgressBar } from "./ProgressBar";
 
+import astronautSrc from "@images/astronaut.png";
+
 export type Speed = 1 | 0.5 | 0.25 | 0.1;
 
 interface UsePreview {
@@ -35,7 +37,7 @@ interface PreviousState {
 
 export function usePreview({ keyframeText }: Props): UsePreview {
   const ref = useRef<HTMLDivElement>(null);
-  const ballRef = useRef<HTMLDivElement>(null);
+  const imageReg = useRef<HTMLDivElement>(null);
 
   const [isRepeat, setIsRepeatRaw] = useState(false);
   const [isAutoPlay, setIsAutoPlay] = useSetting("isPreviewAutoPlay", true);
@@ -74,12 +76,12 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   const playSoonCancellerRef = useRef(nullFn);
 
   const playPreview = useCallback(function playAnimation() {
-    if (!ballRef.current || !ref.current) return;
+    if (!imageReg.current || !ref.current) return;
 
     // Must toggle animate class off and on to ensure it runs. Just changing the keyframes is not enough
-    ballRef.current.classList.remove("is-animate");
-    void ballRef.current.offsetHeight;
-    ballRef.current.classList.add("is-animate");
+    imageReg.current.classList.remove("is-animate");
+    void imageReg.current.offsetHeight;
+    imageReg.current.classList.add("is-animate");
     setIterationCount((prev) => prev + 1);
   }, []);
 
@@ -87,7 +89,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     playSoonCancellerRef?.current();
     setIsPlaying(false);
 
-    if (ballRef.current) ballRef.current.classList.remove("is-animate");
+    if (imageReg.current) imageReg.current.classList.remove("is-animate");
   }, []);
 
   const setIsRepeat = useCallback(
@@ -224,7 +226,10 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     >
       <style>{namedKeyframes}</style>
       <div className="Preview__content">
-        <div className="Preview__ball" ref={ballRef}></div>
+        <div className="Preview__astro" ref={imageReg}>
+          <img src={astronautSrc} />
+        </div>
+        {/* <div className="Preview__ball" ref={imageReg}></div> */}
       </div>
 
       <ProgressBar
