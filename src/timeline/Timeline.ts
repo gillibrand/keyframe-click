@@ -474,7 +474,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     }
 
     const range = getYRange();
-    const tick = range >= 1400 ? 50 : range >= 900 ? 25 : range >= 80 ? 10 : 1;
+    const tick = range >= 1400 ? 100 : range >= 900 ? 100 : range >= 80 ? 10 : 1;
     const minY100 = Math.ceil(getMinY() / tick) * tick;
 
     // horizontal lines
