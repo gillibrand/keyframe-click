@@ -99,7 +99,7 @@ export function loadSavedLayers(activeLayerId: string, onChange: () => void) {
  *   Otherwise, just the same as teh given unit.
  */
 function normalizeUnits(name: CssProp, units: Unit) {
-  return CssInfos[name].supportsPx ? units : "%";
+  return units && CssInfos[name].supportsPx ? units : "%";
 }
 /**
  * Holds all data for the different layers of the timeline. Each layer is a separate CSS property with its own dots.
