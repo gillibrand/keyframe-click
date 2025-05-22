@@ -17,6 +17,10 @@
 }
 
 .Preview__graphic {
+  img {
+    display: block;
+  }
+
   &.is-animate {
     animation: var(--duration, 1000ms) linear preview-anim1 forwards var(--repeat, 1);
   }
