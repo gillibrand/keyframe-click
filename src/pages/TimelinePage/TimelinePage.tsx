@@ -29,7 +29,7 @@ export function TimelinePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [layersDidChange, forceLayerChange] = useForceRender();
-  const [savedActiveLayerId, setSavedActiveLayerId] = useSetting("activeLayerId", "0");
+  const [savedActiveLayerId, setSavedActiveLayerId] = useSetting("activeLayerId", "");
 
   // `layers` is not real state since it's never set again. This is just an easy way to init it once
   // on mount with the saved active layer

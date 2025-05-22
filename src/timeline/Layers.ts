@@ -87,7 +87,6 @@ function createDefaultDots(): UserDot[] {
 
 export function loadSavedLayers(activeLayerId: string, onChange: () => void) {
   const layers = new Layers(loadSavedRealLayers(), onChange);
-  // todo
   layers.setActiveLayer(activeLayerId);
   return layers;
 }
@@ -191,9 +190,20 @@ export class Layers {
    * @returns The new active layer (whether is changed or not).
    */
   setActiveLayer(id: string) {
+    const wasSet = id !== "";
+
+    if (!id) {
+      // Default to the first layer if no ID is given on first load.
+      if (this.layers.length > 0) {
+        id = this.layers[0].id;
+      } else {
+        console.warn("No layers to set active layer to.");
+      }
+    }
+
     this.activeId = id;
     this.purgeActiveSamples();
-    this.onChange();
+    if (wasSet) this.onChange();
     return this.getActiveLayer();
   }
 
