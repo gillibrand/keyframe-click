@@ -137,6 +137,10 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       }
 
       try {
+        // Don't auto play on mount. This must be in the try block to now save the keyframe text and
+        // play auto next time
+        if (!prev.keyframeText) return;
+
         // if we're repeating anyway, we can ignore this.
         if (isRepeat) return;
 
