@@ -29,8 +29,8 @@
 }
 
 .Preview__astro {
-  width: 66px;
-  height: 106px;
+  width: calc(27px * 3);
+  height: calc(47px * 3);
   image-rendering: pixelated;
 }
 

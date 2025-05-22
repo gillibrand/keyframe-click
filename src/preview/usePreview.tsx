@@ -1,5 +1,5 @@
 import { Duration, TimeUnit, useSetting } from "@app/useSettings";
-import astroSrc from "@images/astronaut-small.png";
+import astroSrc from "@images/astro.png";
 import heartSrc from "@images/heart.png";
 import { debounce, nullFn, unreachable } from "@util";
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
