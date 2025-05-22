@@ -29,9 +29,9 @@ const SaveStorageKey = "kc.layers";
 
 function createDefaultLayer(): RealLayer {
   return {
-    cssProp: "translateY",
+    cssProp: "translateX",
     dots: createDefaultDots(),
-    isFlipped: true,
+    isFlipped: false,
     sampleCount: 0,
     samples: null,
     id: newId(),
