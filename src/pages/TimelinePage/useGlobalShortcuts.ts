@@ -34,12 +34,14 @@ export function useGlobalShortcuts({ layers, zoomIn, zoomOut, copyNow }: Props):
           zoomOut();
           break;
 
-        case "c":
-          if ((isMac ? e.metaKey : e.ctrlKey) && copyNow) {
+        case "c": {
+          const isMacCopy = copyNow && isMac && e.key === "c" && e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey;
+          const isOtherCopy = copyNow && !isMac && e.key === "c" && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
+          if (isMacCopy || isOtherCopy) {
             copyNow();
           }
           break;
-
+        }
         default:
           break;
       }
