@@ -54,12 +54,11 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     [setDurationUnit, setDurationTime]
   );
 
-  const duration = useMemo(
-    () =>
-      ({
-        time: durationTime,
-        unit: durationUnit,
-      }) as Duration,
+  const duration: Duration = useMemo(
+    () => ({
+      time: durationTime,
+      unit: durationUnit,
+    }),
     [durationUnit, durationTime]
   );
 
@@ -124,22 +123,24 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   useEffect(
     function playAutomatically() {
       const prev = previousState.current;
-      // Must always store the last keyframe even if off. Otherwise, when setting repeat to false we
-      // will come in here, thinks it's a changed and fire the animation an extra time since we
-      // won't know if it's a response to a change or not.
-      if (
+
+      const sameAsLastTime =
         keyframeText === prev.keyframeText &&
         duration.time === prev.durationTime &&
         duration.unit === prev.durationUnit &&
-        speed === prev.speed
-      ) {
+        speed === prev.speed;
+      // Must always store the last keyframe even if off. Otherwise, when setting repeat to false we
+      // will come in here, thinks it's a changed and fire the animation an extra time since we
+      // won't know if it's a response to a change or not.
+      if (sameAsLastTime) {
         return;
       }
 
       try {
         // Don't auto play on mount. This must be in the try block to now save the keyframe text and
         // play auto next time
-        if (!prev.keyframeText) return;
+        const isFirstRender = !prev.keyframeText;
+        if (isFirstRender) return;
 
         // if we're repeating anyway, we can ignore this.
         if (isRepeat) return;
@@ -200,14 +201,10 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     []
   );
 
-  const cssVariables = useMemo(
-    () =>
-      ({
-        "--repeat": isRepeat ? "infinite" : "1",
-        "--duration": `${durationMs / speed}ms`,
-      }) as React.CSSProperties,
-    [isRepeat, durationMs, speed]
-  );
+  const cssVariables = {
+    "--repeat": isRepeat ? "infinite" : "1",
+    "--duration": `${durationMs / speed}ms`,
+  } as React.CSSProperties;
 
   const namedKeyframes = useMemo(() => {
     void keyframeText;
