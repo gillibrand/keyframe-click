@@ -20,7 +20,7 @@ interface DialogProps extends PropsWithChildren {
    */
   near?: HTMLElement;
 
-  ref?: React.RefObject<DialogApi>;
+  ref?: React.RefObject<DialogApi | null>;
 }
 
 const AnimOptions = {
@@ -183,16 +183,11 @@ export const Dialog = function Dialog({
 
 interface DialogBodyProps extends PropsWithChildren {
   className?: string;
+  ref?: React.RefObject<HTMLDivElement | null>;
 }
 
 /** A body element to use in a dialog. */
-export const DialogBody = function DialogBody({
-  ref,
-  children,
-  className,
-}: DialogBodyProps & {
-  ref: React.RefObject<HTMLDivElement>;
-}) {
+export const DialogBody = function DialogBody({ ref, children, className }: DialogBodyProps) {
   return (
     <div ref={ref} className={cx("mx-4 flex-col min-h-px stack", className)}>
       {children}

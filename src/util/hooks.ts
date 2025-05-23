@@ -32,7 +32,7 @@ export function useStable(value: ReactNode) {
  * @returns A defined ref with the initial value the first time, or whatever value has been set.
  */
 export function useInitedRef<T>(init: () => T) {
-  const ref = useRef<T>();
+  const ref = useRef<T>(undefined);
 
   if (ref.current === undefined) {
     ref.current = init();
@@ -82,7 +82,7 @@ export function useForceRender() {
  * @returns A unique identifier as a string.
  */
 export function useUuid() {
-  const uuid = useRef<string>();
+  const uuid = useRef<string>(undefined);
   if (!uuid.current) {
     uuid.current = crypto.randomUUID();
   }

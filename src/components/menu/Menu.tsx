@@ -5,7 +5,7 @@ import { LabelMenuItem, MenuItem, ToggleMenuItem } from "./MenuItem";
 interface MenuProps {
   id: string;
   hoverIndex?: number;
-  ref?: React.RefObject<HTMLUListElement>;
+  ref?: React.RefObject<HTMLUListElement | null>;
 }
 
 export const Menu = memo(function Menu({ ref, id }: MenuProps) {
