@@ -1,7 +1,7 @@
 import Tail from "@images/tail.svg?react";
 import { Callback } from "@util";
 import { cx } from "@util/cx";
-import { forwardRef, PropsWithChildren, useCallback, useId, useImperativeHandle, useLayoutEffect, useRef } from "react";
+import { PropsWithChildren, useCallback, useId, useImperativeHandle, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import "./Dialog.css";
 
@@ -19,6 +19,8 @@ interface DialogProps extends PropsWithChildren {
    * for now.
    */
   near?: HTMLElement;
+
+  ref?: React.RefObject<DialogApi>;
 }
 
 const AnimOptions = {
@@ -40,10 +42,17 @@ export interface DialogApi {
  * A generic dialog component. Pass children to show. Use `DialogBody` and `DialogFooter` for consistent styling. Open
  * like a popover with a tail near the opening button.
  */
-export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
-  { open, onClose, label, hideLabel, children, onSubmit, id, near },
-  apiRef
-) {
+export const Dialog = function Dialog({
+  ref: apiRef,
+  open,
+  onClose,
+  label,
+  hideLabel,
+  children,
+  onSubmit,
+  id,
+  near,
+}: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   /** Animates the dialog out and closes it. */
@@ -116,7 +125,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     animateClose();
   }
 
-  const mouseDownTarget = useRef<HTMLElement>();
+  const mouseDownTarget = useRef<HTMLElement>(null);
 
   function handleMouseDown(e: React.MouseEvent) {
     mouseDownTarget.current = e.target as HTMLElement;
@@ -170,23 +179,26 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     </dialog>,
     document.body
   );
-});
+};
 
 interface DialogBodyProps extends PropsWithChildren {
   className?: string;
 }
 
 /** A body element to use in a dialog. */
-export const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(function DialogBody(
-  { children, className },
-  ref
-) {
+export const DialogBody = function DialogBody({
+  ref,
+  children,
+  className,
+}: DialogBodyProps & {
+  ref: React.RefObject<HTMLDivElement>;
+}) {
   return (
     <div ref={ref} className={cx("mx-4 flex-col min-h-px stack", className)}>
       {children}
     </div>
   );
-});
+};
 
 /** A footer component to use in a dialog. */
 export function DialogFooter({ children }: PropsWithChildren) {
