@@ -50,6 +50,10 @@
     color: white;
     background-color: var(--c-neo-blue);
 
+    &.is-demo {
+      background-color: var(--c-neo-purple);
+    }
+
     &.is-secondary {
       color: var(--c-neo-black);
       background-color: white;

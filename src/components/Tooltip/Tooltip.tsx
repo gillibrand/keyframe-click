@@ -1,16 +1,17 @@
 import { cx } from "@util/cx";
-import { PropsWithChildren, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { CSSProperties, PropsWithChildren, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./Tooltip.css";
 
 interface Props extends PropsWithChildren {
   target: HTMLElement | null;
+  delayMs?: number;
 }
 
 const HeightMargin = 2;
 const FromEdge = 18;
 
-export function Tooltip({ children, target }: Props) {
+export function Tooltip({ children, target, delayMs }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   void target;
 
@@ -48,12 +49,16 @@ export function Tooltip({ children, target }: Props) {
     };
   }, [target, children]);
 
-  useEffect(() => {}, []);
-
+  const style =
+    delayMs !== undefined
+      ? ({
+          "--tooltip-delay": delayMs,
+        } as CSSProperties)
+      : undefined;
   return createPortal(
     // XXX: Tooltip are tricky with a11y. Just hide them from now so they aren't announced. We're
     // using other aria-labelling for now. Should probably reconsider this later.
-    <div className={cx("Tooltip", { "is-visible": isVisible })} ref={tooltipRef} aria-hidden="true">
+    <div className={cx("Tooltip", { "is-visible": isVisible })} ref={tooltipRef} aria-hidden="true" style={style}>
       {children}
     </div>,
     document.body

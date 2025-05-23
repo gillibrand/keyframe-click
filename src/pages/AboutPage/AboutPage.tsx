@@ -3,7 +3,7 @@ import CreatedBy from "./CreatedBy.mdx";
 
 export function AboutPage() {
   return (
-    <main className="large-page grow flex-col">
+    <main className="grow flex-col">
       <div className="wrapper-small grow flex-col">
         <div className="grow flex-col tile mb-stack">
           <div className="grow">
