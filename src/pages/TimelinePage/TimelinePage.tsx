@@ -1,3 +1,4 @@
+import { useSetting } from "@app/useSettings";
 import { PreviewInspector } from "@preview/PreviewInspector";
 import { usePreview } from "@preview/usePreview";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
@@ -6,7 +7,6 @@ import { createTimeline, Timeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isMac, isSpaceBarHandler, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { useSetting } from "@app/useSettings";
 import "./TimelinePage.css";
 
 import { useNoteApi } from "@components/note";
@@ -19,10 +19,11 @@ import Copy from "@images/copy.svg?react";
 import Down from "@images/down.svg?react";
 import ZoomIn from "@images/zoom-in.svg?react";
 import ZoomOut from "@images/zoom-out.svg?react";
-import { loadSavedLayers, Unit } from "@timeline/Layers";
+import { GlobalLayers, Unit } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
 import { useGlobalShortcuts } from "./useGlobalShortcuts";
+import { useRouter } from "@router/useRouter";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -34,10 +35,12 @@ export function TimelinePage() {
   // `layers` is not real state since it's never set again. This is just an easy way to init it once
   // on mount with the saved active layer
   const [layers] = useState(() => {
-    return loadSavedLayers(savedActiveLayerId, function onChange() {
+    GlobalLayers.setOnChange(function onChange() {
       forceLayerChange();
       timelineRef.current?.draw();
     });
+    GlobalLayers.setActiveLayer(savedActiveLayerId);
+    return GlobalLayers;
   });
 
   // Transient state
@@ -238,6 +241,16 @@ export function TimelinePage() {
   } = usePreview({
     keyframeText: cssKeyframeText,
   });
+
+  const {
+    args: { playDemo },
+  } = useRouter();
+
+  useEffect(() => {
+    if (playDemo) {
+      playPreview();
+    }
+  }, [playDemo, playPreview]);
 
   const [getIsExportOpen, setIsExportOpen] = useLiveState(false);
 

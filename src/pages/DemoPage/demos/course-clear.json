@@ -1,0 +1,73 @@
+[
+  {
+    "dots": [
+      {
+        "space": "user",
+        "x": 0,
+        "y": -100,
+        "h1": { "x": -10, "y": -100 },
+        "h2": { "x": 10, "y": -100 },
+        "type": "square"
+      },
+      {
+        "type": "round",
+        "space": "user",
+        "x": 15,
+        "y": 24,
+        "h1": { "x": 6.07, "y": 24.36 },
+        "h2": { "x": 23.93, "y": 23.64 }
+      },
+      { "type": "square", "space": "user", "x": 25, "y": 0, "h1": { "x": 15, "y": 0 }, "h2": { "x": 35, "y": 0 } },
+      {
+        "type": "round",
+        "space": "user",
+        "x": 31,
+        "y": 10,
+        "h1": { "x": 25.07, "y": 9.94 },
+        "h2": { "x": 36.93, "y": 10.06 }
+      },
+      { "type": "square", "space": "user", "x": 40, "y": 0, "h1": { "x": 30, "y": 0 }, "h2": { "x": 50, "y": 0 } },
+      { "space": "user", "x": 100, "y": -1, "h1": { "x": 90, "y": -1 }, "h2": { "x": 110, "y": -1 }, "type": "round" }
+    ],
+    "cssProp": "translateY",
+    "isFlipped": true,
+    "sampleCount": 36,
+    "samples": null,
+    "id": "60519d3e-8a70-4d72-a439-225630ab3269",
+    "units": "px"
+  },
+  {
+    "dots": [
+      { "space": "user", "x": 0, "y": 0, "h1": { "x": -10, "y": 0 }, "h2": { "x": 10, "y": 0 }, "type": "square" },
+      { "space": "user", "x": 25, "y": 100, "h1": { "x": 15, "y": 100 }, "h2": { "x": 35, "y": 100 }, "type": "round" },
+      { "type": "round", "space": "user", "x": 75, "y": 100, "h1": { "x": 65, "y": 100 }, "h2": { "x": 85, "y": 100 } },
+      { "type": "square", "space": "user", "x": 100, "y": 0, "h1": { "x": 90, "y": 0 }, "h2": { "x": 110, "y": 0 } }
+    ],
+    "cssProp": "opacity",
+    "isFlipped": false,
+    "sampleCount": 13,
+    "samples": null,
+    "id": "5ac56d9d-39f3-4bb3-b925-85b2512ab2d0",
+    "units": "%"
+  },
+  {
+    "dots": [
+      { "space": "user", "x": 0, "y": 0, "h1": { "x": -10, "y": 0 }, "h2": { "x": 10, "y": 0 }, "type": "square" },
+      { "type": "round", "space": "user", "x": 77, "y": 0, "h1": { "x": 67, "y": 0 }, "h2": { "x": 87, "y": 0 } },
+      {
+        "space": "user",
+        "x": 100,
+        "y": 593,
+        "h1": { "x": 97.59, "y": 354.3 },
+        "h2": { "x": 102.41, "y": 831.7 },
+        "type": "round"
+      }
+    ],
+    "cssProp": "translateX",
+    "isFlipped": false,
+    "sampleCount": 22,
+    "samples": null,
+    "id": "629a97c1-4b1e-4dfd-a2c8-25c7914ae5a8",
+    "units": "px"
+  }
+]

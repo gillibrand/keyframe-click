@@ -1,9 +1,10 @@
 import Github from "@images/github-mark.svg?react";
 import { useRouter } from "@router/useRouter";
+import { stopEvent } from "@util";
 import "./Banner.css";
 
 export function Banner() {
-  const { route, setRoute, preloadRoute } = useRouter();
+  const { route, preloadRoute, gotoTimeline } = useRouter();
 
   /**
    * @param href The HREF path to return. This should be a #/path to the current router.
@@ -36,23 +37,20 @@ export function Banner() {
    *
    * @param e Link click event to cancel.
    */
-  function gotoTimeline(e: React.MouseEvent) {
-    e.preventDefault();
-    if (route === "/") return;
-
-    history.pushState({ hash: "#/" }, "", import.meta.env.BASE_URL);
-    setRoute("/");
+  function handleGotoTimeline(e: React.MouseEvent) {
+    stopEvent(e);
+    gotoTimeline();
   }
 
   return (
     <header className="py-4x Banner">
       <div className="wrapper flex gap-8 items-end">
-        <h1 className="Banner__title cursor-default" onClick={gotoTimeline}>
+        <h1 className="Banner__title cursor-default" onClick={handleGotoTimeline}>
           Keyframe Click
         </h1>
 
         <nav className="Banner__nav flex gap-4">
-          <a className="Banner__link" {...href("#/")} onClick={gotoTimeline}>
+          <a className="Banner__link" {...href("#/")} onClick={handleGotoTimeline}>
             Timeline
           </a>
           <a className="Banner__link" {...href("#/demos")}>

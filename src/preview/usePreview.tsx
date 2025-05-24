@@ -5,6 +5,7 @@ import { debounce, nullFn, unreachable } from "@util";
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
 import { ProgressBar } from "./ProgressBar";
+import { usePreviewApi } from "@app/usePreviewApi";
 
 export type Speed = 1 | 0.5 | 0.25 | 0.1;
 
@@ -38,7 +39,7 @@ interface PreviousState {
 export function usePreview({ keyframeText }: Props): UsePreview {
   const graphicRef = useRef<HTMLDivElement>(null);
 
-  const [isRepeat, setIsRepeatRaw] = useState(false);
+  const { isRepeat, ...previewApi } = usePreviewApi();
   const [isAutoPlay, setIsAutoPlay] = useSetting("isPreviewAutoPlay", true);
   const [durationUnit, setDurationUnit] = useSetting("previewDurationUnit", "ms");
   const [durationTime, setDurationTime] = useSetting("previewDurationTime", 1000);
@@ -97,7 +98,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const setIsRepeat = useCallback(
     function setIsRepeat(repeat: boolean) {
-      setIsRepeatRaw(repeat);
+      previewApi.setIsRepeat(repeat);
 
       if (repeat) {
         // Play when repeat is set to true as a convenience since they probably want this. When
@@ -105,7 +106,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
         playPreview();
       }
     },
-    [playPreview, setIsRepeatRaw]
+    [playPreview, previewApi]
   );
 
   const playPreviewSoon = useMemo(() => {

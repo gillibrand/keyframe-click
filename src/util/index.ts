@@ -39,7 +39,7 @@ export function debounce<Args extends unknown[]>(fn: (...args: Args) => void, de
   };
 }
 
-export function stopEvent(e: Event) {
+export function stopEvent(e: React.UIEvent | Event) {
   e.stopPropagation();
   e.preventDefault();
 }

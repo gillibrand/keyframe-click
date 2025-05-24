@@ -8,7 +8,7 @@ export type Unit = "px" | "%";
  * A single animatable property and it's complete state. A timeline is built of multiple property layers to produce the
  * final animation.
  */
-interface RealLayer {
+export interface RealLayer {
   id: string;
   dots: UserDot[];
 
@@ -85,12 +85,6 @@ function createDefaultDots(): UserDot[] {
   ];
 }
 
-export function loadSavedLayers(activeLayerId: string, onChange: () => void) {
-  const layers = new Layers(loadSavedRealLayers(), onChange);
-  layers.setActiveLayer(activeLayerId);
-  return layers;
-}
-
 /**
  * @param name CSS prop to check.
  * @param units The units we want to use with it--possibly saved with an old layer--but we need to check if it's
@@ -107,12 +101,32 @@ function normalizeUnits(name: CssProp, units: Unit) {
  */
 export class Layers {
   private activeId = "";
+  private onChange = () => {};
 
-  constructor(
-    private layers: RealLayer[],
-    private onChange: () => void
-  ) {
+  constructor(private layers: RealLayer[] = []) {
     console.assert(layers.length > 0);
+  }
+
+  /**
+   * Replaces the current layers with the given ones. This is used when loading a new animation for a demo. It is
+   * destructive.
+   *
+   * @param layers The new layers to replace the current ones with. This is used when loading a new set of layers from
+   *   the
+   */
+  replaceLayers(layers: RealLayer[]) {
+    this.layers = layers;
+    this.activeId = layers[0].id;
+    this.onChange();
+  }
+
+  /**
+   * Sets the on change callback. There is only one of these and only used by the timeline page.
+   *
+   * @param onChange Callback when any change occurs.
+   */
+  setOnChange(onChange: () => void) {
+    this.onChange = onChange;
   }
 
   save() {
@@ -409,3 +423,9 @@ function cacheSamples(layer: RealLayer) {
 
   return samples;
 }
+
+/**
+ * The singleton Layers objects. This is what the timeline will draw and what the demos page can change. Always init
+ * from last last save. For now we can only save one.
+ */
+export const GlobalLayers = new Layers(loadSavedRealLayers());

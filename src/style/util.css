@@ -29,7 +29,7 @@
 
 /** Basic layout util of stack the contents with consistent spacing. Note that a child can opt out
  * of this if it's mt-0, usually for animation purposes.*/
-.stack > * + *:not(.mt-0) {
+.stack > :is(* + *) {
   margin-block-start: 1.125rem;
 }
 
@@ -180,6 +180,10 @@
   margin-block-start: 2rem;
 }
 
+.mt-16 {
+  margin-block-start: 4rem;
+}
+
 .py-4 {
   padding-block: 1rem;
 }
@@ -199,6 +203,10 @@
 
 .mb-4 {
   margin-block-end: 1rem;
+}
+
+.mb-16 {
+  margin-block-end: 4rem;
 }
 
 .py-2 {

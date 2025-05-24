@@ -1,5 +1,9 @@
-import { ComponentType, createContext, Dispatch, lazy, SetStateAction, useContext } from "react";
+import { ComponentType, createContext, lazy, useContext } from "react";
 import { LazyComponentType } from "./RouterProvider";
+
+export interface SetRouteFn {
+  (route: string, args?: Record<string, unknown>): void;
+}
 
 export interface RouterContextType {
   /** Current route string. */
@@ -9,7 +13,15 @@ export interface RouterContextType {
    * Programmatically set the route. Normally this is handled by anchors that change the URL hash, but this can be
    * manually set too. This does NOT change the URL, just the React route and current page.
    */
-  setRoute: Dispatch<SetStateAction<string>>;
+  setRoute: SetRouteFn;
+
+  args: Record<string, unknown>;
+
+  /**
+   * Changes to the timeline page. This is a special case since the timeline page is the default page. This will change
+   * the URL to the base URL (without a hash) and set the route to the timeline page.
+   */
+  gotoTimeline: (args?: Record<string, unknown>) => void;
 
   /**
    * The current page for the current route. This is a component that can be rendered as the main page on the app
