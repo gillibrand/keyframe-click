@@ -1,3 +1,4 @@
+import { useTimelineStore } from "@app/TimelineStore";
 import { Duration, TimeUnit, useSetting } from "@app/useSettings";
 import astroSrc from "@images/astro.png";
 import heartSrc from "@images/heart.png";
@@ -5,7 +6,6 @@ import { debounce, nullFn, unreachable } from "@util";
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
 import { ProgressBar } from "./ProgressBar";
-import { usePreviewApi } from "@app/usePreviewApi";
 
 export type Speed = 1 | 0.5 | 0.25 | 0.1;
 
@@ -39,7 +39,9 @@ interface PreviousState {
 export function usePreview({ keyframeText }: Props): UsePreview {
   const graphicRef = useRef<HTMLDivElement>(null);
 
-  const { isRepeat, ...previewApi } = usePreviewApi();
+  const isRepeat = useTimelineStore((state) => state.isRepeat);
+  const setIsRepeat = useTimelineStore((state) => state.setIsRepeat);
+
   const [isAutoPlay, setIsAutoPlay] = useSetting("isPreviewAutoPlay", true);
   const [durationUnit, setDurationUnit] = useSetting("previewDurationUnit", "ms");
   const [durationTime, setDurationTime] = useSetting("previewDurationTime", 1000);
@@ -96,9 +98,9 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     if (graphicRef.current) graphicRef.current.classList.remove("is-animate");
   }, []);
 
-  const setIsRepeat = useCallback(
-    function setIsRepeat(repeat: boolean) {
-      previewApi.setIsRepeat(repeat);
+  const setIsRepeatAndPlay = useCallback(
+    function setIsRepeatAndPlay(repeat: boolean) {
+      setIsRepeat(repeat);
 
       if (repeat) {
         // Play when repeat is set to true as a convenience since they probably want this. When
@@ -106,7 +108,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
         playPreview();
       }
     },
-    [playPreview, previewApi]
+    [playPreview, setIsRepeat]
   );
 
   const playPreviewSoon = useMemo(() => {
@@ -274,7 +276,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
     duration,
     setDuration,
     isRepeat,
-    setIsRepeat,
+    setIsRepeat: setIsRepeatAndPlay,
     isAutoPlay,
     setIsAutoPlay,
     speed,

@@ -1,10 +1,9 @@
 import { HelpPanel } from "@components/HelpPanel";
+import { NoteList } from "@components/note";
 import { useRouter } from "@router/useRouter";
+import { isKeyboardHandler } from "@util";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { Banner } from "./Banner";
-import { isKeyboardHandler } from "@util";
-import { NoteList } from "@components/note";
-import { PreviewProvider } from "./PreviewProvider";
 
 export function App() {
   const { Page } = useRouter();
@@ -54,9 +53,7 @@ export function App() {
       <Banner />
       <NoteList />
       <Suspense fallback={"..."}>
-        <PreviewProvider>
-          <Page />
-        </PreviewProvider>
+        <Page />
       </Suspense>
       {isHelpRendered && <HelpPanel open={isHelpOpen} willClose={handleWillCloseHelp} didClose={handleDidCloseHelp} />}
     </div>
