@@ -47,7 +47,14 @@
         "h2": { "x": 10, "y": 100 },
         "type": "square"
       },
-      { "type": "round", "space": "user", "x": 75, "y": 100, "h1": { "x": 65, "y": 100 }, "h2": { "x": 85, "y": 100 } },
+      {
+        "type": "square",
+        "space": "user",
+        "x": 75,
+        "y": 100,
+        "h1": { "x": 65, "y": 100 },
+        "h2": { "x": 85, "y": 100 }
+      },
       { "space": "user", "x": 100, "y": 0, "h1": { "x": 90, "y": 0 }, "h2": { "x": 110, "y": 0 }, "type": "square" }
     ],
     "cssProp": "opacity",
