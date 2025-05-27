@@ -1,7 +1,16 @@
 import Tail from "@images/tail.svg?react";
 import { Callback } from "@util";
 import { cx } from "@util/cx";
-import { forwardRef, PropsWithChildren, useCallback, useId, useImperativeHandle, useLayoutEffect, useRef } from "react";
+import {
+  forwardRef,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import { createPortal } from "react-dom";
 import "./Dialog.css";
 
@@ -12,7 +21,7 @@ interface DialogProps extends PropsWithChildren {
   onClose?: Callback;
   /** @returns `true` to auto close the dialog. Any other value is ignore and the caller must close manually. */
   onSubmit?: () => unknown;
-  id: string;
+  id?: string;
 
   /**
    * The button that opened this dialog and it should be placed near. Assume the button is on the end side of the page
@@ -46,6 +55,11 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
 ) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  useEffect(() => {
+    document.body.classList.toggle("is-dialog-open", open);
+    return () => document.body.classList.remove("is-dialog-open");
+  }, [open]);
+
   /** Animates the dialog out and closes it. */
   const animateClose = useCallback(async () => {
     const dialog = dialogRef.current;
@@ -62,6 +76,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     ).finished;
 
     dialog.close();
+    // TODO: isn't this called onclose already?
     if (onClose) onClose();
   }, [onClose]);
 
@@ -151,14 +166,17 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="Dialog origin-top-right"
+      className={cx("Dialog", { "origin-top-right": near, "origin-top-center": !near })}
       onCancel={handleCancel}
       onClick={handleLightDismiss}
       onMouseDown={handleMouseDown}
       aria-labelledby={dialogLabelId}
       id={id}
+      style={{
+        margin: near ? 0 : undefined,
+      }}
     >
-      <Tail className="Dialog__tail" />
+      {near && <Tail className="Dialog__tail" />}
 
       <form action="dialog" className="[ flex flex-col ] stack" onSubmit={handleSubmit}>
         <header className={cx("px-4 pt-4", { "sr-only": hideLabel })}>

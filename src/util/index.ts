@@ -65,7 +65,7 @@ export function unreachable(value: never) {
   return new Error("unreachable value: " + value);
 }
 
-export type Callback = () => void;
+export type Callback = () => unknown;
 
 export function nullFn(): void {}
 

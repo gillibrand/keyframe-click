@@ -3,7 +3,6 @@
   --export-border-color: var(--c-neo-black);
 
   position: fixed;
-  margin: 0;
   border: solid 2px var(--export-border-color);
   border-radius: 1rem;
   padding: 0rem;
@@ -16,9 +15,9 @@
 
   &.is-open {
     box-shadow:
-      0.25rem 0.25rem 0 0 var(--c-neo-black),
+      4px 4px 0 0 var(--c-neo-black),
       0 0 0 1px white,
-      0.25rem 0.25rem 0 1px white;
+      4px 4px 0 1px white;
 
     &::backdrop {
       opacity: 1;
@@ -27,7 +26,7 @@
 
   &::backdrop {
     transition: opacity 150ms ease;
-    background: rgba(0 0 0 / 0.1);
+    background: rgba(0 0 0 / 0.15);
     opacity: 0;
   }
 
@@ -59,3 +58,7 @@
   border-end-start-radius: 1rem;
   border-end-end-radius: 1rem;
 }
+
+/* .DialogBody--message {
+  max-width: 50ch;
+} */

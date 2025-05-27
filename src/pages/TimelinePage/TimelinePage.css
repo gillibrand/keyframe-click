@@ -39,7 +39,7 @@
   margin-block-end: -20px;
 }
 
-#root .is-dialog-open :where(button, label, .RadioTab) {
+.is-dialog-open #root :where(button, label, .RadioTab, .DemoTile) {
   filter: grayscale(0.75);
 }
 

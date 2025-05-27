@@ -224,6 +224,9 @@
 .origin-top-right {
   transform-origin: top right;
 }
+.origin-top-center {
+  transform-origin: top center;
+}
 
 .min-h-px {
   min-height: 1px;
