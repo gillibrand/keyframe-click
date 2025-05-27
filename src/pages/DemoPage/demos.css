@@ -1,0 +1,35 @@
+.DemoTile {
+  display: block;
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  text-align: start;
+
+  font-size: var(--sz-body);
+  background-color: white;
+
+  border-radius: 1rem;
+
+  &:where(:hover, :focus-visible):not(:active) {
+    filter: brightness(1.1);
+
+    svg {
+      transition: translate 200ms ease-out;
+      translate: 4px 0;
+    }
+  }
+
+  &:active {
+    filter: brightness(0.95);
+  }
+
+  &:focus-visible {
+    outline: solid calc(var(--outline-width) + 0px) var(--outline-color);
+    outline-offset: var(--outline-offset);
+    box-shadow: 0 0 0 2px var(--c-neo-white);
+  }
+}
+
+.DemoTile__header {
+  border-block-end: solid var(--border-width) var(--border-color);
+}

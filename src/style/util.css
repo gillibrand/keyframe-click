@@ -156,6 +156,10 @@
   height: 1px;
 }
 
+.p-0 {
+  padding: 0;
+}
+
 .pt-4 {
   padding-block-start: 1rem;
 }
@@ -267,4 +271,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.bg-teal {
+  background-color: var(--c-neo-teal);
+}
+
+.bg-blue {
+  background-color: var(--c-neo-blue);
+}
+
+.color-white {
+  color: var(--c-neo-white);
+}
+
+.color-black {
+  color: var(--c-neo-black);
 }
