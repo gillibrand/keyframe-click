@@ -22,18 +22,35 @@ export function DemoTile({ name, className, children, demoName }: Props) {
   const { gotoTimeline } = useRouter();
   const [isConfirm, setIsConfirm] = useState(false);
 
-  async function gotoDemo() {
-    const json = await loadJsonDemo(demoName);
-    // console.info(">>>json2 ", json);
-    const saved = JSON.parse(json) as Saved;
-    GlobalLayers.replaceLayers(saved.layers);
+  async function loadDemo() {
+    const savedDemo = await loadJsonDemo(demoName);
+
+    // Convert both to json for easy compare. Should probably compare deeper.
+    // TODO: compare to all loaded demos
+    const currentLayersJson = GlobalLayers.asJson();
+    const demoLayersJson = JSON.stringify(savedDemo.layers);
+
+    const isSameLayers = currentLayersJson === demoLayersJson;
+
+    if (!isSameLayers) {
+      setIsConfirm(true);
+      return;
+    }
+
+    gotoDemo(savedDemo);
+  }
+
+  async function gotoDemo(demo?: Saved) {
+    if (!demo) demo = await loadJsonDemo(demoName);
+
+    GlobalLayers.replaceLayers(JSON.parse(JSON.stringify(demo.layers)));
     gotoTimeline({ playDemo: true });
   }
 
   return (
     <button
       className={cx("DemoTile tile p-0 overflow-hidden", className)}
-      onClick={() => setIsConfirm(true)}
+      onClick={loadDemo}
       aria-label={`Open demo: ${name}`}
     >
       <div className="flex bg-blue color-white p-4 DemoTile__header items-center justify-between">

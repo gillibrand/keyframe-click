@@ -15,18 +15,18 @@ export type DemoName = keyof typeof DemoPaths;
  * Cache of loaded demos just so we know if the current file is a demo or not. We don't need to cache this for
  * performance.
  */
-const JsonCache: Map<DemoName, string> = new Map();
+const JsonCache: Map<DemoName, Saved> = new Map();
 
 export async function loadJsonDemo(demo: DemoName) {
-  let json = JsonCache.get(demo);
-  if (json) return json;
+  let saved = JsonCache.get(demo);
+  if (saved) return saved;
 
   const path = DemoPaths[demo];
   const module = await modules[path]();
-  const saved = module.default as Saved;
+  saved = module.default as Saved;
 
-  json = JSON.stringify(saved);
+  //   json = JSON.stringify(saved);
 
-  JsonCache.set(demo, json);
-  return json;
+  JsonCache.set(demo, saved);
+  return saved;
 }

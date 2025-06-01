@@ -10,6 +10,10 @@
 
   border-radius: 1rem;
 
+  svg {
+    transition: translate 100ms ease-out;
+  }
+
   &:where(:hover, :focus-visible) {
     filter: brightness(1.1);
 
