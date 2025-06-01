@@ -1,8 +1,6 @@
 import "./demos.css";
 import { DemoTile } from "./DemoTile";
 
-import "./demoLoader";
-
 export function DemoPage() {
   return (
     <main>
@@ -11,11 +9,11 @@ export function DemoPage() {
         {/* <p className="color-black">Get inspired or started quickly.</p> */}
 
         <DemoTile name="Floating in space" demoName={"Floating"}>
-          <p>Slowly bob up and down in a loop.</p>
+          <p>Slowly bob up and down. Perfect in a loop to subtly draw attention.</p>
         </DemoTile>
 
-        <DemoTile name="Up then over" demoName={"CourseClear"}>
-          <p>Pull up an element into view briefly, then slide it away. For an attention </p>
+        <DemoTile name="Up and out" demoName={"CourseClear"}>
+          <p>Pull up an element into view briefly, then slide it away. For an attention grabbing success message.</p>
         </DemoTile>
 
         <DemoTile name="Black hole" demoName={"BlackHole"}>

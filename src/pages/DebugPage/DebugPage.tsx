@@ -12,7 +12,9 @@ export default function DebugPage() {
 
   return (
     <main>
-      <div className="wrapper-small ">
+      <div className="wrapper-small stack">
+        <h2>Debug page</h2>
+
         <button className="button" onClick={handleCopy}>
           Copy Data
         </button>
