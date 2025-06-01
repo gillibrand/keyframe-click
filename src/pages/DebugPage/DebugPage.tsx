@@ -6,9 +6,6 @@ export default function DebugPage() {
 
   function handleCopy() {
     const json = GlobalLayers.asJson();
-    const layers = JSON.parse(json);
-    console.info(">>> layers", layers);
-
     navigator.clipboard.writeText(json);
     sendNote("Copied file data");
   }
