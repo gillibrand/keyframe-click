@@ -8,11 +8,15 @@ export function DemoPage() {
         {/* <h2>Demos</h2> */}
         {/* <p className="color-black">Get inspired or started quickly.</p> */}
 
-        <DemoTile name="Floating in space" demoName={"Floating"}>
-          <p>Slowly bob up and down. Perfect in a loop to subtly draw attention.</p>
+        <DemoTile name="Bounce in" demoName={"Bounce"}>
+          <p>An element fades and and bounces to a stop.</p>
         </DemoTile>
 
-        <DemoTile name="Up and out" demoName={"CourseClear"}>
+        <DemoTile name="Floating in space" demoName={"Floating"}>
+          <p>Slowly bob up and down. Works well repeating over and over to subtly draw attention.</p>
+        </DemoTile>
+
+        <DemoTile name="Spring in, slide out" demoName={"CourseClear"}>
           <p>Pull up an element into view briefly, then slide it away. For an attention grabbing success message.</p>
         </DemoTile>
 

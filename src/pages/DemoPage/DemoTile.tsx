@@ -81,7 +81,7 @@ export function DemoTile({ name, className, children, demoName }: Props) {
       {isConfirm && (
         <Confirm
           label="Open demo?"
-          okLabel="Replace timeline"
+          okLabel="Replace timeline with demo"
           open={isConfirm}
           onOk={gotoDemo}
           onClose={() => setIsConfirm(false)}

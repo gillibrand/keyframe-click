@@ -75,7 +75,7 @@ export const PreviewInspector = memo(function PreviewInspector({
       <div className="stack-small">
         <CheckedInput
           type="checkbox"
-          label="Loop"
+          label="Repeat"
           checked={isRepeat}
           onChange={(e) => onChangeIsRepeat(e.target.checked)}
         />
