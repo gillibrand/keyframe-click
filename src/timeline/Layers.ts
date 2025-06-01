@@ -129,13 +129,19 @@ export class Layers {
     this.onChange = onChange;
   }
 
-  save() {
+  asJson() {
     const slimLayers = this.layers.map((l) => {
       const slim = { ...l };
       slim.samples = null;
       return slim;
     });
-    localStorage.setItem(SaveStorageKey, JSON.stringify(slimLayers));
+    return JSON.stringify(slimLayers);
+  }
+
+  save() {
+    const json = this.asJson();
+    localStorage.setItem(SaveStorageKey, json);
+    return json;
   }
 
   getActiveLayer() {

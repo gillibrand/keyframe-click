@@ -1,6 +1,6 @@
 import Github from "@images/github-mark.svg?react";
 import { useRouter } from "@router/useRouter";
-import { stopEvent } from "@util";
+import { isDevMode, stopEvent } from "@util";
 import "./Banner.css";
 
 export function Banner() {
@@ -64,6 +64,12 @@ export function Banner() {
           <a className="Banner__link" {...href("#/about", true)}>
             About
           </a>
+
+          {isDevMode && (
+            <a className="Banner__link" {...href("#/debug", true)}>
+              🐞
+            </a>
+          )}
         </nav>
 
         <div className="ml-auto py-2 text-light flex gap-4 items-center">

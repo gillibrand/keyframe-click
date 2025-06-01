@@ -1,30 +1,32 @@
-[
-  {
-    "dots": [
-      { "space": "user", "x": 0, "y": 0, "h1": { "x": -10, "y": 0 }, "h2": { "x": 10, "y": 0 }, "type": "square" },
-      { "type": "round", "space": "user", "x": 23, "y": -3, "h1": { "x": 13, "y": -3 }, "h2": { "x": 33, "y": -3 } },
-      { "type": "round", "space": "user", "x": 62, "y": 4, "h1": { "x": 52, "y": 4 }, "h2": { "x": 72, "y": 4 } },
-      { "space": "user", "x": 100, "y": 0, "h1": { "x": 90, "y": 0 }, "h2": { "x": 110, "y": 0 }, "type": "square" }
-    ],
-    "cssProp": "translateY",
-    "isFlipped": false,
-    "sampleCount": 0,
-    "samples": null,
-    "id": "32af65cd-7260-4863-bc66-e6de0bb408f1",
-    "units": "%"
-  },
-  {
-    "dots": [
-      { "space": "user", "x": 0, "y": 0, "h1": { "x": -10, "y": 0 }, "h2": { "x": 10, "y": 0 }, "type": "square" },
-      { "type": "round", "space": "user", "x": 30, "y": 3, "h1": { "x": 20, "y": 3 }, "h2": { "x": 40, "y": 3 } },
-      { "type": "round", "space": "user", "x": 71, "y": -4, "h1": { "x": 61, "y": -4 }, "h2": { "x": 81, "y": -4 } },
-      { "space": "user", "x": 100, "y": 1, "h1": { "x": 90, "y": 1 }, "h2": { "x": 110, "y": 1 }, "type": "square" }
-    ],
-    "cssProp": "rotate",
-    "isFlipped": false,
-    "sampleCount": 0,
-    "samples": null,
-    "id": "9192e705-80ea-4b2f-bedc-c4783f42852f",
-    "units": "%"
-  }
-]
+{
+  "layers": [
+    {
+      "dots": [
+        { "space": "user", "x": 0, "y": 0, "h1": { "x": -10, "y": 0 }, "h2": { "x": 10, "y": 0 }, "type": "square" },
+        { "type": "round", "space": "user", "x": 23, "y": -3, "h1": { "x": 13, "y": -3 }, "h2": { "x": 33, "y": -3 } },
+        { "type": "round", "space": "user", "x": 62, "y": 4, "h1": { "x": 52, "y": 4 }, "h2": { "x": 72, "y": 4 } },
+        { "space": "user", "x": 100, "y": 0, "h1": { "x": 90, "y": 0 }, "h2": { "x": 110, "y": 0 }, "type": "square" }
+      ],
+      "cssProp": "translateY",
+      "isFlipped": false,
+      "sampleCount": 0,
+      "samples": null,
+      "id": "32af65cd-7260-4863-bc66-e6de0bb408f1",
+      "units": "%"
+    },
+    {
+      "dots": [
+        { "space": "user", "x": 0, "y": 0, "h1": { "x": -10, "y": 0 }, "h2": { "x": 10, "y": 0 }, "type": "square" },
+        { "type": "round", "space": "user", "x": 30, "y": 3, "h1": { "x": 20, "y": 3 }, "h2": { "x": 40, "y": 3 } },
+        { "type": "round", "space": "user", "x": 71, "y": -4, "h1": { "x": 61, "y": -4 }, "h2": { "x": 81, "y": -4 } },
+        { "space": "user", "x": 100, "y": 1, "h1": { "x": 90, "y": 1 }, "h2": { "x": 110, "y": 1 }, "type": "square" }
+      ],
+      "cssProp": "rotate",
+      "isFlipped": false,
+      "sampleCount": 0,
+      "samples": null,
+      "id": "9192e705-80ea-4b2f-bedc-c4783f42852f",
+      "units": "%"
+    }
+  ]
+}

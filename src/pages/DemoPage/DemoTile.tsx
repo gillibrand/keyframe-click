@@ -1,10 +1,14 @@
-import { cx } from "@util/cx";
-import { PropsWithChildren, useState } from "react";
-import "./demos.css";
+import { Confirm } from "@components/Confirm/Confirm";
 import Play from "@images/play-large.svg?react";
 import { useRouter } from "@router/useRouter";
 import { GlobalLayers, RealLayer } from "@timeline/Layers";
-import { Confirm } from "@components/Confirm/Confirm";
+import { cx } from "@util/cx";
+import { PropsWithChildren, useState } from "react";
+import "./demos.css";
+
+interface Saved {
+  layers: RealLayer[];
+}
 
 interface Props extends PropsWithChildren {
   /** Name of the demo. Not too long. Sentence case. Used for header and tooltips. */
@@ -21,8 +25,8 @@ export function DemoTile({ name, className, children, demoJson }: Props) {
   const [isConfirm, setIsConfirm] = useState(false);
 
   function gotoDemo() {
-    setIsConfirm(false);
-    GlobalLayers.replaceLayers(JSON.parse(demoJson) as RealLayer[]);
+    const saved = JSON.parse(demoJson) as Saved;
+    GlobalLayers.replaceLayers(saved.layers);
     gotoTimeline({ playDemo: true });
   }
 
