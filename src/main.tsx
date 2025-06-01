@@ -1,7 +1,7 @@
 import { App } from "@app/App";
 import { NoteProvider } from "@components/note";
 import { AboutPage } from "@pages/AboutPage";
-import { DemoPage } from "@pages/DemoPage/DemoPage";
+import { DemoPage } from "@pages/DemoPage";
 import { TimelinePage } from "@pages/TimelinePage";
 import { RouterProvider, Routes } from "@router/RouterProvider";
 import { lazyWithPreload } from "@router/useRouter";

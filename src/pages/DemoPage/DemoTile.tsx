@@ -1,14 +1,12 @@
 import { Confirm } from "@components/Confirm/Confirm";
 import Play from "@images/play-large.svg?react";
 import { useRouter } from "@router/useRouter";
-import { GlobalLayers, RealLayer } from "@timeline/Layers";
+import { GlobalLayers } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { PropsWithChildren, useState } from "react";
+import { DemoName, loadJsonDemo } from "./demoLoader";
 import "./demos.css";
-
-interface Saved {
-  layers: RealLayer[];
-}
+import { Saved } from "./demoTypes";
 
 interface Props extends PropsWithChildren {
   /** Name of the demo. Not too long. Sentence case. Used for header and tooltips. */
@@ -16,16 +14,18 @@ interface Props extends PropsWithChildren {
 
   className?: string;
 
-  demoJson: string;
+  demoName: DemoName;
 }
 
 /** An demo entry on the demo page. A tile with a button. */
-export function DemoTile({ name, className, children, demoJson }: Props) {
+export function DemoTile({ name, className, children, demoName }: Props) {
   const { gotoTimeline } = useRouter();
   const [isConfirm, setIsConfirm] = useState(false);
 
-  function gotoDemo() {
-    const saved = JSON.parse(demoJson) as Saved;
+  async function gotoDemo() {
+    const json = await loadJsonDemo(demoName);
+    // console.info(">>>json2 ", json);
+    const saved = JSON.parse(json) as Saved;
     GlobalLayers.replaceLayers(saved.layers);
     gotoTimeline({ playDemo: true });
   }
@@ -46,7 +46,7 @@ export function DemoTile({ name, className, children, demoJson }: Props) {
       {isConfirm && (
         <Confirm
           label="Open demo?"
-          okLabel="Overwrite with demo"
+          okLabel="Discard timeline"
           open={isConfirm}
           onOk={gotoDemo}
           onClose={() => setIsConfirm(false)}

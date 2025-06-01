@@ -10,7 +10,7 @@
 
   border-radius: 1rem;
 
-  &:where(:hover, :focus-visible):not(:active) {
+  &:where(:hover, :focus-visible) {
     filter: brightness(1.1);
 
     svg {
