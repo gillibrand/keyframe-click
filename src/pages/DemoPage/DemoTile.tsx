@@ -8,6 +8,7 @@ import { DemoName, isJsonDemo, loadJsonDemo } from "./demoLoader";
 import "./demos.css";
 import { SavedDemo } from "./demoTypes";
 import { useSetting } from "@app/useSettings";
+import { useNoteApi } from "@components/note";
 
 interface Props extends PropsWithChildren {
   /** Name of the demo. Not too long. Sentence case. Used for header and tooltips. */
@@ -22,6 +23,8 @@ interface Props extends PropsWithChildren {
 
 /** An demo entry on the demo page. A tile with a button. */
 export function DemoTile({ name, className, children, demoName }: Props) {
+  const { sendNote } = useNoteApi();
+
   const { gotoTimeline } = useRouter();
   const [isConfirm, setIsConfirm] = useState(false);
 
@@ -62,6 +65,8 @@ export function DemoTile({ name, className, children, demoName }: Props) {
       setPreviewDurationTime(demo.previewDurationTime);
       setPreviewDurationUnit(demo.previewDurationUnit);
     }
+
+    sendNote(`Opened "${name}"`, 4000);
 
     GlobalLayers.replaceLayers(JSON.parse(JSON.stringify(demo.layers)));
     gotoTimeline({ playDemo: true });

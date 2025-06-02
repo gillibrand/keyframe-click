@@ -67,7 +67,7 @@ export function Banner() {
 
           {isDevMode && (
             <a className="Banner__link" {...href("#/debug", true)}>
-              🐞
+              dev
             </a>
           )}
         </nav>
