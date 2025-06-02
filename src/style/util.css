@@ -295,3 +295,7 @@
 .color-black {
   color: var(--c-neo-black);
 }
+
+.scale-2 {
+  transform: scale(2);
+}

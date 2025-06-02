@@ -1,0 +1,65 @@
+{
+  "previewDurationTime": 1,
+  "previewDurationUnit": "s",
+  "previewGraphic": "heart",
+  "layers": [
+    {
+      "dots": [
+        {
+          "space": "user",
+          "x": 0,
+          "y": 100,
+          "h1": { "x": -10, "y": 100 },
+          "h2": { "x": 10, "y": 100 },
+          "type": "square"
+        },
+        {
+          "type": "square",
+          "space": "user",
+          "x": 15,
+          "y": 140,
+          "h1": { "x": 5, "y": 140 },
+          "h2": { "x": 25, "y": 140 }
+        },
+        {
+          "type": "square",
+          "space": "user",
+          "x": 28,
+          "y": 100,
+          "h1": { "x": 18, "y": 100 },
+          "h2": { "x": 38, "y": 100 }
+        },
+        {
+          "type": "square",
+          "space": "user",
+          "x": 43,
+          "y": 125,
+          "h1": { "x": 33, "y": 125 },
+          "h2": { "x": 53, "y": 125 }
+        },
+        {
+          "type": "square",
+          "space": "user",
+          "x": 54,
+          "y": 100,
+          "h1": { "x": 44, "y": 100 },
+          "h2": { "x": 64, "y": 100 }
+        },
+        {
+          "type": "square",
+          "space": "user",
+          "x": 100,
+          "y": 100,
+          "h1": { "x": 90, "y": 100 },
+          "h2": { "x": 110, "y": 100 }
+        }
+      ],
+      "cssProp": "scale",
+      "isFlipped": false,
+      "sampleCount": 0,
+      "samples": null,
+      "id": "9dd262ed-2dcd-4bb9-aec7-0291db3521c6",
+      "units": "%"
+    }
+  ]
+}

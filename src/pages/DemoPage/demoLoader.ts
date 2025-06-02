@@ -8,6 +8,7 @@ const DemoPaths = {
   Floating: "./demos/floating.json",
   NewTimeline: "./demos/new-timeline.json",
   Bounce: "./demos/bounce.json",
+  Heartbeat: "./demos/heartbeat.json",
 } as const;
 
 export type DemoName = keyof typeof DemoPaths;

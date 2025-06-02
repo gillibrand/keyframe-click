@@ -16,6 +16,8 @@ interface Props extends PropsWithChildren {
   className?: string;
 
   demoName: DemoName;
+
+  emoji?: string;
 }
 
 /** An demo entry on the demo page. A tile with a button. */
