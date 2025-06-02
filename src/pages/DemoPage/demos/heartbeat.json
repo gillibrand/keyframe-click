@@ -2,6 +2,7 @@
   "previewDurationTime": 1,
   "previewDurationUnit": "s",
   "previewGraphic": "heart",
+  "repeat": true,
   "layers": [
     {
       "dots": [

@@ -11,4 +11,5 @@ export interface SavedDemo {
   previewDurationUnit?: TimeUnit;
   previewGraphic?: Graphic;
   layers: RealLayer[];
+  repeat?: boolean;
 }

@@ -2,6 +2,7 @@
   "previewDurationTime": 8,
   "previewDurationUnit": "s",
   "previewGraphic": "astro",
+  "repeat": true,
   "layers": [
     {
       "dots": [

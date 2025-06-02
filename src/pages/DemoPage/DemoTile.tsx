@@ -9,6 +9,7 @@ import "./demos.css";
 import { SavedDemo } from "./demoTypes";
 import { useSetting } from "@app/useSettings";
 import { useNoteApi } from "@components/note";
+import { usePreviewApi } from "@app/usePreviewApi";
 
 interface Props extends PropsWithChildren {
   /** Name of the demo. Not too long. Sentence case. Used for header and tooltips. */
@@ -50,6 +51,7 @@ export function DemoTile({ name, className, children, demoName }: Props) {
     }
   }
 
+  const { setIsRepeat } = usePreviewApi();
   const [, setPreviewGraphic] = useSetting("previewGraphic", "astro");
   const [, setPreviewDurationTime] = useSetting("previewDurationTime", 1);
   const [, setPreviewDurationUnit] = useSetting("previewDurationUnit", "ms");
@@ -65,6 +67,8 @@ export function DemoTile({ name, className, children, demoName }: Props) {
       setPreviewDurationTime(demo.previewDurationTime);
       setPreviewDurationUnit(demo.previewDurationUnit);
     }
+
+    setIsRepeat(demo.repeat === true);
 
     sendNote(`Opened "${name}"`, 4000);
 

@@ -1,4 +1,4 @@
-import { isDevMode, round2dp } from "@util";
+import { isDevMode, round2dp, round3dp } from "@util";
 import { ColorName } from "@util/Colors";
 
 type OutputFn = (n: number) => string;
@@ -77,7 +77,7 @@ const CssInfos = typedKeys({
   rotate: {
     label: "Rotate",
     fn: (n) => {
-      return `${round2dp(n / 100)}turn`;
+      return `${round3dp(n / 100)}turn`;
     },
     color: "fuchsia",
     supportsPx: false,
