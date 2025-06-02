@@ -762,6 +762,41 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     if (notify) didDraw();
   }
 
+  /**
+   * Adds a new point after the selected one. If none selected, then after the first. If none at all, then right at the
+   * start of the timeline.
+   */
+  function newPointFromSelected() {
+    const dots = _layers.getDots();
+
+    let newX = 0;
+    let newY = 0;
+
+    if (dots.length > 0) {
+      // We'll create a new dot after the selected. If none selected, then after the first
+      if (_selectedIndex === null) {
+        _selectedIndex = 0;
+      }
+
+      const { x, y } = dots[_selectedIndex];
+      newY = y;
+
+      const nextDot: UserDot | undefined = dots[_selectedIndex + 1];
+      const nextX = nextDot ? nextDot.x : 100;
+
+      // x for the new dot will be right in the middle of the the selected and next dots
+      newX = x + (nextX - x) / 2;
+    }
+
+    _addingAtUserPoint = {
+      x: newX,
+      y: newY,
+    };
+
+    // This mouse method doesn't care about the mouse, just that _addingAtUserPoint is set. Should simplify this.
+    onMouseDownAdding();
+  }
+
   function onKeyDown(e: KeyboardEvent) {
     const dots = _layers.getDots();
     const dot = _selectedIndex === null ? null : dots[_selectedIndex];
@@ -779,6 +814,11 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
         if (_selectedIndex === null) return;
         const p = dots[_selectedIndex];
         togglePt(p);
+        break;
+      }
+
+      case "n": {
+        newPointFromSelected();
         break;
       }
 

@@ -70,7 +70,7 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
       <dl className="row-gap-4 col-gap-8">
         <dt>Add point</dt>
         <dd>
-          <kbd>Shift</kbd>-click
+          <kbd>N</kbd> <span className="p-4">or</span> <kbd>Shift</kbd>-click
         </dd>
 
         <dt>Select previous/next point</dt>
