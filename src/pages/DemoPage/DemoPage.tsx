@@ -8,28 +8,28 @@ export function DemoPage() {
         {/* <h2>Demos</h2> */}
         {/* <p className="color-black">Get inspired or started quickly.</p> */}
 
-        <DemoTile name="Bounce in" emoji="⚽️" demoName={"Bounce"}>
-          <p>Drop down and bounce to a stop.</p>
-        </DemoTile>
-
-        <DemoTile name="Floating in space" emoji="🧑‍🚀" demoName={"Floating"}>
-          <p>Slowly bob up and down in place.</p>
-        </DemoTile>
-
-        <DemoTile name="Success message" emoji="🐇" demoName={"CourseClear"}>
-          <p>Show a brief status message, then slide it away.</p>
-        </DemoTile>
-
-        <DemoTile name="Black hole" emoji="🕳️" demoName={"BlackHole"}>
+        <DemoTile name="Black hole" demoName={"BlackHole"}>
           <p> Spin and shrink a deleted element into oblivion.</p>
         </DemoTile>
 
-        <DemoTile name="Heartbeat " emoji="❤️" demoName={"Heartbeat"}>
+        <DemoTile name="Bounce in" demoName={"Bounce"}>
+          <p>Drop down and bounce to a stop.</p>
+        </DemoTile>
+
+        <DemoTile name="Floating in space" demoName={"Floating"}>
+          <p>Slowly bob up and down in place.</p>
+        </DemoTile>
+
+        <DemoTile name="Heartbeat " demoName={"Heartbeat"}>
           <p>Lub-dub. Lub-dub.</p>
         </DemoTile>
 
         <DemoTile name="Home run" demoName={"HomeRun"}>
           <p>Smash an element into the distance.</p>
+        </DemoTile>
+
+        <DemoTile name="Success message" demoName={"CourseClear"}>
+          <p>Show a brief status message, then slide it away.</p>
         </DemoTile>
 
         <DemoTile name="Start over" demoName={"NewTimeline"} className="mt-16">
