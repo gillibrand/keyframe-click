@@ -9,6 +9,7 @@ import { memo, useId } from "react";
 import { Graphic } from "./previewTypes";
 import { Speed } from "./usePreview";
 import { useChildAnimator, wipeInHeight, wipeOutHeight } from "@util/useChildAnimator";
+import { stopEvent } from "@util";
 
 interface Props {
   duration: Duration;
@@ -107,7 +108,13 @@ export const PreviewInspector = memo(function PreviewInspector({
       </label>
 
       {graphic === "text" && (
-        <div className="mt-0">
+        <form
+          className="mt-0"
+          onSubmit={(e) => {
+            stopEvent(e);
+            onClickPlay();
+          }}
+        >
           <label className="stacked-label mt-stack">
             <span className="sr-only">Your text</span>
             <input
@@ -118,7 +125,7 @@ export const PreviewInspector = memo(function PreviewInspector({
               placeholder="your text here"
             />
           </label>
-        </div>
+        </form>
       )}
 
       <label className="stacked-label">
