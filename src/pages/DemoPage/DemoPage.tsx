@@ -28,6 +28,10 @@ export function DemoPage() {
           <p>Lub-dub. Lub-dub.</p>
         </DemoTile>
 
+        <DemoTile name="Home run" demoName={"HomeRun"}>
+          <p>Smash an element into the distance.</p>
+        </DemoTile>
+
         <DemoTile name="Start over" demoName={"NewTimeline"} className="mt-16">
           <p>A basic timeline to start from.</p>
         </DemoTile>

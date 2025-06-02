@@ -9,6 +9,7 @@ const DemoPaths = {
   NewTimeline: "./demos/new-timeline.json",
   Bounce: "./demos/bounce.json",
   Heartbeat: "./demos/heartbeat.json",
+  HomeRun: "./demos/home-run.json",
 } as const;
 
 export type DemoName = keyof typeof DemoPaths;
