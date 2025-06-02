@@ -1,3 +1,4 @@
+import { Callback } from "@util";
 import {
   Dispatch,
   MutableRefObject,
@@ -146,4 +147,39 @@ export function useMergeRefs<T>(...refs: React.Ref<T>[]): React.RefCallback<T> {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, refs);
+}
+
+/**
+ * Used to install a callback that will fire once if an element is hovered over long enough. This is used to preload
+ * data when hovering over demo buttons Returns the React event handlers to spread into you element.
+ *
+ * @param callback Callback to fire once after the hover delay.
+ * @param delayMillis How long to wait before firing.
+ * @returns Event listener to spread into an element that want to listen for a hover.
+ */
+export function useHoverSoon(callback: Callback, delayMillis: number = 500) {
+  const timerRef = useRef<number | null>(-1);
+
+  return useMemo(() => {
+    function onMouseEnter() {
+      if (timerRef.current === null) return;
+      clearTimeout(timerRef.current);
+
+      timerRef.current = setTimeout(() => {
+        callback();
+        timerRef.current = null;
+      }, delayMillis);
+    }
+
+    function onMouseLeave() {
+      if (timerRef.current === null) return;
+
+      clearTimeout(timerRef.current);
+    }
+
+    return {
+      onMouseEnter,
+      onMouseLeave,
+    } as const;
+  }, [callback, delayMillis]);
 }

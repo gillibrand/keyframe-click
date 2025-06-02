@@ -6,10 +6,11 @@ import Play from "@images/play-large.svg?react";
 import { useRouter } from "@router/useRouter";
 import { GlobalLayers } from "@timeline/Layers";
 import { cx } from "@util/cx";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useCallback, useState } from "react";
 import { DemoName, isJsonDemo, loadJsonDemo } from "./demoLoader";
 import "./demos.css";
 import { SavedDemo } from "./demoTypes";
+import { useHoverSoon } from "@util/hooks";
 
 interface Props extends PropsWithChildren {
   /** Name of the demo. Not too long. Sentence case. Used for header and tooltips. */
@@ -81,11 +82,27 @@ export function DemoTile({ name, className, children, demoName }: Props) {
     gotoTimeline({ playDemo: true });
   }
 
+  /**
+   * Preloads the JSON for a demo file on hover to reduce the delay after the click (mostly seen in Firefox). There is
+   * still a window if the load is very slow where the user can click and not see anything for a while. It's like
+   * following a normal link on a web page though. Could add a debounced loading message if I see this more, but seems
+   * more than fast enough with preload.
+   */
+  const preload = useCallback(
+    function preload() {
+      loadJsonDemo(demoName);
+    },
+    [demoName]
+  );
+
+  const { ...hoverProps } = useHoverSoon(preload, 300);
+
   return (
     <button
       className={cx("DemoTile tile p-0 overflow-hidden", className)}
       onClick={loadDemo}
       aria-label={`Open demo: ${name}`}
+      {...hoverProps}
     >
       <div className="flex bg-blue color-white p-4 DemoTile__header items-center justify-between">
         <h2>{name}</h2>
