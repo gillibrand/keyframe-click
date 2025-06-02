@@ -3,6 +3,7 @@
   "previewDurationUnit": "s",
   "previewGraphic": "astro",
   "repeat": true,
+  "maxY": 20,
   "layers": [
     {
       "dots": [

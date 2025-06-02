@@ -2,6 +2,7 @@
   "previewDurationTime": 1500,
   "previewDurationUnit": "ms",
   "previewGraphic": "ball",
+  "maxY": 210,
   "layers": [
     {
       "dots": [

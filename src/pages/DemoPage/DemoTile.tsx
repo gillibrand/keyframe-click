@@ -1,4 +1,7 @@
+import { usePreviewApi } from "@app/usePreviewApi";
+import { useSetting } from "@app/useSettings";
 import { Confirm } from "@components/Confirm/Confirm";
+import { useNoteApi } from "@components/note";
 import Play from "@images/play-large.svg?react";
 import { useRouter } from "@router/useRouter";
 import { GlobalLayers } from "@timeline/Layers";
@@ -7,9 +10,6 @@ import { PropsWithChildren, useState } from "react";
 import { DemoName, isJsonDemo, loadJsonDemo } from "./demoLoader";
 import "./demos.css";
 import { SavedDemo } from "./demoTypes";
-import { useSetting } from "@app/useSettings";
-import { useNoteApi } from "@components/note";
-import { usePreviewApi } from "@app/usePreviewApi";
 
 interface Props extends PropsWithChildren {
   /** Name of the demo. Not too long. Sentence case. Used for header and tooltips. */
@@ -55,6 +55,7 @@ export function DemoTile({ name, className, children, demoName }: Props) {
   const [, setPreviewGraphic] = useSetting("previewGraphic", "astro");
   const [, setPreviewDurationTime] = useSetting("previewDurationTime", 1);
   const [, setPreviewDurationUnit] = useSetting("previewDurationUnit", "ms");
+  const [, setMaxY] = useSetting("maxY", 110);
 
   async function gotoDemo(demo?: SavedDemo) {
     if (!demo) demo = await loadJsonDemo(demoName);
@@ -66,6 +67,10 @@ export function DemoTile({ name, className, children, demoName }: Props) {
     if (demo.previewDurationTime && demo.previewDurationUnit) {
       setPreviewDurationTime(demo.previewDurationTime);
       setPreviewDurationUnit(demo.previewDurationUnit);
+    }
+
+    if (demo.maxY) {
+      setMaxY(demo.maxY);
     }
 
     setIsRepeat(demo.repeat === true);

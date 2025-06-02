@@ -12,4 +12,5 @@ export interface SavedDemo {
   previewGraphic?: Graphic;
   layers: RealLayer[];
   repeat?: boolean;
+  maxY?: number;
 }

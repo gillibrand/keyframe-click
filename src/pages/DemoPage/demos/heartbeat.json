@@ -3,6 +3,7 @@
   "previewDurationUnit": "s",
   "previewGraphic": "heart",
   "repeat": true,
+  "maxY": 160,
   "layers": [
     {
       "dots": [
