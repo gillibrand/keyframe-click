@@ -1,7 +1,7 @@
 {
   "previewDurationTime": 2,
   "previewDurationUnit": "s",
-  "previewGraphic": "heart",
+  "previewGraphic": "text",
   "maxY": 110,
 
   "layers": [

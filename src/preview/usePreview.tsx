@@ -36,6 +36,16 @@ interface PreviousState {
   speed: Speed;
 }
 
+const HelloWorld = "Hello, World!";
+
+function normalizePreviewText(text: string) {
+  text = text.trim();
+
+  if (text.length === 0) return HelloWorld;
+
+  return text;
+}
+
 export function usePreview({ keyframeText }: Props): UsePreview {
   const graphicRef = useRef<HTMLDivElement>(null);
 
@@ -222,6 +232,8 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   // This key is used to force a remount of the ProgressPlayer, effectively restarting it. React is weird.
   const progressPlayerKey = useMemo(() => String(iterationCount), [iterationCount]);
 
+  const [previewText] = useSetting("previewText", HelloWorld);
+
   function renderGraphic() {
     switch (graphic) {
       case "astro":
@@ -232,6 +244,9 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
       case "heart":
         return <img src={heartSrc} className="Preview__heart" />;
+
+      case "text":
+        return <div className="Preview__text">{normalizePreviewText(previewText)}</div>;
 
       default: {
         unreachable(graphic);

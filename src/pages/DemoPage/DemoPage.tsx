@@ -16,8 +16,8 @@ export function DemoPage() {
           <p>Slowly bob up and down in place.</p>
         </DemoTile>
 
-        <DemoTile name="Spring in, slide out" emoji="🐇" demoName={"CourseClear"}>
-          <p>Briefly draw attention to an element, then slide it away.</p>
+        <DemoTile name="Success message" emoji="🐇" demoName={"CourseClear"}>
+          <p>Show a brief status message, then slide it away.</p>
         </DemoTile>
 
         <DemoTile name="Black hole" emoji="🕳️" demoName={"BlackHole"}>

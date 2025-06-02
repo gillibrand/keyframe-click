@@ -8,6 +8,7 @@ import "@style/inspector.css";
 import { memo, useId } from "react";
 import { Graphic } from "./previewTypes";
 import { Speed } from "./usePreview";
+import { useChildAnimator, wipeInHeight, wipeOutHeight } from "@util/useChildAnimator";
 
 interface Props {
   duration: Duration;
@@ -56,8 +57,20 @@ export const PreviewInspector = memo(function PreviewInspector({
 
   const speedId = useId();
 
+  const { parentRef } = useChildAnimator<HTMLDivElement>("both", {
+    animateIn: wipeInHeight,
+    animateOut: wipeOutHeight,
+  });
+
+  const [previewText, setPreviewTextSetting] = useSetting("previewText", "Hello, World!");
+
+  function setPreviewText(text: string) {
+    const max = 42;
+    setPreviewTextSetting(text.length > max ? text.slice(0, max) : text);
+  }
+
   return (
-    <aside className="inspector stack">
+    <aside className="inspector stack" ref={parentRef}>
       <h2>Preview</h2>
 
       <div className="stack-small">
@@ -84,13 +97,29 @@ export const PreviewInspector = memo(function PreviewInspector({
       <hr />
 
       <label className="stacked-label">
-        <span>Image</span>
+        <span>Example</span>
         <Select value={graphic} onChange={(e) => setGraphic(e.target.value as Graphic)}>
           <option value="astro">Astronaut</option>
           <option value="ball">Ball</option>
           <option value="heart">Heart</option>
+          <option value="text">Text</option>
         </Select>
       </label>
+
+      {graphic === "text" && (
+        <div className="mt-0">
+          <label className="stacked-label mt-stack">
+            <span className="sr-only">Your text</span>
+            <input
+              type="text"
+              className="textbox"
+              value={previewText}
+              onChange={(e) => setPreviewText(e.target.value)}
+              placeholder="your text here"
+            />
+          </label>
+        </div>
+      )}
 
       <label className="stacked-label">
         <span>Duration</span>

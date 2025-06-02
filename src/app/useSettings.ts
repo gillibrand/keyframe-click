@@ -25,6 +25,7 @@ interface Settings {
   previewDurationUnit: TimeUnit;
   previewSpeed: Speed;
   previewGraphic: Graphic;
+  previewText: string;
 
   ruleName: string;
   format: Format;
@@ -59,6 +60,7 @@ function validate<K extends SettingName>(name: K, value: Settings[K]) {
 
     case "activeLayerId":
     case "ruleName":
+    case "previewText":
       return typeof value === "string";
 
     case "previewSpeed":
