@@ -1,3 +1,4 @@
+import { usePreviewApi } from "@app/usePreviewApi";
 import { Duration, TimeUnit, useSetting } from "@app/useSettings";
 import astroSrc from "@images/astro.png";
 import heartSrc from "@images/heart.png";
@@ -5,7 +6,6 @@ import { debounce, nullFn, unreachable } from "@util";
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Preview.css";
 import { ProgressBar } from "./ProgressBar";
-import { usePreviewApi } from "@app/usePreviewApi";
 
 export type Speed = 1 | 0.5 | 0.25 | 0.1;
 
@@ -31,7 +31,7 @@ interface Props {
 
 interface PreviousState {
   keyframeText: string;
-  durationTime: number;
+  durationTime: number | null;
   durationUnit: TimeUnit;
   speed: Speed;
 }
@@ -59,7 +59,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   const setDuration = useCallback(
     (duration: Duration) => {
       // TODO: validate time and unit
-      setDurationTime(Math.max(1, duration.time));
+      setDurationTime(duration.time === null ? null : Math.max(0, duration.time));
       setDurationUnit(duration.unit);
     },
     [setDurationUnit, setDurationTime]
@@ -77,9 +77,9 @@ export function usePreview({ keyframeText }: Props): UsePreview {
   const durationMs = useMemo(() => {
     switch (durationUnit) {
       case "ms":
-        return durationTime;
+        return durationTime ?? 0;
       case "s":
-        return durationTime * 1000;
+        return (durationTime ?? 0) * 1000;
 
       default:
         unreachable(durationUnit);
@@ -126,7 +126,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const previousState = useRef<PreviousState>({
     keyframeText: "",
-    durationTime: -1,
+    durationTime: null,
     durationUnit: "s",
     speed: -1 as Speed,
   });

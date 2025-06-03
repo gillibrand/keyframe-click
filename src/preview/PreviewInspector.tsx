@@ -37,12 +37,11 @@ export const PreviewInspector = memo(function PreviewInspector({
   speed,
   onChangeSpeed,
 }: Props) {
-  function handleDurationTimChange(timeString: string) {
+  function handleDurationTimeChange(timeString: string) {
     const time = parseInt(timeString);
-    if (isNaN(time) || time < 0) return;
 
     onChangeDuration({
-      time: time,
+      time: time < 0 || isNaN(time) ? null : time,
       unit: duration.unit,
     });
   }
@@ -52,7 +51,12 @@ export const PreviewInspector = memo(function PreviewInspector({
 
     // Convert between s and ms values when the unit changes the preview takes about the same time
     // still. Don't want to change 1000ms to 1000sl make it 1s
-    const newTime = duration.unit === "ms" ? Math.round(duration.time / 1000) : Math.round(duration.time * 1000);
+    const newTime =
+      duration.time === null
+        ? null
+        : unit === "ms"
+          ? Math.round(duration.time * 1000)
+          : Math.max(1, Math.round(duration.time / 1000));
 
     onChangeDuration({
       time: newTime,
@@ -138,11 +142,13 @@ export const PreviewInspector = memo(function PreviewInspector({
         <span>Duration</span>
         <div className="col-2 gap-2">
           <input
+            required
             type="number"
             className="textbox"
             min={1}
-            onChange={(e) => handleDurationTimChange(e.target.value)}
-            value={duration.time}
+            onChange={(e) => handleDurationTimeChange(e.target.value)}
+            value={duration.time === null ? "" : duration.time}
+            placeholder={duration.unit === "ms" ? "e.g. 1500" : "e.g. 2"}
           />
 
           <Select value={duration.unit} onChange={(e) => handleDurationUnitChange(e.target.value)}>

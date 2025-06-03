@@ -7,7 +7,7 @@ const TimeUnits = ["ms", "s"] as const;
 export type TimeUnit = (typeof TimeUnits)[number];
 
 export interface Duration {
-  time: number;
+  time: number | null;
   unit: TimeUnit;
 }
 
@@ -21,7 +21,7 @@ interface Settings {
   isPreviewAutoPlay: boolean;
   isLabelYAxis: boolean;
 
-  previewDurationTime: number;
+  previewDurationTime: null | number;
   previewDurationUnit: TimeUnit;
   previewSpeed: Speed;
   previewGraphic: Graphic;
@@ -45,7 +45,7 @@ type SettingName = keyof Settings;
 function validate<K extends SettingName>(name: K, value: Settings[K]) {
   switch (name) {
     case "previewDurationTime":
-      return typeof value === "number" && value > 0;
+      return value === null || (typeof value === "number" && value > 0);
 
     case "maxY":
       return typeof value === "number" && value > 10 && value < 10000;
