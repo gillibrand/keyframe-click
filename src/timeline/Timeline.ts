@@ -841,12 +841,14 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
         break;
 
       case "ArrowUp":
-        if (dot) moveDot(dot, dot.x, dot.y + increment);
+        if (dot) moveDot(dot, dot.x, Math.min(getMaxY(), dot.y + increment));
         e.preventDefault();
         break;
 
       case "ArrowDown":
-        if (dot) moveDot(dot, dot.x, dot.y - increment);
+        if (dot) {
+          moveDot(dot, dot.x, Math.max(getMinY(), dot.y - increment));
+        }
         e.preventDefault();
         break;
 
