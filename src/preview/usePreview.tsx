@@ -51,8 +51,8 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const { isRepeat, ...previewApi } = usePreviewApi();
   const [isAutoPlay, setIsAutoPlay] = useSetting("isPreviewAutoPlay", true);
-  const [durationUnit, setDurationUnit] = useSetting("previewDurationUnit", "ms");
-  const [durationTime, setDurationTime] = useSetting("previewDurationTime", 1000);
+  const [durationUnit, setDurationUnit] = useSetting("previewDurationUnit", "s");
+  const [durationTime, setDurationTime] = useSetting("previewDurationTime", 1);
   const [speed, setSpeed] = useSetting("previewSpeed", 1);
   const [graphic] = useSetting("previewGraphic", "astro");
 

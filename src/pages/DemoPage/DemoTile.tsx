@@ -55,7 +55,7 @@ export function DemoTile({ name, className, children, demoName }: Props) {
   const { setIsRepeat } = usePreviewApi();
   const [, setPreviewGraphic] = useSetting("previewGraphic", "astro");
   const [, setPreviewDurationTime] = useSetting("previewDurationTime", 1);
-  const [, setPreviewDurationUnit] = useSetting("previewDurationUnit", "ms");
+  const [, setPreviewDurationUnit] = useSetting("previewDurationUnit", "s");
   const [, setMaxY] = useSetting("maxY", 110);
 
   async function gotoDemo(demo?: SavedDemo) {

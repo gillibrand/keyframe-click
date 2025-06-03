@@ -48,8 +48,14 @@ export const PreviewInspector = memo(function PreviewInspector({
   }
 
   function handleDurationUnitChange(unit: string) {
+    if (duration.unit === unit) return;
+
+    // Convert between s and ms values when the unit changes the preview takes about the same time
+    // still. Don't want to change 1000ms to 1000sl make it 1s
+    const newTime = duration.unit === "ms" ? Math.round(duration.time / 1000) : Math.round(duration.time * 1000);
+
     onChangeDuration({
-      time: duration.time,
+      time: newTime,
       unit: unit as TimeUnit,
     });
   }
