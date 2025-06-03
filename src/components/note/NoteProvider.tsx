@@ -1,5 +1,6 @@
 import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
 import { NoteApiValue, NoteProps, NoteApiContext, NotesContext } from "./_NoteContext";
+import { randomId } from "@util";
 
 const MaxNotes = 1;
 
@@ -21,7 +22,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
   /** Adds a visible note. Schedules it to be removed soon. */
   const sendNote = useCallback(
     (message: ReactNode, timeoutMs: number = 3000) => {
-      const id = crypto.randomUUID();
+      const id = randomId();
 
       function removeMaxNotes() {
         setNotes((old) => {

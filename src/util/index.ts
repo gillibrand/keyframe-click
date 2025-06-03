@@ -132,3 +132,12 @@ export const isMac =
     : typeof navigator.platform !== "string"
       ? true
       : navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+
+let nextId = 1;
+
+export function randomId() {
+  // This is really just for testing without https, which is not normal or safe
+  return crypto.randomUUID ? crypto.randomUUID() : Math.random() + ":" + nextId++ + Date.now();
+}
+
+export const IsTouch = "ontouchstart" in window;

@@ -1,6 +1,7 @@
 import { Colors } from "@util/Colors";
 import { CssInfos, CssProp } from "./CssInfo";
 import { findYForX, Point, UserDot } from "./point";
+import { randomId } from "@util";
 
 export type Unit = "px" | "%";
 
@@ -61,7 +62,7 @@ function loadSavedRealLayers(): RealLayer[] {
  *   during a delete (unlike the index).
  */
 function newId() {
-  return crypto.randomUUID();
+  return randomId();
 }
 
 function createDefaultDots(): UserDot[] {

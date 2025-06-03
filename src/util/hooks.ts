@@ -1,4 +1,4 @@
-import { Callback } from "@util";
+import { Callback, randomId } from "@util";
 import {
   Dispatch,
   MutableRefObject,
@@ -85,7 +85,7 @@ export function useForceRender() {
 export function useUuid() {
   const uuid = useRef<string>();
   if (!uuid.current) {
-    uuid.current = crypto.randomUUID();
+    uuid.current = randomId();
   }
   return uuid.current;
 }
