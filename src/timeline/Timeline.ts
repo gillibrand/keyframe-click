@@ -925,6 +925,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
   function updateSelectedDot(d: UserDot) {
     if (_selectedIndex === null) return;
+    d.x = Math.max(0, Math.min(d.x, 100));
     _layers.getDots()[_selectedIndex] = d;
     draw();
   }
