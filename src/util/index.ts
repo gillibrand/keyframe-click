@@ -140,4 +140,5 @@ export function randomId() {
   return crypto.randomUUID ? crypto.randomUUID() : Math.random() + ":" + nextId++ + Date.now();
 }
 
-export const IsTouch = "ontouchstart" in window;
+const IsTest = typeof window === "undefined";
+export const IsTouch = !IsTest && "ontouchstart" in window;
