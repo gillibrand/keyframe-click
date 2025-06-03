@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { Tooltip } from "./Tooltip";
+import { IsTouch } from "@util";
 
 /**
  * Creates a tooltip to show around another element.
@@ -35,9 +36,9 @@ export function useTooltip<T extends HTMLElement>(message: string | undefined, d
   return {
     tooltip,
     ref: targetRef,
-    onMouseEnter: showSoon,
-    onFocus: showSoon,
-    onMouseLeave: hide,
-    onBlur: hide,
+    onMouseEnter: IsTouch ? undefined : showSoon,
+    onFocus: IsTouch ? undefined : showSoon,
+    onMouseLeave: IsTouch ? undefined : hide,
+    onBlur: IsTouch ? undefined : hide,
   } as const;
 }

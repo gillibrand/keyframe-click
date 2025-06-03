@@ -1,5 +1,6 @@
-import { throttle } from "@util";
+import { IsTouch, throttle } from "@util";
 import { ColorName, Colors } from "@util/Colors";
+import { isFocusVisible } from "@util/focusVisible";
 import {
   asRealDot,
   asRealPoint,
@@ -8,24 +9,23 @@ import {
   asUserPoint,
   asUserX,
   asUserY,
+  getMaxY,
+  getMinY,
+  getYRange,
   InsetX,
   InsetY,
   OffsetX,
   offsetY,
-  getMaxY,
-  getMinY,
-  setUserPxWidth,
+  setMaxY,
   setUserPxHeight,
-  getYRange,
+  setUserPxWidth,
   zoomInY,
   zoomOutY,
-  setMaxY,
 } from "./convert";
 import { CssInfos } from "./CssInfo";
 import { bullsEye, circle, diamond, ex, willDraw } from "./drawing";
 import { Layers } from "./Layers";
 import { diffPt, findYForXInCurve, nearPt, Point, togglePt, UserDot } from "./point";
-import { isFocusVisible } from "@util/focusVisible";
 
 /** Point being actively dragged. */
 type DraggingPoint = {
@@ -285,14 +285,39 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     draw();
   }
 
-  function onMouseDown(e: MouseEvent) {
-    if (_addingAtUserPoint !== null) return;
+  /**
+   * Normalizes touch and mouse events so either can be used.
+   *
+   * @param e Touch or mouse event.
+   * @returns The coordinates of either event type.
+   */
+  function getEventCoords(e: MouseEvent | TouchEvent) {
+    if (e instanceof MouseEvent) {
+      return { x: e.pageX, y: e.pageY, offsetX: e.offsetX, offsetY: e.offsetY };
+    } else {
+      const touch = e.touches[0] || e.changedTouches[0];
+      const rect = _canvas.getBoundingClientRect();
+      return {
+        x: touch.pageX,
+        y: touch.pageY,
+        offsetX: touch.clientX - rect.left,
+        offsetY: touch.clientY - rect.top,
+      };
+    }
+  }
 
+  function onMouseDown(e: MouseEvent | TouchEvent) {
+    if (_addingAtUserPoint !== null) return;
     _dragging = null;
-    const realX = e.offsetX;
+    const { offsetX, offsetY } = getEventCoords(e);
+    const realX = offsetX;
     const x = asUserX(realX);
-    const realY = e.offsetY;
+    const realY = offsetY;
     const y = asUserY(realY);
+
+    // force keyboard focus on touch UIs so that the dots turn blue (and you can use keyboard
+    // shortcuts with iPad)
+    if (e instanceof TouchEvent) _canvas.focus();
 
     const isConvertClick = e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey;
     let newSelected: number | null = null;
@@ -350,18 +375,21 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
    * @param e
    * @returns
    */
-  function onMouseMoveDrag(e: MouseEvent) {
-    if (!isPastThreshold(e)) return;
+  function onMouseMoveDrag(e: MouseEvent | TouchEvent) {
+    const { x: pageX, y: pageY } = getEventCoords(e);
 
-    if (!_dragging || e.buttons === 0) {
+    if (e instanceof MouseEvent && !isPastThreshold(e)) return;
+    e.preventDefault();
+
+    if (!_dragging || ("buttons" in e && e.buttons === 0)) {
       endDrag();
       return;
     }
 
     const rect = _canvas.getBoundingClientRect();
 
-    let x = asUserX(Math.max(InsetX, Math.min(e.pageX - window.scrollX - rect.x, width() - InsetX)));
-    const y = asUserY(Math.max(InsetY, Math.min(e.pageY - window.scrollY - rect.y, height() - InsetY)));
+    let x = asUserX(Math.max(InsetX, Math.min(pageX - window.scrollX - rect.x, width() - InsetX)));
+    const y = asUserY(Math.max(InsetY, Math.min(pageY - window.scrollY - rect.y, height() - InsetY)));
 
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
@@ -430,8 +458,13 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
    */
   function startDrag(x: number, y: number) {
     isPastThreshold = createThreshold({ x: asRealX(x), y: asRealY(y) }, 2);
-    document.addEventListener("mousemove", onMouseMoveDrag);
-    document.addEventListener("mouseup", onMouseUpDrag);
+    if (IsTouch) {
+      document.addEventListener("touchmove", onMouseMoveDrag, { passive: false });
+      document.addEventListener("touchend", onMouseUpDrag);
+    } else {
+      document.addEventListener("mousemove", onMouseMoveDrag);
+      document.addEventListener("mouseup", onMouseUpDrag);
+    }
     if (_onIsMoving) _onIsMoving(true);
   }
 
@@ -440,6 +473,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
    * Canvas.
    */
   function endDrag() {
+    document.removeEventListener("touchmove", onMouseMoveDrag);
+    document.removeEventListener("touchend", onMouseUpDrag);
     document.removeEventListener("mousemove", onMouseMoveDrag);
     document.removeEventListener("mouseup", onMouseUpDrag);
     _dragging = null;
@@ -899,13 +934,20 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
   _canvas.addEventListener("focus", onFocus);
   _canvas.addEventListener("blur", onBlur);
-  _canvas.addEventListener("mousedown", onMouseDown);
+
+  if (IsTouch) {
+    _canvas.addEventListener("touchstart", onMouseDown, { passive: false });
+  } else {
+    _canvas.addEventListener("mousedown", onMouseDown);
+  }
+
   _canvas.addEventListener("keydown", onKeyDown);
 
   function destroy() {
     endAddingDot(false);
 
     _canvas.removeEventListener("keydown", onKeyDown);
+    _canvas.removeEventListener("touchstart", onMouseDown);
     _canvas.removeEventListener("mousedown", onMouseDown);
     _canvas.removeEventListener("focus", onFocus);
     _canvas.removeEventListener("blur", onBlur);

@@ -1,3 +1,5 @@
+import { IsTouch } from "@util";
+
 interface Point {
   x: number;
   y: number;
@@ -33,7 +35,7 @@ export function diffPt(p1: Point, p2: Point) {
   return { x: p1.x - p2.x, y: p1.y - p2.y };
 }
 
-export function nearPt(p: Point, x: number, y: number, minDistance: number = 9) {
+export function nearPt(p: Point, x: number, y: number, minDistance: number = IsTouch ? 22 : 9) {
   const dx = x - p.x;
   const dy = y - p.y;
   return dx * dx + dy * dy < minDistance * minDistance;
