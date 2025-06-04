@@ -22,7 +22,7 @@
     "**/*.tsx": "eslint"
   },
   "devDependencies": {
-    "@eslint/css": "^0.6.0",
+    "@eslint/css": "^0.8.1",
     "@eslint/js": "^9.13.0",
     "@mdx-js/react": "^3.1.0",
     "@mdx-js/rollup": "^3.1.0",
