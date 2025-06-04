@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@eslint/css": "^0.6.0",
-    "@eslint/js": "^9.13.0",
+    "@eslint/js": "^9.28.0",
     "@mdx-js/react": "^3.1.0",
     "@mdx-js/rollup": "^3.1.0",
     "@types/react": "^18.3.12",
