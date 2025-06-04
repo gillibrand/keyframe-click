@@ -139,8 +139,14 @@
   justify-content: end;
 }
 
-.hidden {
+.invisible {
   visibility: hidden;
+}
+
+.hidden\:sm {
+  @media (width < 750px) {
+    display: none;
+  }
 }
 
 .overflow-hidden {

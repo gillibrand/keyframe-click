@@ -188,7 +188,7 @@ export const TimelineInspector = memo(function Inspector({
       </div>
 
       {/* Hide this so it take the same space hidden or not and doesn't shift the height around on selection */}
-      <div className={cx("stack", { hidden: !selected })}>
+      <div className={cx("stack", { "invisible hidden:sm": !selected })}>
         <label className="stacked-label">
           <span>Style</span>
           <Select onChange={(e) => handleTypeChange(e.target.value)} value={selected?.type ?? ""}>
