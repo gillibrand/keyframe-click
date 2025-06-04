@@ -419,8 +419,8 @@ export function TimelinePage() {
 
   const stopExporting = useCallback(() => setIsExportOpen(false), [setIsExportOpen]);
 
-  const copyNow = useCallback(() => {
-    const note = copyToClipboard(layers, format, ruleName);
+  const copyNow = useCallback(async () => {
+    const note = await copyToClipboard(layers, format, ruleName);
     sendNote(note);
   }, [layers, format, ruleName, sendNote]);
 

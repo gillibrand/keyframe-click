@@ -25,6 +25,13 @@
   --sz-small: 0.875rem; /* 14px */
   --sz-x-small: 0.75rem; /* 14px */
 
+  @media (width < 750px) {
+    /* no fonts less then 16px on mobile for readability and to prevent auto zoom */
+    --sz-h2: 1.25rem;
+    --sz-small: 1rem;
+    --sz-x-small: 1rem;
+  }
+
   --c-gray-50: oklch(0.985 0.002 247.839);
   --c-gray-100: oklch(0.967 0.003 264.542);
   --c-gray-200: oklch(0.928 0.006 264.531);
@@ -230,5 +237,11 @@ kbd {
 
   &.is-plain {
     padding-block: 0;
+  }
+}
+
+.desktop-only {
+  @media (width < 750px) {
+    display: none !important;
   }
 }

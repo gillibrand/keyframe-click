@@ -45,7 +45,7 @@ export function Banner() {
   return (
     <header className="py-4x Banner">
       <div className="wrapper flex gap-8 items-end">
-        <h1 className="Banner__title cursor-default" onClick={handleGotoTimeline}>
+        <h1 className="Banner__title cursor-default desktop-only" onClick={handleGotoTimeline}>
           Keyframe Click
         </h1>
 
@@ -66,13 +66,13 @@ export function Banner() {
           </a>
 
           {isDevMode && (
-            <a className="Banner__link" {...href("#/debug", true)}>
+            <a className="Banner__link desktop-only" {...href("#/debug", true)}>
               dev
             </a>
           )}
         </nav>
 
-        <div className="ml-auto py-2 text-light flex gap-4 items-center">
+        <div className="ml-auto py-2 text-light flex gap-4 items-center desktop-only">
           <span>
             by <a href="https://gillibrand.github.io/projects/">Jay Gillibrand</a>{" "}
           </span>

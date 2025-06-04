@@ -135,12 +135,11 @@ function indent(css: string) {
  * @returns A message about the success that should be shown in a notification. This function doesn't do that for you
  *   since sometime we want to animate a dialog closed first.
  */
-export function copyToClipboard(layers: Layers, format: Format, ruleName: string) {
+export async function copyToClipboard(layers: Layers, format: Format, ruleName: string) {
   const keyframeText = genKeyframeText(layers, format);
-  navigator.clipboard.writeText(generateCssAtRule(keyframeText, format, ruleName));
+  await navigator.clipboard.writeText(generateCssAtRule(keyframeText, format, ruleName));
 
   const message = format === "js" ? "Copied JavaScript" : ruleName ? `Copied "${ruleName}" CSS` : "Copied CSS";
-
   return (
     <span className="flex items-center gap-2">
       <Check /> {message}

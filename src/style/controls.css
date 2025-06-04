@@ -17,7 +17,7 @@
   border-radius: 999px;
   padding: 0.5rem 1rem;
   background-color: white;
-
+  color: black;
   min-width: 12ch;
 
   &:not(:disabled) {

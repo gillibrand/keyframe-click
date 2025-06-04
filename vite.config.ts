@@ -5,8 +5,11 @@ import svgr from "vite-plugin-svgr";
 import browserslistToEsbuild from "browserslist-to-esbuild";
 import browserslist from "browserslist";
 import mdx from "@mdx-js/rollup";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 
 const esbuildTargets = browserslistToEsbuild(browserslist());
+
+// vite.config.js
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,7 +17,15 @@ export default defineConfig({
   build: {
     target: esbuildTargets,
   },
-  plugins: [svgr(), react(), mdx(), tsconfigPaths()],
+  plugins: [
+    svgr(),
+    react(),
+    mdx(),
+    tsconfigPaths(),
+    basicSsl({
+      name: "test",
+    }),
+  ],
   resolve: {
     alias: {
       "@components": "/src/components",

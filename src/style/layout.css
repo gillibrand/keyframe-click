@@ -11,6 +11,10 @@
 
   padding-inline: 1rem;
   margin-inline: auto;
+
+  @media (width < 750px) {
+    min-width: 0;
+  }
 }
 
 .wrapper-small {

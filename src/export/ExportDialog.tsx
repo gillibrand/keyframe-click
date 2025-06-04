@@ -50,7 +50,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
   const { sendNote } = useNoteApi();
 
   const handleSubmit = useCallback(async () => {
-    const note = copyToClipboard(layers, format, ruleName);
+    const note = await copyToClipboard(layers, format, ruleName);
     await dialogApi.current?.animateClose();
     sendNote(note);
   }, [layers, format, ruleName, dialogApi, sendNote]);

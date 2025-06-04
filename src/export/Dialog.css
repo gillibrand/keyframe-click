@@ -28,6 +28,10 @@
     transition: opacity 150ms ease;
     background: rgba(0 0 0 / 0.15);
     opacity: 0;
+
+    @media (width < 750px) {
+      background: rgba(0 0 0 / 0.5);
+    }
   }
 
   h2 {

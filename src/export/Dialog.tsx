@@ -45,6 +45,10 @@ export interface DialogApi {
   animateClose: () => Promise<void>;
 }
 
+function isSmallScreen() {
+  return window.innerWidth < 750;
+}
+
 /**
  * A generic dialog component. Pass children to show. Use `DialogBody` and `DialogFooter` for consistent styling. Open
  * like a popover with a tail near the opening button.
@@ -101,7 +105,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
         const el = dialog.querySelector("[data-autofocus]") as HTMLElement;
         if (el) el.focus();
 
-        if (near) {
+        if (!isSmallScreen() && near) {
           const r = near.getBoundingClientRect();
           dialog.style.top = `${r.top + r.height + 10}px`;
           dialog.style.right = `${window.innerWidth - r.right}px`;
@@ -162,6 +166,8 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     }
   }
 
+  const isSmall = isSmallScreen();
+
   return createPortal(
     <dialog
       ref={dialogRef}
@@ -173,10 +179,10 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
       aria-labelledby={dialogLabelId}
       id={id}
       style={{
-        margin: near ? 0 : undefined,
+        margin: !isSmall && near ? 0 : undefined,
       }}
     >
-      {near && <Tail className="Dialog__tail" />}
+      {!isSmallScreen() && near && <Tail className="Dialog__tail" />}
 
       <form action="dialog" className="[ flex flex-col ] stack" onSubmit={handleSubmit}>
         <header className={cx("px-4 pt-4", { "sr-only": hideLabel })}>

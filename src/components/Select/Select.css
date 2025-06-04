@@ -11,6 +11,7 @@
   width: 100%;
   background-color: white;
   outline: none;
+  color: inherit;
 
   &:not(:disabled) {
     cursor: pointer;

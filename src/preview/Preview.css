@@ -3,6 +3,7 @@
   place-items: center;
   overflow: hidden;
   cursor: pointer;
+  min-height: 250px;
 
   position: relative;
 
