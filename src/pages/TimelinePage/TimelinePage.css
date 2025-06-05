@@ -5,10 +5,10 @@
   /* Inset is used to overflow drawing of the dots and text near the edge. We offset the position so
   we can have a large canvas that takes up the same physical size. The extra 20px of height is 10+10
   for that.*/
-  inset: -10px;
-  height: 100%;
-
-  width: 100%;
+  top: -10px;
+  left: -10px;
+  height: calc(100% + 20px);
+  width: calc(100% + 20px);
 
   &:focus {
     outline: none;
@@ -25,8 +25,27 @@
   grid-template-columns: 1fr 18rem;
   align-items: stretch;
 
+  /* Switch to a scroll snapping h scroller when skinny enough */
   @media (width < 750px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100% 100%;
+
+    /* push to the edges of the page for less scroll clipping. Compensate with padding */
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    scroll-padding-inline: 1rem;
+
+    /* give overdraw space for dots off the canvas */
+    padding-block: 6px;
+    margin-block: -6px;
+
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    & > * {
+      scroll-snap-align: start;
+    }
   }
 }
 
@@ -41,10 +60,11 @@
 .timeline-wrapper {
   position: relative;
 
-  /* This timeline visually overflow a bit (the text and focus outline)--10 on each edge */
   min-height: 350px;
-  margin-inline-end: -20px;
-  margin-block-end: -20px;
+
+  /* TODO: share with .tile */
+  border: solid 2px var(--c-neo-black);
+  box-shadow: 4px 4px 0 0 var(--c-neo-black);
 }
 
 .is-dialog-open #root :where(button, label, .RadioTab, .DemoTile) {

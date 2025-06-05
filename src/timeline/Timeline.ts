@@ -1,6 +1,5 @@
 import { IsTouch, throttle } from "@util";
 import { ColorName, Colors } from "@util/Colors";
-import { isFocusVisible } from "@util/focusVisible";
 import {
   asRealDot,
   asRealPoint,
@@ -195,16 +194,6 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
   /** Watches the canvas ro resizes and updates and redraws it if needed. */
   let _resizeObserver: ResizeObserver | undefined;
-
-  // We save whether focus is "visible" (based on keyboard vs mouse activity) when we focus on the
-  // canvas. This lets us maintain the same visible focus state the entire time so we don't Tab in,
-  // then click a dot and have the border disappear. Similarly, if we click with the mouse first, we
-  // don't want the focus ring to appear if we hit the keyboard. Basically, only show focus ring if
-  // we Tabbed into this.
-  //
-  // I want o investigate a more subtle ring later so maybe we always show it. It's useful but is a
-  // little distracting as-is.
-  let _isFocusVisible = false;
 
   /**
    * Call after a zoom or resize. This calcs the correct logical pixel sizes and re-centers the timeline. Without this,
@@ -530,37 +519,7 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
     drawAxisText();
 
-    // border
-    _cx.lineWidth = 2;
-    _cx.strokeStyle = Colors.NeoBlack;
-    _cx.strokeRect(InsetX, InsetY, width() - 2 * InsetX - 1, fullDiffReal);
-
-    const isFocused = _isFocusVisible;
-
-    // shadow
-    if (!isFocused) {
-      _cx.strokeStyle = Colors.NeoBlack;
-      _cx.lineWidth = 4;
-      _cx.beginPath();
-      _cx.moveTo(InsetX + 4, _canvas.clientHeight - InsetY + 2);
-      _cx.lineTo(width() - InsetX + 2, _canvas.clientHeight - InsetY + 2);
-      _cx.lineTo(width() - InsetX + 2, InsetY + 4);
-      _cx.stroke();
-    }
-
-    // Draw our own focus ring. This is because we draw large dots that appear to break out of the canvas
-    if (isFocused) {
-      // blue line
-      _cx.lineWidth = 3;
-      _cx.strokeStyle = "#1c7ef3";
-      _cx.strokeRect(InsetX - 3, InsetY - 3, width() - 2 * InsetX - 1 + 6, fullDiffReal + 6);
-
-      // inset white line to cover background color and ensure the outer client is well contrasted
-      _cx.strokeRect(InsetX - 3, InsetY - 3, width() - 2 * InsetX - 1 + 6, fullDiffReal + 6);
-      _cx.lineWidth = 1;
-      _cx.strokeStyle = "white";
-      _cx.strokeRect(InsetX - 1, InsetY - 1, width() - 2 * InsetX - 1 + 2, fullDiffReal + 2);
-    }
+    // TODO: missing a focus ring now. Possibly handle in CSS with timeline-wrapper
   }
 
   /**
@@ -923,12 +882,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   function onFocus() {
-    _isFocusVisible = isFocusVisible();
     draw();
   }
 
   function onBlur() {
-    _isFocusVisible = false;
     draw();
   }
 
