@@ -1,0 +1,23 @@
+.PageIndicator {
+  background-color: rgba(255 255 255 / 0.5);
+  border-radius: 999px;
+  padding: 4px 6px;
+  gap: 6px;
+  border: solid 2px black;
+}
+
+.PageIndicator__dot {
+  display: grid;
+  place-items: center;
+
+  color: var(--c-n);
+  color: white;
+  color: black;
+  opacity: 0.25;
+  transition: opacity 200ms;
+}
+
+.PageIndicator:not(:has(:checked)) :first-child,
+.PageIndicator:has(:checked) :last-child {
+  opacity: 1;
+}

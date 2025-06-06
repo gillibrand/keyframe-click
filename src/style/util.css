@@ -149,6 +149,12 @@
   }
 }
 
+.hidden\:lg {
+  @media (width >= 750px) {
+    display: none;
+  }
+}
+
 .overflow-hidden {
   overflow: hidden;
 }

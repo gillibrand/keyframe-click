@@ -16,20 +16,21 @@
   --z-toast: 100;
 
   font-size: 87.5%;
-  --sz-base: 1rem; /* 16px */
-  --sz-h1: 1.5rem; /* 32px */
-  --sz-h2: 1.75rem; /* 28px */
-  --sz-h3: 1.5rem; /* 24px */
-  --sz-body: 1rem; /* 16px */
+  --sz-base: 1rem;
+  --sz-h1: 1.5rem;
+  --sz-h2: 1.75rem;
+  --sz-h3: 1.5rem;
+  --sz-body: 1rem;
   --sz-large: 1.25rem;
-  --sz-small: 0.875rem; /* 14px */
-  --sz-x-small: 0.75rem; /* 14px */
+  --sz-small: 0.875rem;
+  --sz-x-small: 0.75rem;
 
   @media (width < 750px) {
+    font-size: 100%;
     /* no fonts less then 16px on mobile for readability and to prevent auto zoom */
-    --sz-h2: 1.25rem;
-    --sz-small: 1rem;
-    --sz-x-small: 1rem;
+    --sz-h2: 1rem;
+    /* --sz-small: 1rem; */
+    /* --sz-x-small: 1rem; */
   }
 
   --c-gray-50: oklch(0.985 0.002 247.839);

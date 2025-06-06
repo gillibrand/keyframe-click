@@ -10,6 +10,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import "./TimelinePage.css";
 
 import { useNoteApi } from "@components/note";
+import { PageIndicator } from "@components/PageIndicator";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { useTooltip } from "@components/Tooltip";
@@ -19,11 +20,11 @@ import Copy from "@images/copy.svg?react";
 import Down from "@images/down.svg?react";
 import ZoomIn from "@images/zoom-in.svg?react";
 import ZoomOut from "@images/zoom-out.svg?react";
+import { useRouter } from "@router/useRouter";
 import { GlobalLayers, Unit } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
 import { useGlobalShortcuts } from "./useGlobalShortcuts";
-import { useRouter } from "@router/useRouter";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -447,6 +448,45 @@ export function TimelinePage() {
 
   useGlobalShortcuts({ layers, zoomIn, zoomOut, copyNow: isExporting ? null : copyNow });
 
+  const [timelineOptionsChecked, setTimelineOptionsChecked] = useState<boolean>(false);
+
+  function handleTimelineOptionsChange(checked: boolean) {
+    const timelineRow = timelineRowRef.current;
+    if (!timelineRow) return;
+    setTimelineOptionsChecked(checked);
+
+    const visiblePane = checked ? timelineRow.children[1] : timelineRow.children[0];
+    visiblePane.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+
+  const timelineRowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(function timelineScrollObserver() {
+    const timelineRow = timelineRowRef.current;
+    if (!timelineRow) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const target = entry.target as HTMLElement;
+            setTimelineOptionsChecked(target.dataset["scrollChoice"] === "options");
+          }
+        });
+      },
+      {
+        root: timelineRow,
+        threshold: 0.75,
+      }
+    );
+
+    Array.from(timelineRow.children).forEach((item) => {
+      observer.observe(item);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
@@ -502,8 +542,8 @@ export function TimelinePage() {
         </section>
 
         {/* TIMELINE ROW */}
-        <section className="inspector-sidebar grow">
-          <div className="timeline-wrapper ">
+        <section className="inspector-sidebar grow" ref={timelineRowRef}>
+          <div className="timeline-wrapper" data-scroll-choice="timeline">
             <canvas
               className={"timeline " + (isAdding ? "is-adding" : "")}
               width={1}
@@ -526,7 +566,7 @@ export function TimelinePage() {
           </div>
 
           {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
-          <div className="tile">
+          <div className="tile" data-scroll-choice="options">
             <TimelineInspector
               cssProp={layers.getCssProp()}
               onChangeCssProp={setCssProp}
@@ -545,6 +585,10 @@ export function TimelinePage() {
             />
           </div>
         </section>
+
+        <div className="flex justify-center hidden:lg">
+          <PageIndicator checked={timelineOptionsChecked} onChange={handleTimelineOptionsChange} />
+        </div>
 
         {/* PREVIEW ROW */}
         <section className="inspector-sidebar">

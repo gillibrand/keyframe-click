@@ -174,7 +174,7 @@ export const TimelineInspector = memo(function Inspector({
             Delete
           </button>
         </div>
-        <Hint>
+        <Hint className="desktop-only">
           <div className="text-center">
             {isAdding ? (
               <>Click timeline to place the point</>
@@ -188,7 +188,7 @@ export const TimelineInspector = memo(function Inspector({
       </div>
 
       {/* Hide this so it take the same space hidden or not and doesn't shift the height around on selection */}
-      <div className={cx("stack", { "invisible hidden:sm": !selected })}>
+      <div className={cx("stack", { invisible: !selected })}>
         <label className="stacked-label">
           <span>Style</span>
           <Select onChange={(e) => handleTypeChange(e.target.value)} value={selected?.type ?? ""}>

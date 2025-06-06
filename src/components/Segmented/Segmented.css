@@ -9,6 +9,10 @@
   justify-content: center;
   font-size: var(--sz-small);
 
+  @media (width < 750px) {
+    font-size: small;
+  }
+
   /* This works around a subpixel rendering problem in Chrome where the background can bleed through
   sometimes below the element. If that background is white, its's very obvious. This seems to always look good. */
   background-color: var(--c-neo-blue);

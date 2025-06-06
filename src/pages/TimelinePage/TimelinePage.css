@@ -73,10 +73,16 @@
 
 .zoom-buttons {
   position: absolute;
-  inset-block-end: 36px;
-  inset-inline-end: 36px;
   opacity: 1;
   transition: opacity 100ms;
+
+  inset-block-end: 36px;
+  inset-inline-end: 36px;
+
+  @media (width < 750px) {
+    inset-block-end: 16px;
+    inset-inline-end: 16px;
+  }
 
   .is-moving &:hover {
     opacity: 0;

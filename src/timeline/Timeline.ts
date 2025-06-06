@@ -350,7 +350,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
         }
       }
     } finally {
-      setSelectedIndex(newSelected);
+      // Don't deselect points in touch since it's too easy to lose them when scrolling. We could
+      // change this to a click event fro deselect, but this seems to work well enough
+      if (!IsTouch || newSelected !== null) setSelectedIndex(newSelected);
     }
 
     if (_dragging) startDrag(x, y);
