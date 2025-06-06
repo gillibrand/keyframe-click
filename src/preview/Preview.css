@@ -4,6 +4,7 @@
   overflow: hidden;
   cursor: pointer;
   min-height: 250px;
+  flex-grow: 1;
 
   position: relative;
 

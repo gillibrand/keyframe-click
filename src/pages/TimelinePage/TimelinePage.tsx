@@ -10,7 +10,6 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import "./TimelinePage.css";
 
 import { useNoteApi } from "@components/note";
-import { PageIndicator } from "@components/PageIndicator";
 import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { useTooltip } from "@components/Tooltip";
@@ -25,6 +24,7 @@ import { GlobalLayers, Unit } from "@timeline/Layers";
 import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
 import { useGlobalShortcuts } from "./useGlobalShortcuts";
+import { usePageIndicator } from "./usePageIndicator";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -448,44 +448,19 @@ export function TimelinePage() {
 
   useGlobalShortcuts({ layers, zoomIn, zoomOut, copyNow: isExporting ? null : copyNow });
 
-  const [timelineOptionsChecked, setTimelineOptionsChecked] = useState<boolean>(false);
+  const {
+    pageIndicator: timelinePageIndicator,
+    scrollParentRef: timelineParentRef,
+    page1Ref: timelinePage1Ref,
+    page2Ref: timelinePage2Ref,
+  } = usePageIndicator();
 
-  function handleTimelineOptionsChange(checked: boolean) {
-    const timelineRow = timelineRowRef.current;
-    if (!timelineRow) return;
-    setTimelineOptionsChecked(checked);
-
-    const visiblePane = checked ? timelineRow.children[1] : timelineRow.children[0];
-    visiblePane.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }
-
-  const timelineRowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(function timelineScrollObserver() {
-    const timelineRow = timelineRowRef.current;
-    if (!timelineRow) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const target = entry.target as HTMLElement;
-            setTimelineOptionsChecked(target.dataset["scrollChoice"] === "options");
-          }
-        });
-      },
-      {
-        root: timelineRow,
-        threshold: 0.75,
-      }
-    );
-
-    Array.from(timelineRow.children).forEach((item) => {
-      observer.observe(item);
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  const {
+    pageIndicator: previewPageIndicator,
+    scrollParentRef: previewParentRef,
+    page1Ref: previewPage1Ref,
+    page2Ref: previewPage2Ref,
+  } = usePageIndicator();
 
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
@@ -542,8 +517,8 @@ export function TimelinePage() {
         </section>
 
         {/* TIMELINE ROW */}
-        <section className="inspector-sidebar grow" ref={timelineRowRef}>
-          <div className="timeline-wrapper" data-scroll-choice="timeline">
+        <section className="inspector-sidebar grow" ref={timelineParentRef}>
+          <div className="timeline-wrapper" ref={timelinePage1Ref}>
             <canvas
               className={"timeline " + (isAdding ? "is-adding" : "")}
               width={1}
@@ -566,7 +541,7 @@ export function TimelinePage() {
           </div>
 
           {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
-          <div className="tile" data-scroll-choice="options">
+          <div className="tile" ref={timelinePage2Ref}>
             <TimelineInspector
               cssProp={layers.getCssProp()}
               onChangeCssProp={setCssProp}
@@ -586,15 +561,15 @@ export function TimelinePage() {
           </div>
         </section>
 
-        <div className="flex justify-center hidden:lg">
-          <PageIndicator checked={timelineOptionsChecked} onChange={handleTimelineOptionsChange} />
-        </div>
+        <div className="flex justify-center hidden:lg">{timelinePageIndicator}</div>
 
         {/* PREVIEW ROW */}
-        <section className="inspector-sidebar">
-          {preview}
+        <section className="inspector-sidebar" ref={previewParentRef}>
+          <div className="flex-col" ref={previewPage1Ref}>
+            {preview}
+          </div>
 
-          <div className="tile">
+          <div className="tile" ref={previewPage2Ref}>
             <PreviewInspector
               isPlaying={isPlaying}
               duration={duration}
@@ -608,6 +583,8 @@ export function TimelinePage() {
             />
           </div>
         </section>
+
+        <div className="flex justify-center hidden:lg">{previewPageIndicator}</div>
       </div>
     </main>
   );

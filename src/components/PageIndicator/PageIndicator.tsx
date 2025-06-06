@@ -1,3 +1,4 @@
+import { memo } from "react";
 import "./PageIndicator.css";
 
 import DotSmall from "@images/dot-small.svg?react";
@@ -8,7 +9,7 @@ interface Props {
 }
 
 /** The "dots" under slidable mobile pages. In this case, we only support two pages, so this is a checkbox underneath. */
-export function PageIndicator({ checked, onChange }: Props) {
+export const PageIndicator = memo(function PageIndicator({ checked, onChange }: Props) {
   // TODO: accessible label
 
   return (
@@ -22,4 +23,4 @@ export function PageIndicator({ checked, onChange }: Props) {
       </span>
     </label>
   );
-}
+});
