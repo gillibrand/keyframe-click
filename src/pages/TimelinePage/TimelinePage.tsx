@@ -19,6 +19,7 @@ import Copy from "@images/copy.svg?react";
 import Down from "@images/down.svg?react";
 import ZoomIn from "@images/zoom-in.svg?react";
 import ZoomOut from "@images/zoom-out.svg?react";
+import Trash from "@images/trash.svg?react";
 import { useRouter } from "@router/useRouter";
 import { GlobalLayers, Unit } from "@timeline/Layers";
 import { cx } from "@util/cx";
@@ -462,6 +463,38 @@ export function TimelinePage() {
     page2Ref: previewPage2Ref,
   } = usePageIndicator();
 
+  function renderCopyButtons(isDesktop: boolean, className?: string) {
+    let buttons = [
+      <button
+        title="Set options and copy keyframes"
+        onClick={startExport}
+        className={cx("grow  flex-center gap-2 is-icon", { "is-pressed": isExporting })}
+        ref={isDesktop ? copyButtonRef : undefined}
+        aria-haspopup="dialog"
+        aria-controls={activeExportId}
+      >
+        {isDesktop && "Copy"} <Down />
+      </button>,
+      <button
+        aria-haspopup="dialog"
+        aria-expanded={isExporting}
+        aria-controls={activeExportId}
+        onClick={copyNow}
+        className="center"
+        {...copyTooltipProps}
+      >
+        <Copy />
+        <span className="sr-only">Copy with current options</span>
+        {copyTooltip}
+      </button>,
+    ];
+
+    // On mobile we show only the icon for copy, so put the drop down (with no text) after the icon.
+    if (!isDesktop) buttons = buttons.reverse();
+
+    return <SplitButtons className={className}>{[buttons]}</SplitButtons>;
+  }
+
   return (
     <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
       {isExporting && (
@@ -489,35 +522,11 @@ export function TimelinePage() {
             onChange={changeTab}
           />
 
-          <SplitButtons>
-            <button
-              title="Set options and copy keyframes"
-              onClick={startExport}
-              className={cx("grow  flex-center gap-2 is-icon", { "is-pressed": isExporting })}
-              ref={copyButtonRef}
-              aria-haspopup="dialog"
-              aria-controls={activeExportId}
-            >
-              Copy <Down />
-            </button>
-
-            <button
-              aria-haspopup="dialog"
-              aria-expanded={isExporting}
-              aria-controls={activeExportId}
-              onClick={copyNow}
-              className="center"
-              {...copyTooltipProps}
-            >
-              <Copy />
-              <span className="sr-only">Copy with current options</span>
-              {copyTooltip}
-            </button>
-          </SplitButtons>
+          {renderCopyButtons(true, "desktop-only")}
         </section>
 
         {/* TIMELINE ROW */}
-        <section className="inspector-sidebar grow" ref={timelineParentRef}>
+        <section className="inspector-sidebar grow relative" ref={timelineParentRef}>
           <div className="timeline-wrapper" ref={timelinePage1Ref}>
             <canvas
               className={"timeline " + (isAdding ? "is-adding" : "")}
@@ -560,6 +569,27 @@ export function TimelinePage() {
             />
           </div>
         </section>
+
+        <div className="mobile-only flex gap-2 justify-between">
+          <div className="flex gap-2">
+            <button
+              className={cx("button is-small", { "is-pressed": isAdding })}
+              aria-pressed={isAdding}
+              onClick={handleClickAdd}
+            >
+              Add
+            </button>
+            {selectedDot && (
+              <button className="button is-small is-danger" onClick={handleClickDelete} disabled={!selectedDot}>
+                <Trash />
+              </button>
+            )}
+            {/* <button className="button">
+              <Trash />
+            </button> */}
+          </div>
+          {renderCopyButtons(false, "ml-auto")}
+        </div>
 
         <div className="flex justify-center hidden:lg">{timelinePageIndicator}</div>
 

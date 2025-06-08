@@ -162,7 +162,7 @@ export const TimelineInspector = memo(function Inspector({
       <h2>Point</h2>
 
       <div className="stack-small">
-        <div className="flex gap-2">
+        <div className="flex gap-2 desktop-only">
           <button
             className={cx("button flex-auto basis-1", { "is-pressed": isAdding })}
             aria-pressed={isAdding}
