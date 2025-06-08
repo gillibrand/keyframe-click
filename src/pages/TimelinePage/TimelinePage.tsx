@@ -466,6 +466,7 @@ export function TimelinePage() {
   function renderCopyButtons(isDesktop: boolean, className?: string) {
     let buttons = [
       <button
+        key="copy"
         title="Set options and copy keyframes"
         onClick={startExport}
         className={cx("grow  flex-center gap-2 is-icon", { "is-pressed": isExporting })}
@@ -476,6 +477,7 @@ export function TimelinePage() {
         {isDesktop && "Copy"} <Down />
       </button>,
       <button
+        key="copy-options"
         aria-haspopup="dialog"
         aria-expanded={isExporting}
         aria-controls={activeExportId}
@@ -570,7 +572,10 @@ export function TimelinePage() {
           </div>
         </section>
 
-        <div className="mobile-only flex gap-2 justify-between">
+        <div className="PageIndicator--row mobile-only">{timelinePageIndicator}</div>
+
+        {/* Mobile only toolbar row */}
+        <div className="mobile-only flex gap-2 justify-between mt-0">
           <div className="flex gap-2">
             <button
               className={cx("button is-small", { "is-pressed": isAdding })}
@@ -590,10 +595,10 @@ export function TimelinePage() {
           </div>
           {renderCopyButtons(false, "ml-auto")}
         </div>
-
-        <div className="flex justify-center hidden:lg">{timelinePageIndicator}</div>
-
         {/* PREVIEW ROW */}
+
+        {/* <h2 className="mt-8 color-black">Preview</h2> */}
+
         <section className="inspector-sidebar" ref={previewParentRef}>
           <div className="flex-col" ref={previewPage1Ref}>
             {preview}
@@ -614,7 +619,7 @@ export function TimelinePage() {
           </div>
         </section>
 
-        <div className="flex justify-center hidden:lg">{previewPageIndicator}</div>
+        <div className="PageIndicator--row mobile-only">{previewPageIndicator}</div>
       </div>
     </main>
   );

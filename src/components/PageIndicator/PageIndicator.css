@@ -1,9 +1,6 @@
 .PageIndicator {
-  background-color: rgba(255 255 255 / 0.5);
   border-radius: 999px;
-  padding: 4px 6px;
   gap: 6px;
-  border: solid 2px black;
 }
 
 .PageIndicator__dot {
@@ -20,4 +17,13 @@
 .PageIndicator:not(:has(:checked)) :first-child,
 .PageIndicator:has(:checked) :last-child {
   opacity: 1;
+}
+
+.PageIndicator--row {
+  margin: 0;
+  margin-block-start: 0;
+  padding: 0.5rem 0 0 0;
+  display: grid;
+  place-items: center;
+  height: 1rem;
 }

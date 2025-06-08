@@ -1,3 +1,9 @@
+import "@style/util.css";
+import "@style/colors.css";
+import "@style/controls.css";
+import "@style/global.css";
+import "@style/layout.css";
+
 import { App } from "@app/App";
 import { NoteProvider } from "@components/note";
 import { AboutPage } from "@pages/AboutPage";
@@ -5,15 +11,10 @@ import { DemoPage } from "@pages/DemoPage";
 import { TimelinePage } from "@pages/TimelinePage";
 import { RouterProvider, Routes } from "@router/RouterProvider";
 import { lazyWithPreload } from "@router/useRouter";
-import "@style/colors.css";
-import "@style/controls.css";
-import "@style/global.css";
-import "@style/layout.css";
-import "@style/util.css";
 import { isDevMode } from "@util";
-import "@util/focusVisible";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "@util/focusVisible";
 
 const routes: Routes = {
   "/": TimelinePage,

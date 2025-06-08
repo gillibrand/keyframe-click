@@ -1,7 +1,7 @@
 import { memo } from "react";
 import "./PageIndicator.css";
 
-import DotSmall from "@images/dot-small.svg?react";
+import DotXSmall from "@images/dot-x-small.svg?react";
 
 interface Props {
   checked: boolean;
@@ -15,11 +15,11 @@ export const PageIndicator = memo(function PageIndicator({ checked, onChange }: 
   return (
     <label className="PageIndicator flex">
       <span className="PageIndicator__dot">
-        <DotSmall />
+        <DotXSmall />
       </span>
       <input type="checkbox" checked={checked} className="sr-only" onChange={(e) => onChange(e.target.checked)}></input>
       <span className="PageIndicator__dot">
-        <DotSmall />
+        <DotXSmall />
       </span>
     </label>
   );

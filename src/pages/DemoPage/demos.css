@@ -1,9 +1,10 @@
-.DemoTile {
+.tile.DemoTile {
   display: block;
   width: 100%;
   appearance: none;
   cursor: pointer;
   text-align: start;
+  padding: 0;
 
   font-size: var(--sz-body);
   color: black;

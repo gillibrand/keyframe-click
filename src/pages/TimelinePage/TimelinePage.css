@@ -28,15 +28,17 @@
   /* Switch to a scroll snapping h scroller when skinny enough */
   @media (width < 750px) {
     grid-template-columns: 100% 100%;
+    gap: 1.5rem;
 
     /* push to the edges of the page for less scroll clipping. Compensate with padding */
     margin-inline: -1rem;
     padding-inline: 1rem;
     scroll-padding-inline: 1rem;
 
-    /* give overdraw space for dots off the canvas */
-    padding-block: 6px;
-    margin-block: -6px;
+    /* use padding instead of margin so we don't clip shadows. Small on bottom for pagination
+    controls to sit tight */
+    padding-block: 1rem 0.2rem;
+    margin-block: 0px;
 
     overflow-x: scroll;
     overflow-y: hidden;
@@ -45,6 +47,14 @@
 
     & > * {
       scroll-snap-align: start;
+    }
+  }
+
+  &.canvas-row {
+    @media (width < 750px) {
+      /* give overdraw space for dots off the canvas */
+      padding-block: 6px;
+      margin-block: -6px;
     }
   }
 }

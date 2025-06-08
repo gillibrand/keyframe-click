@@ -29,8 +29,12 @@
 
 /** Basic layout util of stack the contents with consistent spacing. Note that a child can opt out
  * of this if it's mt-0, usually for animation purposes.*/
-.stack > :is(* + *) {
+.stack > :where(* + *) {
   margin-block-start: 1.125rem;
+
+  @media (width < 750px) {
+    margin-block-start: 1rem;
+  }
 }
 
 .stack-small > * + * {
@@ -174,6 +178,17 @@
 
 .pt-4 {
   padding-block-start: 1rem;
+}
+
+.p-1 {
+  padding: 0.25rem;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
 .p-4 {
