@@ -244,16 +244,6 @@ export function TimelinePage() {
     keyframeText: cssKeyframeText,
   });
 
-  const {
-    args: { playDemo },
-  } = useRouter();
-
-  useEffect(() => {
-    if (playDemo) {
-      playPreview();
-    }
-  }, [playDemo, playPreview]);
-
   const [getIsExportOpen, setIsExportOpen] = useLiveState(false);
 
   useEffect(
@@ -463,6 +453,17 @@ export function TimelinePage() {
     page2Ref: previewPage2Ref,
   } = usePageIndicator();
 
+  const {
+    args: { playDemo },
+  } = useRouter();
+
+  useEffect(() => {
+    if (playDemo) {
+      previewParentRef.current?.scrollIntoView({ behavior: "smooth" });
+      playPreview();
+    }
+  }, [playDemo, playPreview, previewParentRef]);
+
   function renderCopyButtons(isDesktop: boolean, className?: string) {
     let buttons = [
       <button
@@ -498,7 +499,7 @@ export function TimelinePage() {
   }
 
   return (
-    <main className={cx("grow [ flex-col ] wrapper", { "is-dialog-open": isExporting })}>
+    <main className={cx("grow [ flex-col ] wrapper mb-stack", { "is-dialog-open": isExporting })}>
       {isExporting && (
         <ExportDialog
           open={true}
