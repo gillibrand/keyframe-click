@@ -20,7 +20,6 @@
 }
 
 .PageIndicator--row {
-  margin: 0;
   margin-block-start: 0;
   padding: 0.5rem 0 0 0;
   display: grid;

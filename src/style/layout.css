@@ -17,6 +17,13 @@
   }
 }
 
+.tinted-wrapper\:sm {
+  @media (width < 750px) {
+    background-image: linear-gradient(rgba(0 0 0 / 0.1), transparent 20%);
+    margin-block-start: 1rem;
+  }
+}
+
 .wrapper-small {
   /* Need width in case this is nested in a flex-col */
   width: 100%;

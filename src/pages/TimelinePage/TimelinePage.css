@@ -25,6 +25,9 @@
   grid-template-columns: 1fr 18rem;
   align-items: stretch;
 
+  padding-block: 1rem;
+  margin-block: 0px;
+
   /* Switch to a scroll snapping h scroller when skinny enough */
   @media (width < 750px) {
     grid-template-columns: 100% 100%;
@@ -47,14 +50,6 @@
 
     & > * {
       scroll-snap-align: start;
-    }
-  }
-
-  &.canvas-row {
-    @media (width < 750px) {
-      /* give overdraw space for dots off the canvas */
-      padding-block: 6px;
-      margin-block: -6px;
     }
   }
 }

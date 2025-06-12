@@ -499,7 +499,7 @@ export function TimelinePage() {
   }
 
   return (
-    <main className={cx("grow [ flex-col ] wrapper mb-stack", { "is-dialog-open": isExporting })}>
+    <main className={cx("grow [ flex-col ]", { "is-dialog-open": isExporting })}>
       {isExporting && (
         <ExportDialog
           open={true}
@@ -510,117 +510,125 @@ export function TimelinePage() {
         />
       )}
 
-      <div className="flex-col grow [ stack stack--trail ]">
+      <div className="flex-col grow">
         {/* TABS and SETTINGS at top */}
-        <section className="flex gap-4 items-center justify-between">
-          <RadioTabGroup
-            tabs={tabs}
-            label="Active property"
-            radioGroupName="property"
-            canAddNew={remainingCssProps.size > 0}
-            onAddNew={addNewTab}
-            onDelete={deleteTab}
-            canDelete={layers.size > 1 ? canDeleteTab : undefined}
-            checkedId={layers.getActiveLayer().id}
-            onChange={changeTab}
-          />
+        <div className="wrapper">
+          <section className="flex gap-4 items-center justify-between">
+            <RadioTabGroup
+              tabs={tabs}
+              label="Active property"
+              radioGroupName="property"
+              canAddNew={remainingCssProps.size > 0}
+              onAddNew={addNewTab}
+              onDelete={deleteTab}
+              canDelete={layers.size > 1 ? canDeleteTab : undefined}
+              checkedId={layers.getActiveLayer().id}
+              onChange={changeTab}
+            />
 
-          {renderCopyButtons(true, "desktop-only")}
-        </section>
+            {renderCopyButtons(true, "desktop-only")}
+          </section>
+        </div>
 
         {/* TIMELINE ROW */}
-        <section className="inspector-sidebar grow relative" ref={timelineParentRef}>
-          <div className="timeline-wrapper" ref={timelinePage1Ref}>
-            <canvas
-              className={"timeline " + (isAdding ? "is-adding" : "")}
-              width={1}
-              height={1}
-              id="canvas"
-              ref={canvasRef}
-              tabIndex={0}
-            />
+        <div className="wrapper grow flex-col">
+          <section className="inspector-sidebar grow relative" ref={timelineParentRef}>
+            <div className="timeline-wrapper" ref={timelinePage1Ref}>
+              <canvas
+                className={"timeline " + (isAdding ? "is-adding" : "")}
+                width={1}
+                height={1}
+                id="canvas"
+                ref={canvasRef}
+                tabIndex={0}
+              />
 
-            <SplitButtons className="zoom-buttons">
-              <button className="is-secondary is-small text-large font-bold" title="Zoom out values" onClick={zoomOut}>
-                <ZoomOut />
-                <span className="sr-only">zoom out values</span>
+              <SplitButtons className="zoom-buttons">
+                <button
+                  className="is-secondary is-small text-large font-bold"
+                  title="Zoom out values"
+                  onClick={zoomOut}
+                >
+                  <ZoomOut />
+                  <span className="sr-only">zoom out values</span>
+                </button>
+                <button className="is-secondary is-small text-large font-bold" title="Zoom in values" onClick={zoomIn}>
+                  <ZoomIn />
+                  <span className="sr-only">zoom in values</span>
+                </button>
+              </SplitButtons>
+            </div>
+
+            {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
+            <div className="tile" ref={timelinePage2Ref}>
+              <TimelineInspector
+                cssProp={layers.getCssProp()}
+                onChangeCssProp={setCssProp}
+                sampleCount={layers.getSampleCount()}
+                onChangeSampleCount={setSampleCount}
+                units={layers.getUnits()}
+                onChangeUnits={setUnits}
+                isFlipped={layers.getIsFlipped()}
+                onChangeIsFlipped={setIsFlipped}
+                selected={selectedDot}
+                onChangeSelectedProps={handleInspectorSelectedChange}
+                onClickAdd={handleClickAdd}
+                onClickDelete={handleClickDelete}
+                isAdding={isAdding}
+                disabledCssProps={disabledCssProps}
+              />
+            </div>
+          </section>
+
+          <div className="PageIndicator--row mobile-only">{timelinePageIndicator}</div>
+
+          {/* Mobile only toolbar row */}
+          <div className="mobile-only flex gap-2 justify-between mt-0">
+            <div className="flex gap-2">
+              <button
+                className={cx("button is-small", { "is-pressed": isAdding })}
+                aria-pressed={isAdding}
+                onClick={handleClickAdd}
+              >
+                Add
               </button>
-              <button className="is-secondary is-small text-large font-bold" title="Zoom in values" onClick={zoomIn}>
-                <ZoomIn />
-                <span className="sr-only">zoom in values</span>
-              </button>
-            </SplitButtons>
-          </div>
-
-          {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
-          <div className="tile" ref={timelinePage2Ref}>
-            <TimelineInspector
-              cssProp={layers.getCssProp()}
-              onChangeCssProp={setCssProp}
-              sampleCount={layers.getSampleCount()}
-              onChangeSampleCount={setSampleCount}
-              units={layers.getUnits()}
-              onChangeUnits={setUnits}
-              isFlipped={layers.getIsFlipped()}
-              onChangeIsFlipped={setIsFlipped}
-              selected={selectedDot}
-              onChangeSelectedProps={handleInspectorSelectedChange}
-              onClickAdd={handleClickAdd}
-              onClickDelete={handleClickDelete}
-              isAdding={isAdding}
-              disabledCssProps={disabledCssProps}
-            />
-          </div>
-        </section>
-
-        <div className="PageIndicator--row mobile-only">{timelinePageIndicator}</div>
-
-        {/* Mobile only toolbar row */}
-        <div className="mobile-only flex gap-2 justify-between mt-0">
-          <div className="flex gap-2">
-            <button
-              className={cx("button is-small", { "is-pressed": isAdding })}
-              aria-pressed={isAdding}
-              onClick={handleClickAdd}
-            >
-              Add
-            </button>
-            {selectedDot && (
-              <button className="button is-small is-danger" onClick={handleClickDelete} disabled={!selectedDot}>
-                <Trash />
-              </button>
-            )}
-            {/* <button className="button">
+              {selectedDot && (
+                <button className="button is-small is-danger" onClick={handleClickDelete} disabled={!selectedDot}>
+                  <Trash />
+                </button>
+              )}
+              {/* <button className="button">
               <Trash />
             </button> */}
+            </div>
+            {renderCopyButtons(false, "ml-auto")}
           </div>
-          {renderCopyButtons(false, "ml-auto")}
         </div>
+
         {/* PREVIEW ROW */}
+        <div className="wrapper mt-neg-4:lg tinted-wrapper:sm">
+          <section className="inspector-sidebar" ref={previewParentRef}>
+            <div className="flex-col" ref={previewPage1Ref}>
+              {preview}
+            </div>
 
-        {/* <h2 className="mt-8 color-black">Preview</h2> */}
+            <div className="tile" ref={previewPage2Ref}>
+              <PreviewInspector
+                isPlaying={isPlaying}
+                duration={duration}
+                onChangeDuration={setDuration}
+                isRepeat={isRepeat}
+                onChangeIsRepeat={setIsRepeat}
+                onClickPlay={playPreview}
+                onClickStop={stopPreview}
+                speed={speed}
+                onChangeSpeed={setSpeed}
+              />
+            </div>
+          </section>
 
-        <section className="inspector-sidebar" ref={previewParentRef}>
-          <div className="flex-col" ref={previewPage1Ref}>
-            {preview}
-          </div>
-
-          <div className="tile" ref={previewPage2Ref}>
-            <PreviewInspector
-              isPlaying={isPlaying}
-              duration={duration}
-              onChangeDuration={setDuration}
-              isRepeat={isRepeat}
-              onChangeIsRepeat={setIsRepeat}
-              onClickPlay={playPreview}
-              onClickStop={stopPreview}
-              speed={speed}
-              onChangeSpeed={setSpeed}
-            />
-          </div>
-        </section>
-
-        <div className="PageIndicator--row mobile-only">{previewPageIndicator}</div>
+          <div className="PageIndicator--row mobile-only mb-4">{previewPageIndicator}</div>
+        </div>
       </div>
     </main>
   );
