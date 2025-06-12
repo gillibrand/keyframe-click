@@ -54,11 +54,11 @@
   &:not([aria-current="page"]) {
     cursor: pointer;
 
-    background-color: #e8e8e8;
+    background-color: #fbd677;
 
     &:hover,
     &:focus-visible {
-      background-color: #d9d9d9;
+      background-color: #ffcd4f;
     }
   }
 
