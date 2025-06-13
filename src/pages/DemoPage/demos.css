@@ -12,6 +12,18 @@
 
   border-radius: 1rem;
 
+  .p-4 {
+    padding: 0.5rem 0.75rem;
+  }
+
+  h2 {
+    font-size: var(--sz-h1);
+
+    @media (width < 750px) {
+      font-size: var(--sz-body);
+    }
+  }
+
   svg {
     transition: translate 100ms ease-out;
   }
