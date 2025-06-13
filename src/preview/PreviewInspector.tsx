@@ -132,7 +132,7 @@ export const PreviewInspector = memo(function PreviewInspector({
               className="textbox"
               value={previewText}
               onChange={(e) => setPreviewText(e.target.value)}
-              placeholder="your text here"
+              placeholder="e.g your name"
             />
           </label>
         </form>
