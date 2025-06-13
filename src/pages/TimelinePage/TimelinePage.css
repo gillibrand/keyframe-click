@@ -98,3 +98,19 @@
     opacity: 0;
   }
 }
+
+.mobile-play-button {
+  position: absolute;
+  min-width: 0;
+  height: 3rem;
+  width: 3rem;
+  padding: 0;
+  inset-block-end: 1rem;
+  inset-inline-end: 1rem;
+  z-index: var(--z-bump);
+
+  & > svg {
+    scale: 1.5;
+    translate: 2px 0;
+  }
+}

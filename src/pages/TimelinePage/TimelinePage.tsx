@@ -26,6 +26,8 @@ import { cx } from "@util/cx";
 import { useForceRender, useLiveState } from "@util/hooks";
 import { useGlobalShortcuts } from "./useGlobalShortcuts";
 import { usePageIndicator } from "./usePageIndicator";
+import Play from "@images/play.svg?react";
+import Stop from "@images/stop.svg?react";
 
 export function TimelinePage() {
   const timelineRef = useRef<Timeline | null>(null);
@@ -608,7 +610,16 @@ export function TimelinePage() {
         {/* PREVIEW ROW */}
         <div className="wrapper mt-neg-4:lg tinted-wrapper:sm">
           <section className="inspector-sidebar" ref={previewParentRef}>
-            <div className="flex-col" ref={previewPage1Ref}>
+            <div className="flex-col relative" ref={previewPage1Ref}>
+              {isPlaying ? (
+                <button className="button mobile-play-button" onClick={stopPreview}>
+                  <Stop />
+                </button>
+              ) : (
+                <button className="button mobile-play-button" onClick={playPreview}>
+                  <Play />
+                </button>
+              )}
               {preview}
             </div>
 

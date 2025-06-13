@@ -89,7 +89,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const playSoonCancellerRef = useRef(nullFn);
 
-  const playPreview = useCallback(function playAnimation() {
+  const playPreview = useCallback(function playPreview() {
     if (!graphicRef.current) return;
 
     // Must toggle animate class off and on to ensure it runs. Just changing the keyframes is not enough
@@ -262,7 +262,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       onAnimationStart={didStart}
       onAnimationEnd={didEnd}
       onAnimationIteration={didIteration}
-      onClick={playPreview}
+      onClick={togglePreview}
     >
       <div className="Preview__frame">
         <style>{namedKeyframes}</style>
