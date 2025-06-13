@@ -133,6 +133,9 @@ export const PreviewInspector = memo(function PreviewInspector({
               value={previewText}
               onChange={(e) => setPreviewText(e.target.value)}
               placeholder="e.g your name"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </label>
         </form>
