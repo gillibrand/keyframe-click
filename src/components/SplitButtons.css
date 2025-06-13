@@ -29,6 +29,12 @@
     padding: 0.2rem 0.7rem;
   }
 
+  &.is-small\:lg {
+    @media (width >= 750px) {
+      padding: 0.2rem 0.7rem;
+    }
+  }
+
   border: 2px solid var(--c-neo-black);
 
   & + &:not(:focus-visible) {

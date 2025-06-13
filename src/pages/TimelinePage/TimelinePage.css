@@ -40,7 +40,7 @@
 
     /* use padding instead of margin so we don't clip shadows. Small on bottom for pagination
     controls to sit tight */
-    padding-block: 1rem 0.2rem;
+    padding-block: 1rem 8px;
     margin-block: 0px;
 
     overflow-x: scroll;
@@ -76,41 +76,38 @@
   filter: grayscale(0.75);
 }
 
-.zoom-buttons {
-  position: absolute;
-  opacity: 1;
-  transition: opacity 100ms;
-
-  inset-block-end: 36px;
-  inset-inline-end: 36px;
-
-  @media (width < 750px) {
-    inset-block-end: 16px;
-    inset-inline-end: 16px;
-  }
-
-  .is-moving &:hover {
-    opacity: 0;
-  }
-
-  .is-adding &:not(:has(:focus-visible)) {
-    pointer-events: none;
-    opacity: 0;
-  }
-}
-
 .mobile-play-button {
-  position: absolute;
   min-width: 0;
   height: 3rem;
   width: 3rem;
   padding: 0;
-  inset-block-end: 1rem;
-  inset-inline-end: 1rem;
-  z-index: var(--z-bump);
 
   & > svg {
     scale: 1.5;
     translate: 2px 0;
   }
+}
+
+.canvas-bar-bl,
+.canvas-bar-br,
+.canvas-bar-tr {
+  position: absolute;
+  z-index: var(--z-bump);
+}
+
+.canvas-bar-tr {
+  inset-block-start: 1rem;
+  inset-inline-end: 1rem;
+}
+
+.canvas-bar-bl,
+.canvas-bar-br {
+  inset-block-end: 1rem;
+}
+.canvas-bar-bl {
+  inset-inline-start: 1rem;
+}
+
+.canvas-bar-br {
+  inset-inline-end: 1rem;
 }

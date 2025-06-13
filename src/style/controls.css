@@ -24,6 +24,8 @@
   background-color: white;
   color: black;
   min-width: 12ch;
+  text-wrap: balance;
+  text-wrap: pretty;
 
   &.is-small {
     min-width: 5rem;

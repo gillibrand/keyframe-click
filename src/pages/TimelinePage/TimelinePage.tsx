@@ -5,7 +5,7 @@ import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot } from "@timeline/point";
 import { createTimeline, Timeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
-import { debounce, isMac, isSpaceBarHandler, throttle } from "@util";
+import { debounce, isMac, isSpaceBarHandler, IsTouch, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import "./TimelinePage.css";
 
@@ -77,7 +77,7 @@ export function TimelinePage() {
     [setSavedMaxY, setCurrentMaxY]
   );
 
-  const { sendNote } = useNoteApi();
+  const { sendNote, dismissNote } = useNoteApi();
 
   useEffect(
     /**
@@ -128,6 +128,9 @@ export function TimelinePage() {
 
       timeline.onAdding = (adding: boolean) => {
         setIsAdding(adding);
+        if (!adding) {
+          if (touchToAddHintRef.current) dismissNote(touchToAddHintRef.current);
+        }
       };
 
       timeline.onMoving = (moving: boolean) => {
@@ -141,7 +144,7 @@ export function TimelinePage() {
         timelineRef.current = null;
       };
     },
-    [layers, saveLayers, fireKeyframeTextChange, getCurrentMaxY]
+    [layers, saveLayers, fireKeyframeTextChange, getCurrentMaxY, dismissNote]
   );
 
   // useEffect(
@@ -181,6 +184,8 @@ export function TimelinePage() {
     [saveLayers, isDataDirty]
   );
 
+  const touchToAddHintRef = useRef("");
+
   const handleClickAdd = useCallback(() => {
     if (!canvasRef.current) return;
 
@@ -190,9 +195,14 @@ export function TimelinePage() {
     if (isAdding) {
       timeline.cancel();
     } else {
+      if (IsTouch) {
+        if (touchToAddHintRef.current) dismissNote(touchToAddHintRef.current);
+        touchToAddHintRef.current = sendNote("Touch timeline to add", 10 * 1000);
+      }
+
       timeline.beginAddingDot();
     }
-  }, [isAdding]);
+  }, [isAdding, sendNote, dismissNote]);
 
   const handleClickDelete = useCallback(() => {
     timelineRef.current!.deleteSelectedDot();
@@ -467,37 +477,35 @@ export function TimelinePage() {
   }, [playDemo, playPreview, previewParentRef]);
 
   function renderCopyButtons(isDesktop: boolean, className?: string) {
-    let buttons = [
-      <button
-        key="copy"
-        title="Set options and copy keyframes"
-        onClick={startExport}
-        className={cx("grow  flex-center gap-2 is-icon", { "is-pressed": isExporting })}
-        ref={isDesktop ? copyButtonRef : undefined}
-        aria-haspopup="dialog"
-        aria-controls={activeExportId}
-      >
-        {isDesktop && "Copy"} <Down />
-      </button>,
-      <button
-        key="copy-options"
-        aria-haspopup="dialog"
-        aria-expanded={isExporting}
-        aria-controls={activeExportId}
-        onClick={copyNow}
-        className="center"
-        {...copyTooltipProps}
-      >
-        <Copy />
-        <span className="sr-only">Copy with current options</span>
-        {copyTooltip}
-      </button>,
-    ];
-
-    // On mobile we show only the icon for copy, so put the drop down (with no text) after the icon.
-    if (!isDesktop) buttons = buttons.reverse();
-
-    return <SplitButtons className={className}>{[buttons]}</SplitButtons>;
+    return (
+      <SplitButtons className={className}>
+        <button
+          key="copy"
+          title="Set options and copy keyframes"
+          onClick={startExport}
+          className={cx("grow  flex-center gap-2 is-icon", { "is-pressed": isExporting })}
+          ref={isDesktop ? copyButtonRef : undefined}
+          aria-haspopup="dialog"
+          aria-controls={activeExportId}
+        >
+          Copy
+          <Down />
+        </button>
+        <button
+          key="copy-options"
+          aria-haspopup="dialog"
+          aria-expanded={isExporting}
+          aria-controls={activeExportId}
+          onClick={copyNow}
+          className="center"
+          {...copyTooltipProps}
+        >
+          <Copy />
+          <span className="sr-only">Copy with current options</span>
+          {copyTooltip}
+        </button>
+      </SplitButtons>
+    );
   }
 
   return (
@@ -545,20 +553,52 @@ export function TimelinePage() {
                 tabIndex={0}
               />
 
-              <SplitButtons className="zoom-buttons">
-                <button
-                  className="is-secondary is-small text-large font-bold"
-                  title="Zoom out values"
-                  onClick={zoomOut}
-                >
-                  <ZoomOut />
-                  <span className="sr-only">zoom out values</span>
-                </button>
-                <button className="is-secondary is-small text-large font-bold" title="Zoom in values" onClick={zoomIn}>
-                  <ZoomIn />
-                  <span className="sr-only">zoom in values</span>
-                </button>
-              </SplitButtons>
+              {/* Mobile only toolbar */}
+              <div className="mobile-only flex gap-2 canvas-bar-bl">
+                <div className="flex gap-2">
+                  {/* ADD */}
+                  <button
+                    className={cx("button is-small", { "is-pressed": isAdding })}
+                    aria-pressed={isAdding}
+                    onClick={handleClickAdd}
+                  >
+                    Add
+                  </button>
+
+                  {/* DELETE */}
+                  {selectedDot && (
+                    <button
+                      className="button is-small is-danger"
+                      onClick={handleClickDelete}
+                      disabled={!selectedDot || isAdding}
+                    >
+                      <Trash />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ZOOM */}
+              <div className="canvas-bar-br">
+                <SplitButtons>
+                  <button
+                    className="is-secondary is-small:lg text-large font-bold"
+                    title="Zoom out values"
+                    onClick={zoomOut}
+                  >
+                    <ZoomOut />
+                    <span className="sr-only">zoom out values</span>
+                  </button>
+                  <button
+                    className="is-secondary is-small:lg text-large font-bold"
+                    title="Zoom in values"
+                    onClick={zoomIn}
+                  >
+                    <ZoomIn />
+                    <span className="sr-only">zoom in values</span>
+                  </button>
+                </SplitButtons>
+              </div>
             </div>
 
             {/* This wrapper div is needed to make the inspector sticky since the timeline grid stretches the direct child items */}
@@ -583,43 +623,24 @@ export function TimelinePage() {
           </section>
 
           <div className="PageIndicator--row mobile-only">{timelinePageIndicator}</div>
-
-          {/* Mobile only toolbar row */}
-          <div className="mobile-only flex gap-2 justify-between mt-0">
-            <div className="flex gap-2">
-              <button
-                className={cx("button is-small", { "is-pressed": isAdding })}
-                aria-pressed={isAdding}
-                onClick={handleClickAdd}
-              >
-                Add
-              </button>
-              {selectedDot && (
-                <button className="button is-small is-danger" onClick={handleClickDelete} disabled={!selectedDot}>
-                  <Trash />
-                </button>
-              )}
-              {/* <button className="button">
-              <Trash />
-            </button> */}
-            </div>
-            {renderCopyButtons(false, "ml-auto")}
-          </div>
         </div>
 
         {/* PREVIEW ROW */}
         <div className="wrapper mt-neg-4:lg tinted-wrapper:sm">
           <section className="inspector-sidebar" ref={previewParentRef}>
             <div className="flex-col relative" ref={previewPage1Ref}>
-              {isPlaying ? (
-                <button className="button mobile-play-button mobile-only" onClick={stopPreview}>
-                  <Stop />
-                </button>
-              ) : (
-                <button className="button mobile-play-button mobile-only" onClick={playPreview}>
-                  <Play />
-                </button>
-              )}
+              <div className="canvas-bar-bl">
+                {isPlaying ? (
+                  <button className="button mobile-play-button mobile-only" onClick={stopPreview}>
+                    <Stop />
+                  </button>
+                ) : (
+                  <button className="button mobile-play-button mobile-only" onClick={playPreview}>
+                    <Play />
+                  </button>
+                )}
+              </div>
+
               {preview}
             </div>
 
@@ -639,6 +660,8 @@ export function TimelinePage() {
           </section>
 
           <div className="PageIndicator--row mobile-only mb-4">{previewPageIndicator}</div>
+
+          <div className="mobile-only ">{renderCopyButtons(false, "mt-8 mb-4 text-x-large")}</div>
         </div>
       </div>
     </main>
