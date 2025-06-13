@@ -6,7 +6,7 @@ import "@style/inspector.css";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { DotType, moveDot, UserDot } from "@timeline/point";
 import { cx } from "@util/cx";
-import { round3dp } from "@util/index";
+import { IsTouch, round3dp } from "@util/index";
 import { memo, useId } from "react";
 import { Unit } from "./Layers";
 
@@ -159,7 +159,7 @@ export const TimelineInspector = memo(function Inspector({
     <aside className="inspector stack">
       <GlobalSettings units={units} {...props} />
 
-      <h2>Point</h2>
+      {<h2 className={cx({ invisible: IsTouch && !selected })}>Point</h2>}
 
       <div className="stack-small">
         <div className="flex gap-2 desktop-only">
