@@ -29,6 +29,12 @@
   font-size: var(--sz-small);
   padding: 0.5rem 0.75rem 0.5rem 1rem;
 
+  @media (width < 750px) {
+    padding: 0.5rem 0.5rem;
+    font-size: var(--sz-x-small);
+    gap: 0.5rem;
+  }
+
   min-width: 5rem;
   user-select: none;
   white-space: nowrap;
