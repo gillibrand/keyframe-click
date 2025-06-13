@@ -612,11 +612,11 @@ export function TimelinePage() {
           <section className="inspector-sidebar" ref={previewParentRef}>
             <div className="flex-col relative" ref={previewPage1Ref}>
               {isPlaying ? (
-                <button className="button mobile-play-button" onClick={stopPreview}>
+                <button className="button mobile-play-button mobile-only" onClick={stopPreview}>
                   <Stop />
                 </button>
               ) : (
-                <button className="button mobile-play-button" onClick={playPreview}>
+                <button className="button mobile-play-button mobile-only" onClick={playPreview}>
                   <Play />
                 </button>
               )}

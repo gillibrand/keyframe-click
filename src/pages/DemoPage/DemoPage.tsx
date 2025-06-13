@@ -4,7 +4,7 @@ import { DemoTile } from "./DemoTile";
 export function DemoPage() {
   return (
     <main>
-      <div className="wrapper-small stack mb-stack">
+      <div className="wrapper-small stack-large mb-stack">
         {/* <h2>Demos</h2> */}
         {/* <p className="color-black">Get inspired or started quickly.</p> */}
 
