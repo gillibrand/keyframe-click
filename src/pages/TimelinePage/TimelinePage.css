@@ -48,9 +48,15 @@
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
 
-    & > * {
-      scroll-snap-align: start;
+    /* Hide scrollbars since this purely a touch focused slide interaction. Use the dots to show pages. */
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
     }
+  }
+
+  & > * {
+    scroll-snap-align: start;
   }
 }
 
