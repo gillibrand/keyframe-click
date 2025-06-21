@@ -5,7 +5,6 @@ import { Banner } from "./Banner";
 import { isKeyboardHandler } from "@util";
 import { NoteList } from "@components/note";
 import { PreviewProvider } from "./PreviewProvider";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 
 export function App() {
@@ -60,7 +59,6 @@ export function App() {
           <Page />
         </PreviewProvider>
       </Suspense>
-      <SpeedInsights />
       <Analytics />
       {isHelpRendered && <HelpPanel open={isHelpOpen} willClose={handleWillCloseHelp} didClose={handleDidCloseHelp} />}
     </div>
