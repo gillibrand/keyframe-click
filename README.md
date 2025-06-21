@@ -22,7 +22,7 @@ Perfect for developers and designers who want experiment visually with CSS anima
 
 ## 🧪 Live Demo
 
-Try it at [https://gillibrand.github.io/keyframe-click](https://gillibrand.github.io/keyframe-click/)
+Try it at [https://keyframe-click.vercel.app](https://keyframe-click.vercel.app//)
 
 ## 📋 Future enhancements
 
