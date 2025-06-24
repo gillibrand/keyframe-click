@@ -1,0 +1,129 @@
+TODAY:
+Mobile:
+	- touch events in timeline
+	- move timeline inspector
+	- put preview button on preview
+	- hide preview inspector in dialog?
+App:
+	- multi select points @future
+- make preview a form so Enter will always Play
+- draw Opacity as gray or warn color when below 0 (others?) @future
+Neobrutalism:
+	- Unify sidebars with content to left? @future
+Preview:
+	- Toggle code vs preview? Or option to show both @future
+Settings:
+Save:
+	- Reset button? @future
+	- Detect localStorage change in other windows? @future
+Fonts:
+	- Public Sans? @future
+Defects:
+	- Can move dots too far with keyboard
+	- Can flip opacity, which never works?
+	- debounce Duration changes
+Demos:
+	- CourseClear shrink down
+	- ball bounce towards you
+	Demos:
+		- CourseClear shrink down
+		- ball bounce towards you
+A11y:
+- No way to add new point with keyboard @future
+Help:
+- move help panel @future
+Archive:
+	- convert mills to sec when changing unit and vice versa @done
+	- no way to add point with only keyboard @done @project(Defects)
+	- Scale down and rotate (wormhole) @done @project(Demos)
+	- CourseClear text intro @done @project(Demos)
+	- ball bounce from top @done @project(Demos)
+	- Images @done @project(Preview)
+		- Pixel art guy/astro @done
+		- Text @done
+		- Ball @done
+	- Scale is not excluded right when on initial tab @done
+	Load a demo: @done
+	- set Layers @done
+		Preview: @done
+			- set loop @done
+			settings: @done
+				- set graphic @done
+				- set duration @done
+	Export: @done
+		- JavaScript @done
+	- README @done
+	- Keyboard Help @done
+	- Global keys @done
+	- Hold Option or Alt to move 10 px at a time @done
+	- nearPt clicks take user points, which vary in size so make hatboxes wrong @done @project(Defects)
+	- Can't light-close dialogs in non-Chrome @done @project(Defects)
+	- arrow keys can move outside the canvas @done @project(Defects)
+	- changing inspector offset doesn't move handles @done @project(Defects)
+	- drag is offset when page is scrolled down @done @project(Defects)
+	- Translate X and Y overwrite each other @done @project(Defects)
+	- Can add point outside of clip area @done @project(Defects)
+	- Tooltip @done
+	- is open filter from Save dialog (only works from Export) @done
+	- Make timeline area into a page component @done @project(App)
+	- Banner @done @project(App)
+		- Timeline @done
+		- Help @done
+		- Demos / Saved? @done
+	- Push in tabs if not restyled @done @project(TODAY)
+	- active state of close button @done @project(TODAY)
+	- better close X icon. 1.5px @done @project(TODAY)
+	- tabs @done @project(Neobrutalism)
+		- and plus buttons @done
+	- inaccurate point detection @done @project(TODAY)
+	- buttons states @done @project(Neobrutalism)
+		- hover @done
+		- active @done
+		- pressed for Add Point @done
+	- prefs menus @done @project(Neobrutalism)
+	- focus ring of timeline @done @project(Neobrutalism)
+	- segmented control @done @project(Neobrutalism)
+	- Note @done @project(Neobrutalism)
+	- Pink Delete? @done @project(Neobrutalism)
+	- animation name field @done @project(Export)
+	- show preview text @done @project(Export)
+		Buttons: @done
+		- Copy @done
+		- Cancel @done
+	- Fix Copy buttons @done @project(TODAY)
+		- better icon; bolder @done
+	- slider control @done @project(TODAY)
+	- timeline focus ring @done @project(TODAY)
+	- range focus ring @done @project(TODAY)
+	- better add point. Show point initially @done @project(TODAY)
+	- Progress causes DOM changes. Maybe just set a single transition @done @project(Preview)
+	- move Show labels and Snap to grid into gear menu or modal @done @project(Settings)
+	- preserve x order @done @project(Save)
+	Change animated properties: @done
+	- duration @done
+	- Restart? @done
+	- auto-play? @done
+	- limit x in timeline to 1-100 @done
+	- dragging needs body event listener to get to edge (or add visual edges) @done
+	- list common css props @done @project(Change animated properties)
+	- add @done @project(Points)
+	- remove @done @project(Points)
+	- local storage @done @project(Save)
+	- restore on load @done @project(Save)
+	- every 10 with real math @done @project(Sample)
+	- pass in user points @done @project(User vs physical units)
+	- snap to grid on logical @done @project(User vs physical units)
+	- standard height @done @project(Grid)
+	- grid lines every 10% @done @project(Grid)
+	- x [-0%, 100%] @done @project(Grid)
+	- y [-100%, 200%] @done @project(Grid)
+		- 100 x 300 logical @done
+	- Draw handle lines @done @project(Handles)
+	- Drag/move handles @done @project(Handles)
+	- Balance h1, h2 on drag @done @project(Handles)
+	- Convert type @done @project(Handles)
+		- option-click @done
+			- "c" if selected @done
+		- inspector later @done
+Searches:
+	Not Future @search(not @future and not @done)

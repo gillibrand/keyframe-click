@@ -1,1 +1,0 @@
-const s=110,e=[{dots:[{space:"user",x:0,y:0,h1:{x:-10,y:0},h2:{x:10,y:0},type:"square"},{space:"user",x:100,y:100,h1:{x:90,y:100},h2:{x:110,y:100},type:"square"}],cssProp:"translateX",isFlipped:!1,sampleCount:0,samples:null,id:"9dd262ed-2dcd-4bb9-aec7-0291db3521c6",units:"%"}],a={maxY:110,layers:e};export{a as default,e as layers,s as maxY};
