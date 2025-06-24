@@ -2,7 +2,7 @@ import { HelpPanel } from "@components/HelpPanel";
 import { useRouter } from "@router/useRouter";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { Banner } from "./Banner";
-import { isKeyboardHandler } from "@util";
+import { isDevMode, isKeyboardHandler } from "@util";
 import { NoteList } from "@components/note";
 import { PreviewProvider } from "./PreviewProvider";
 import { Analytics } from "@vercel/analytics/react";
@@ -51,7 +51,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="flex-col min-h-screen stack">
+    <div className="flex flex-col min-h-screen stack">
       <Banner />
       <NoteList />
       <Suspense fallback={"..."}>
@@ -59,7 +59,7 @@ export function App() {
           <Page />
         </PreviewProvider>
       </Suspense>
-      <Analytics />
+      {!isDevMode && <Analytics />}
       {isHelpRendered && <HelpPanel open={isHelpOpen} willClose={handleWillCloseHelp} didClose={handleDidCloseHelp} />}
     </div>
   );

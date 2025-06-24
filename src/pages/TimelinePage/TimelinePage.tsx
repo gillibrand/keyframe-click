@@ -509,7 +509,7 @@ export function TimelinePage() {
   }
 
   return (
-    <main className={cx("grow [ flex-col ]", { "is-dialog-open": isExporting })}>
+    <main className={cx("grow [ flex flex-col ]", { "is-dialog-open": isExporting })}>
       {isExporting && (
         <ExportDialog
           open={true}
@@ -520,7 +520,7 @@ export function TimelinePage() {
         />
       )}
 
-      <div className="flex-col grow">
+      <div className="flex flex-col grow">
         {/* TABS and SETTINGS at top */}
         <div className="wrapper">
           <section className="flex gap-4 items-center justify-between">
@@ -541,7 +541,7 @@ export function TimelinePage() {
         </div>
 
         {/* TIMELINE ROW */}
-        <div className="wrapper grow flex-col">
+        <div className="wrapper grow flex flex-col">
           <section className="inspector-sidebar grow relative" ref={timelineParentRef}>
             <div className="timeline-wrapper" ref={timelinePage1Ref}>
               <canvas
@@ -628,7 +628,7 @@ export function TimelinePage() {
         {/* PREVIEW ROW */}
         <div className="wrapper mt-neg-4:lg tinted-wrapper:sm">
           <section className="inspector-sidebar" ref={previewParentRef}>
-            <div className="flex-col relative" ref={previewPage1Ref}>
+            <div className="flex flex-col relative" ref={previewPage1Ref}>
               <div className="canvas-bar-bl">
                 {isPlaying ? (
                   <button className="button mobile-play-button mobile-only" onClick={stopPreview}>

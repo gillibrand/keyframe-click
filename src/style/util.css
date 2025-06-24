@@ -1,13 +1,13 @@
-.flex {
+/* .flex {
   display: flex;
-}
+} */
 
-.flex-col {
+/* .flex-col {
   display: flex;
   flex-direction: column;
-}
+} */
 
-.grow {
+/* .grow {
   flex-grow: 1;
 }
 
@@ -21,7 +21,7 @@
 
 .shrink {
   flex-shrink: 1;
-}
+} */
 
 .stack-large > * + * {
   margin-block-start: 1.75rem;
@@ -79,14 +79,14 @@
   white-space: nowrap;
 }
 
-.flex-nowrap {
+/* .flex-nowrap {
   flex-wrap: nowrap;
 }
 
 .inline-flex {
   display: inline-flex;
-}
-
+} */
+/* 
 .gap-2 {
   gap: 0.5rem;
 }
@@ -145,7 +145,7 @@
 
 .invisible {
   visibility: hidden;
-}
+} */
 
 .hidden\:sm {
   @media (width < 750px) {
@@ -318,9 +318,9 @@
   align-items: center;
 }
 
-.underline {
+/* .underline {
   text-decoration: underline;
-}
+} */
 
 .bg-teal {
   background-color: var(--c-neo-teal);

@@ -3,6 +3,7 @@ import "@style/colors.css";
 import "@style/controls.css";
 import "@style/global.css";
 import "@style/layout.css";
+import "@style/tail.css";
 
 import { App } from "@app/App";
 import { NoteProvider } from "@components/note";

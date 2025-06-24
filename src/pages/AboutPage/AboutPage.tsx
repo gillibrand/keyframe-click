@@ -3,10 +3,10 @@ import CreatedBy from "./CreatedBy.mdx";
 
 export function AboutPage() {
   return (
-    <main className="grow flex-col">
-      <div className="wrapper-small grow flex-col">
-        <div className="grow flex-col tile stack mb-stack">
-          <div className="grow stack">
+    <main className=" grow flex flex-col">
+      <div className="wrapper-small grow flex flex-col j-prose">
+        <div className="grow flex flex-col tile stack mb-stack">
+          <div className="grow space-y-4">
             <AboutDoc />
           </div>
 

@@ -6,6 +6,7 @@ import browserslistToEsbuild from "browserslist-to-esbuild";
 import browserslist from "browserslist";
 import mdx from "@mdx-js/rollup";
 import basicSsl from "@vitejs/plugin-basic-ssl";
+import tailwindcss from "@tailwindcss/vite";
 
 const esbuildTargets = browserslistToEsbuild(browserslist());
 
@@ -17,6 +18,7 @@ export default defineConfig({
     target: esbuildTargets,
   },
   plugins: [
+    tailwindcss(),
     svgr(),
     react(),
     mdx(),

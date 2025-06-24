@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@layer base {
+  .j-prose {
+    h1,
+    h2,
+    h3 {
+      @apply font-bold;
+    }
+
+    h1 {
+      @apply text-3xl;
+    }
+
+    h2 {
+      @apply text-2xl;
+    }
+
+    h3 {
+      @apply text-lg;
+    }
+
+    a {
+      @apply underline decoration-2;
+    }
+
+    ol {
+      @apply list-decimal;
+    }
+
+    ul {
+      @apply list-[square];
+    }
+
+    ul,
+    ol {
+      @apply ps-10;
+    }
+
+    p,
+    li {
+      @apply text-pretty;
+    }
+  }
+}

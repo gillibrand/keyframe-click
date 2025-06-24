@@ -45,28 +45,28 @@ export function Banner() {
   return (
     <header className="py-4x Banner">
       <div className="wrapper flex gap-8 items-end">
-        <h1 className="Banner__title cursor-default desktop-only" onClick={handleGotoTimeline}>
+        <h1 className="Banner__title cursor-default desktop-only text-2xl font-bold" onClick={handleGotoTimeline}>
           Keyframe Click
         </h1>
 
         <nav className="Banner__nav flex gap-4">
-          <a className="Banner__link" {...href("#/")} onClick={handleGotoTimeline}>
+          <a className="Banner__link leading-none" {...href("#/")} onClick={handleGotoTimeline}>
             Timeline
           </a>
-          <a className="Banner__link" {...href("#/demos")}>
+          <a className="Banner__link leading-none" {...href("#/demos")}>
             Demos
           </a>
           {/*
-          <a className="Banner__link" {...href("#/help")}>
+          <a className="Banner__link leading-none" {...href("#/help")}>
             Help
           </a> 
           */}
-          <a className="Banner__link" {...href("#/about", true)}>
+          <a className="Banner__link leading-none" {...href("#/about", true)}>
             About
           </a>
 
           {isDevMode && (
-            <a className="Banner__link desktop-only" {...href("#/debug", true)}>
+            <a className="Banner__link leading-none desktop-only" {...href("#/debug", true)}>
               dev
             </a>
           )}
@@ -74,7 +74,10 @@ export function Banner() {
 
         <div className="ml-auto py-2 text-light flex gap-4 items-center desktop-only">
           <span>
-            by <a href="https://gillibrand.github.io/projects/">Jay Gillibrand</a>{" "}
+            by{" "}
+            <a href="https://gillibrand.github.io/projects/" className="underline decoration-2">
+              Jay Gillibrand
+            </a>
           </span>
           <a href="https://github.com/gillibrand/keyframe-click" title="Available on GitHub">
             <Github className="github" />

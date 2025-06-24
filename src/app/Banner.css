@@ -14,11 +14,11 @@
 
 .Banner__link {
   font-weight: bold;
-  text-decoration: none;
+  /* text-decoration: none; */
   color: var(--c-neo-black);
   padding: 0.5rem 1rem;
 
-  padding-block-end: 0.5rem;
+  /* padding-block-end: 0.5rem; */
   margin-block-start: 0.5rem;
 
   border: solid transparent;

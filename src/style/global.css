@@ -31,7 +31,7 @@
   }
 
   @media (width >= 750px) {
-    font-size: 87.5%;
+    /* font-size: 87.5%; */
   }
 
   --c-gray-50: oklch(0.985 0.002 247.839);
@@ -133,26 +133,20 @@ button {
   font-size: var(--sz-small);
 }
 
-a,
-a:visited {
-  color: inherit;
-  text-decoration-thickness: 2px;
-}
-
 h1,
 h2,
 h3,
 main {
-  margin: 0;
-  padding: 0;
+  /* margin: 0; */
+  /* padding: 0; */
 }
 
 h1 {
-  font-size: var(--sz-h1);
+  /* font-size: var(--sz-h1); */
 }
 
 h2 {
-  font-size: var(--sz-h2);
+  /* font-size: var(--sz-h2); */
 }
 
 body,
@@ -220,18 +214,18 @@ textarea {
   resize: vertical;
 }
 
-ul {
+/* ul {
   list-style-type: square;
-}
+} */
 
-p,
+/* p,
 ul,
 li,
 ds {
   line-height: 1.5;
   text-wrap: pretty;
   margin: 0;
-}
+} */
 
 code,
 kbd {
