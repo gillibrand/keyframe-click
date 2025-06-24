@@ -477,6 +477,9 @@ export function TimelinePage() {
   }, [playDemo, playPreview, previewParentRef]);
 
   function renderCopyButtons(isDesktop: boolean, className?: string) {
+    // Ignore the tooltip unless on desktop layout
+    const tooltipProps = isDesktop ? copyTooltipProps : {};
+
     return (
       <SplitButtons className={className}>
         <button
@@ -498,7 +501,7 @@ export function TimelinePage() {
           aria-controls={activeExportId}
           onClick={copyNow}
           className="center"
-          {...copyTooltipProps}
+          {...tooltipProps}
         >
           <Copy />
           <span className="sr-only">Copy with current options</span>
