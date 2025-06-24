@@ -105,7 +105,7 @@ export function DemoTile({ name, className, children, demoName }: Props) {
       {...hoverProps}
     >
       <div className="flex bg-blue color-white p-4 DemoTile__header items-center justify-between">
-        <h2>{name}</h2>
+        <h2 className="text-lg sm:text-xl font-bold">{name}</h2>
         <Play className="ms-auto" />
       </div>
 

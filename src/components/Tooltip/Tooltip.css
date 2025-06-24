@@ -9,7 +9,7 @@
   border-radius: 0.5rem;
 
   padding: 0.325rem 0.75rem;
-  font-size: var(--sz-x-small);
+  /* font-size: var(--sz-x-small); */
   white-space: nowrap;
 
   pointer-events: none;

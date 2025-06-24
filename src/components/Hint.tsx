@@ -13,5 +13,5 @@ interface Props extends PropsWithChildren {
  * If the hint is static text, pair with `useStatic` to prevent re-renders.
  */
 export function Hint({ children, className }: Props) {
-  return <div className={cx("text-light text-x-small", className)}>{children}</div>;
+  return <div className={cx("text-gray-500 text-xs", className)}>{children}</div>;
 }

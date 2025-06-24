@@ -43,7 +43,7 @@ export function Banner() {
   }
 
   return (
-    <header className="py-4x Banner">
+    <header className="py-4x Banner text-sm">
       <div className="wrapper flex gap-8 items-end">
         <h1 className="Banner__title cursor-default desktop-only text-2xl font-bold" onClick={handleGotoTimeline}>
           Keyframe Click

@@ -282,9 +282,9 @@
   text-align: end;
 }
 
-.text-center {
+/* .text-center {
   text-align: center;
-}
+} */
 
 .justify-end {
   justify-content: end;

@@ -98,7 +98,7 @@ export function RadioTabGroup({
 
       {addTooltip}
       <button
-        className="button is-secondary is-round"
+        className="button is-secondary"
         onClick={onAddNew}
         disabled={!canAddNew}
         title={!canAddNew ? "All properties are already being used" : undefined}

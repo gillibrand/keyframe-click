@@ -58,7 +58,12 @@ export function Tooltip({ children, target, delayMs }: Props) {
   return createPortal(
     // XXX: Tooltip are tricky with a11y. Just hide them from now so they aren't announced. We're
     // using other aria-labelling for now. Should probably reconsider this later.
-    <div className={cx("Tooltip", { "is-visible": isVisible })} ref={tooltipRef} aria-hidden="true" style={style}>
+    <div
+      className={cx("Tooltip text-xs", { "is-visible": isVisible })}
+      ref={tooltipRef}
+      aria-hidden="true"
+      style={style}
+    >
       {children}
     </div>,
     document.body

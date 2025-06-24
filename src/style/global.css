@@ -15,14 +15,14 @@
   --z-overlay: 70;
   --z-toast: 100;
 
-  --sz-base: 1rem;
+  /* --sz-base: 1rem;
   --sz-h1: 1.5rem;
   --sz-h2: 1.75rem;
   --sz-h3: 1.5rem;
   --sz-body: 1rem;
   --sz-large: 1.25rem;
   --sz-small: 0.875rem;
-  --sz-x-small: 0.75rem;
+  --sz-x-small: 0.75rem; */
 
   @media (width < 750px) {
     /* no average fonts less then 16px on mobile for readability and to prevent auto zoom */
@@ -93,7 +93,7 @@
   font-size: 114.29%;
 }
 
-.text-light {
+/* .text-light {
   color: var(--c-gray-500);
 }
 
@@ -110,11 +110,11 @@
 
 .text-x-large {
   font-size: var(--sz-x-large);
-}
+} */
 
-.font-bold {
+/* .font-bold {
   font-weight: bold;
-}
+} */
 
 body {
   color: var(--c-body);
@@ -123,7 +123,7 @@ body {
 }
 
 body {
-  font-size: var(--sz-base);
+  /* font-size: var(--sz-base); */
   color: var(--c-body);
 }
 
@@ -131,22 +131,6 @@ input,
 select,
 button {
   font-size: var(--sz-small);
-}
-
-h1,
-h2,
-h3,
-main {
-  /* margin: 0; */
-  /* padding: 0; */
-}
-
-h1 {
-  /* font-size: var(--sz-h1); */
-}
-
-h2 {
-  /* font-size: var(--sz-h2); */
 }
 
 body,
