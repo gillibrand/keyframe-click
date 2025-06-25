@@ -588,24 +588,24 @@ export function TimelinePage() {
 
               {/* ZOOM */}
               <div className="canvas-bar-br">
-                <SplitButtons>
-                  <button
-                    className="is-secondary is-small:lg text-large font-bold"
-                    title="Zoom out values"
-                    onClick={zoomOut}
-                  >
-                    <ZoomOut />
-                    <span className="sr-only">zoom out values</span>
-                  </button>
-                  <button
-                    className="is-secondary is-small:lg text-large font-bold"
-                    title="Zoom in values"
-                    onClick={zoomIn}
-                  >
-                    <ZoomIn />
-                    <span className="sr-only">zoom in values</span>
-                  </button>
-                </SplitButtons>
+                <button
+                  className="split-button px-3 py-1.5"
+                  // className="is-secondary is-small:lg text-large font-bold"
+                  title="Zoom out values"
+                  onClick={zoomOut}
+                >
+                  <ZoomOut />
+                  <span className="sr-only">zoom out values</span>
+                </button>
+                <button
+                  // className="is-secondary is-small:lg text-large font-bold"
+                  className="split-button px-3 py-1.5"
+                  title="Zoom in values"
+                  onClick={zoomIn}
+                >
+                  <ZoomIn />
+                  <span className="sr-only">zoom in values</span>
+                </button>
               </div>
             </div>
 

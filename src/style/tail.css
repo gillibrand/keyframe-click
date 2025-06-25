@@ -6,6 +6,8 @@
   --shadow-hard: 2px 2px 0 0 black;
   --shadow-hard-1: 1px 1px 0 0 black;
 
+  /* --shadow-hard: 2px 2px 0 0 black; */
+
   --color-disabled: var(--color-gray-500);
   --color-neo-blue: #006dea;
   --color-danger: #ff2683;
@@ -36,6 +38,20 @@
 
   .button.is-secondary {
     @apply hover:brightness-95 active:brightness-90 enabled:bg-white enabled:text-black;
+  }
+}
+
+@layer components {
+  .split-button {
+    @apply bg-white px-6 py-2 leading-none text-black select-none first:rounded-s-full last:rounded-e-full;
+    @apply enabled:cursor-pointer enabled:active:brightness-90;
+    @apply shadow-hard-1 active:shadow-none;
+
+    /* border in on start of first, but no others so that it appears between the buttons (no double border) */
+    @apply border-2 border-s-0 border-black first:border-s-2;
+    /* but when focus is visible we show all borders. That means the button before this hides its end border. This is so the focus ring circles the entire apparent border */
+    @apply focus-visible:z-10 focus-visible:border-s-2 focus-visible:ring-2 focus-visible:outline-3 [&:has(+:focus-visible)]:border-e-0;
+    @apply outline-neo-blue relative ring-white outline-offset-2;
   }
 }
 
