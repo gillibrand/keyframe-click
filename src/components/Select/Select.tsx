@@ -10,7 +10,7 @@ interface Props extends PropsWithChildren {
 
 export function Select({ value, children, onChange, disabled }: Props) {
   return (
-    <div className="Select">
+    <div className="Select leading-none">
       <select value={value} onChange={onChange} disabled={disabled}>
         {children}
       </select>

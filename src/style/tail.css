@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+@theme {
+  --shadow-hard: 2px 2px 0 0 black;
+
+  --color-disabled: var(--color-gray-500);
+  --color-neo-blue: #006dea;
+}
+
+@layer utilities {
+  .focus-outline {
+    @apply outline-3 outline-offset-2 outline-neo-blue;
+  }
+  .focus-within\:focus-outline {
+    &:focus-within:has(:focus-visible) {
+      @apply outline-3 outline-offset-2 outline-neo-blue;
+    }
+  }
+}
+
 @layer base {
   .j-prose {
     h1,

@@ -1,8 +1,15 @@
-import { useUuid } from "@util/hooks";
-import { createContext, memo, PropsWithChildren, Provider, useContext, useId, useMemo } from "react";
-import "./Segmented.css";
-import { cx } from "@util/cx";
 import { useTooltip } from "@components/Tooltip";
+import { useUuid } from "@util/hooks";
+import clsx from "clsx";
+import {
+  createContext,
+  memo,
+  PropsWithChildren,
+  Provider,
+  useContext,
+  useId,
+  useMemo,
+} from "react";
 
 /** A type for the radio group properties to pass via context to the radio buttons. */
 interface SegmentedContextType<T> {
@@ -32,9 +39,9 @@ interface Props<T> extends PropsWithChildren {
 const genericMemo: <T>(component: T) => T = memo;
 
 /**
- * A segmented control is a group of buttons that act like radio buttons but present as a single control of push
- * buttons. This is essentially a compact way to present mutually exclusive options that uses less space than
- * traditional radio buttons.
+ * A segmented control is a group of buttons that act like radio buttons but present as a single
+ * control of push buttons. This is essentially a compact way to present mutually exclusive options
+ * that uses less space than traditional radio buttons.
  */
 export const Segmented = genericMemo(function Segmented<T = string>({
   children,
@@ -68,7 +75,15 @@ export const Segmented = genericMemo(function Segmented<T = string>({
   return (
     // This should be a fieldset, but it has rendering errors with a border radius and overflow in Chrome as of 135.0.7049.96
     <div
-      className={cx("Segmented", className, { "is-disabled": disabled })}
+      className={clsx(
+        "flex items-center justify-stretch overflow-hidden rounded-lg border-2",
+        disabled ? "border-disabled" : "border-black",
+        "focus-within:focus-outline has-[&:focus-visible]:shadow-none",
+        {
+          "shadow-hard": !disabled,
+        },
+        className
+      )}
       role="radiogroup"
       aria-labelledby={maybeLabelId}
       {...tooltipProps}
@@ -85,25 +100,53 @@ export const Segmented = genericMemo(function Segmented<T = string>({
 });
 
 interface ButtonProps<T> extends PropsWithChildren {
-  /** The value of this button. This is used to determine if this button is checked or not. This must be unique. */
+  /**
+   * The value of this button. This is used to determine if this button is checked or not. This must
+   * be unique.
+   */
   value: T;
   className?: string;
 }
 
 /**
- * A single button in a segmented control. The caller creates one of these for each button in the group and passes them
- * as children to the parent `Segmented` component.
+ * A single button in a segmented control. The caller creates one of these for each button in the
+ * group and passes them as children to the parent `Segmented` component.
  */
-export const SegmentedButton = memo(function SegmentedButton<T>({ value, className, children }: ButtonProps<T>) {
-  const { groupName, checkedValue, onChange, disabled } = useContext(Context) as SegmentedContextType<T>;
+export const SegmentedButton = memo(function SegmentedButton<T>({
+  value,
+  className,
+  children,
+}: ButtonProps<T>) {
+  const { groupName, checkedValue, onChange, disabled } = useContext(
+    Context
+  ) as SegmentedContextType<T>;
   void value;
 
   function handleChange() {
     if (onChange) onChange(value);
   }
 
+  const checked = value === checkedValue;
+
   return (
-    <label className={cx("Segmented__button", className)}>
+    <label
+      className={clsx(
+        "h-full flex-1 border-s-2 border-black px-3 py-1 text-center leading-none select-none first:border-0",
+        !disabled && "cursor-pointer active:brightness-90",
+        {
+          "border-disabled": disabled,
+          "border-neo-blue": !disabled && checked,
+        },
+        // Next button should also hide border by changing to bg color
+        !disabled && "[:has(:checked)+*]:border-neo-blue",
+        {
+          "bg-white": !checked,
+          "bg-disabled text-white": checked && disabled,
+          "bg-neo-blue text-white": checked && !disabled,
+        },
+        className
+      )}
+    >
       <span>{children}</span>
       <input
         className="sr-only"

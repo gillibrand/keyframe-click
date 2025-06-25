@@ -1,6 +1,6 @@
 import Tail from "@images/tail.svg?react";
 import { Callback } from "@util";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 import {
   forwardRef,
   PropsWithChildren,
@@ -19,13 +19,16 @@ interface DialogProps extends PropsWithChildren {
   hideLabel?: boolean;
   open: boolean;
   onClose?: Callback;
-  /** @returns `true` to auto close the dialog. Any other value is ignore and the caller must close manually. */
+  /**
+   * @returns `true` to auto close the dialog. Any other value is ignore and the caller must close
+   *   manually.
+   */
   onSubmit?: () => unknown;
   id?: string;
 
   /**
-   * The button that opened this dialog and it should be placed near. Assume the button is on the end side of the page
-   * for now.
+   * The button that opened this dialog and it should be placed near. Assume the button is on the
+   * end side of the page for now.
    */
   near?: HTMLElement;
 }
@@ -38,7 +41,8 @@ const AnimOptions = {
 /** Functions to interact with the dialog. Pass in a ref to get an instance. */
 export interface DialogApi {
   /**
-   * Closes the dialog with an animation. The dialog will be hidden, but still in the DOM unless the caller removes it.
+   * Closes the dialog with an animation. The dialog will be hidden, but still in the DOM unless the
+   * caller removes it.
    *
    * @returns Resolves once closed.
    */
@@ -50,8 +54,8 @@ function isSmallScreen() {
 }
 
 /**
- * A generic dialog component. Pass children to show. Use `DialogBody` and `DialogFooter` for consistent styling. Open
- * like a popover with a tail near the opening button.
+ * A generic dialog component. Pass children to show. Use `DialogBody` and `DialogFooter` for
+ * consistent styling. Open like a popover with a tail near the opening button.
  */
 export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
   { open, onClose, label, hideLabel, children, onSubmit, id, near },
@@ -172,7 +176,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className={cx("Dialog text-sm", { "origin-top-right": near, "origin-top-center": !near })}
+      className={clsx("Dialog text-sm", { "origin-top-right": near, "origin-top-center": !near })}
       onCancel={handleCancel}
       onClick={handleLightDismiss}
       onMouseDown={handleMouseDown}
@@ -184,8 +188,8 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     >
       {!isSmallScreen() && near && <Tail className="Dialog__tail" />}
 
-      <form action="dialog" className="[ flex flex-col ] stack" onSubmit={handleSubmit}>
-        <header className={cx("px-4 pt-4", { "sr-only": hideLabel })}>
+      <form action="dialog" className="[ ] stack flex flex-col" onSubmit={handleSubmit}>
+        <header className={clsx("px-4 pt-4", { "sr-only": hideLabel })}>
           <h2 id={dialogLabelId}>{label}</h2>
         </header>
 
@@ -206,7 +210,7 @@ export const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(function D
   ref
 ) {
   return (
-    <div ref={ref} className={cx("mx-4 flex-col min-h-px stack", className)}>
+    <div ref={ref} className={clsx("stack mx-4 min-h-px flex-col", className)}>
       {children}
     </div>
   );

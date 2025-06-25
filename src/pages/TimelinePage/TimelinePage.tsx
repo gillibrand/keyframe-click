@@ -22,7 +22,7 @@ import ZoomOut from "@images/zoom-out.svg?react";
 import Trash from "@images/trash.svg?react";
 import { useRouter } from "@router/useRouter";
 import { GlobalLayers, Unit } from "@timeline/Layers";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 import { useForceRender, useLiveState } from "@util/hooks";
 import { useGlobalShortcuts } from "./useGlobalShortcuts";
 import { usePageIndicator } from "./usePageIndicator";
@@ -63,9 +63,9 @@ export function TimelinePage() {
   const [format] = useSetting("format", "css");
 
   /**
-   * Sets the max-y value to save it in settings, but also make it available as a ref when creating a timeline. This
-   * seems overly complex, but we don't want to fire the "setup" function again after changing this. This should work
-   * more like `snapToGrid` probably to be a little cleaner.
+   * Sets the max-y value to save it in settings, but also make it available as a ref when creating
+   * a timeline. This seems overly complex, but we don't want to fire the "setup" function again
+   * after changing this. This should work more like `snapToGrid` probably to be a little cleaner.
    *
    * Max-y is essentially the zoom level.
    */
@@ -81,8 +81,8 @@ export function TimelinePage() {
 
   useEffect(
     /**
-     * This just mirrors the active layer to the saved one. This is used to restore the active layer when the app is
-     * reloaded.
+     * This just mirrors the active layer to the saved one. This is used to restore the active layer
+     * when the app is reloaded.
      */
     function saveActiveLayerSetting() {
       setSavedActiveLayerId(layers.activeLayerId);
@@ -160,9 +160,10 @@ export function TimelinePage() {
 
   useEffect(
     /**
-     * We debounce saves for a bit since changes are so frequent. If the user navigates away during that time changes
-     * would be lost. Whenever we're dirty, this adds a page-hide listener to immediately save those changes. We don't
-     * always have this since these listener can interfere with bfcaches.
+     * We debounce saves for a bit since changes are so frequent. If the user navigates away during
+     * that time changes would be lost. Whenever we're dirty, this adds a page-hide listener to
+     * immediately save those changes. We don't always have this since these listener can interfere
+     * with bfcaches.
      */
     function addSaveBeforePageHide() {
       if (!isDataDirty) return;
@@ -305,12 +306,13 @@ export function TimelinePage() {
   );
 
   /**
-   * A checksum of the current visible tab state. This reflects the number of tabs, what CSS props they are for, and the
-   * active tab. This can then be used to trigger updates to the visible tabs and related data when they change.
+   * A checksum of the current visible tab state. This reflects the number of tabs, what CSS props
+   * they are for, and the active tab. This can then be used to trigger updates to the visible tabs
+   * and related data when they change.
    *
-   * This avoid rendering them each time unrelated state like `sampleCount` changes. Performance is probably not a big
-   * deal here, so maybe this is overkill. Tabs weren't rendering so often before, so I want to keep that, but maybe
-   * this is more complicated than necessary.
+   * This avoid rendering them each time unrelated state like `sampleCount` changes. Performance is
+   * probably not a big deal here, so maybe this is overkill. Tabs weren't rendering so often
+   * before, so I want to keep that, but maybe this is more complicated than necessary.
    */
   const tabsChecksum = useMemo(() => {
     void layersDidChange;
@@ -335,8 +337,8 @@ export function TimelinePage() {
   }, [layers, tabsChecksum]);
 
   /**
-   * This has to be below effects that push changes to Layers. This is also used to know what prop to default to on new
-   * tabs.
+   * This has to be below effects that push changes to Layers. This is also used to know what prop
+   * to default to on new tabs.
    */
   const remainingCssProps = useMemo(() => {
     void tabsChecksum;
@@ -383,7 +385,10 @@ export function TimelinePage() {
     [layers]
   );
 
-  /** The inspector should disable the CSS props used on other layers. They can only be active on one layer at a time. */
+  /**
+   * The inspector should disable the CSS props used on other layers. They can only be active on one
+   * layer at a time.
+   */
   const disabledCssProps = useMemo(() => {
     void layersDidChange;
     return new Set(layers.getBackgroundLayers().map((l) => l.cssProp));
@@ -486,7 +491,7 @@ export function TimelinePage() {
           key="copy"
           title="Set options and copy keyframes"
           onClick={startExport}
-          className={cx("grow  flex-center gap-2 is-icon", { "is-pressed": isExporting })}
+          className={clsx("flex-center is-icon grow gap-2", { "is-pressed": isExporting })}
           ref={isDesktop ? copyButtonRef : undefined}
           aria-haspopup="dialog"
           aria-controls={activeExportId}
@@ -512,7 +517,7 @@ export function TimelinePage() {
   }
 
   return (
-    <main className={cx("grow [ flex flex-col ] text-sm", { "is-dialog-open": isExporting })}>
+    <main className={clsx("[ ] flex grow flex-col text-sm", { "is-dialog-open": isExporting })}>
       {isExporting && (
         <ExportDialog
           open={true}
@@ -523,10 +528,10 @@ export function TimelinePage() {
         />
       )}
 
-      <div className="flex flex-col grow">
+      <div className="flex grow flex-col">
         {/* TABS and SETTINGS at top */}
         <div className="wrapper">
-          <section className="flex gap-4 items-center justify-between">
+          <section className="flex items-center justify-between gap-4">
             <RadioTabGroup
               tabs={tabs}
               label="Active property"
@@ -544,8 +549,8 @@ export function TimelinePage() {
         </div>
 
         {/* TIMELINE ROW */}
-        <div className="wrapper grow flex flex-col">
-          <section className="inspector-sidebar grow relative" ref={timelineParentRef}>
+        <div className="wrapper flex grow flex-col">
+          <section className="inspector-sidebar relative grow" ref={timelineParentRef}>
             <div className="timeline-wrapper" ref={timelinePage1Ref}>
               <canvas
                 className={"timeline " + (isAdding ? "is-adding" : "")}
@@ -557,11 +562,11 @@ export function TimelinePage() {
               />
 
               {/* Mobile only toolbar */}
-              <div className="mobile-only flex gap-2 canvas-bar-bl">
+              <div className="mobile-only canvas-bar-bl flex gap-2">
                 <div className="flex gap-2">
                   {/* ADD */}
                   <button
-                    className={cx("button is-small", { "is-pressed": isAdding })}
+                    className={clsx("button is-small", { "is-pressed": isAdding })}
                     aria-pressed={isAdding}
                     onClick={handleClickAdd}
                   >
@@ -631,7 +636,7 @@ export function TimelinePage() {
         {/* PREVIEW ROW */}
         <div className="wrapper mt-neg-4:lg tinted-wrapper:sm">
           <section className="inspector-sidebar" ref={previewParentRef}>
-            <div className="flex flex-col relative" ref={previewPage1Ref}>
+            <div className="relative flex flex-col" ref={previewPage1Ref}>
               <div className="canvas-bar-bl">
                 {isPlaying ? (
                   <button className="button mobile-play-button mobile-only" onClick={stopPreview}>
@@ -664,7 +669,7 @@ export function TimelinePage() {
 
           <div className="PageIndicator--row mobile-only mb-4">{previewPageIndicator}</div>
 
-          <div className="mobile-only ">{renderCopyButtons(false, "mt-8 mb-4 text-x-large")}</div>
+          <div className="mobile-only">{renderCopyButtons(false, "mt-8 mb-4 text-x-large")}</div>
         </div>
       </div>
     </main>

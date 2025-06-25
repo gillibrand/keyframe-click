@@ -1,6 +1,6 @@
 import { memo } from "react";
 import Check from "@images/check.svg?react";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 
 interface ToggleMenuItemProps {
   label: string;
@@ -21,7 +21,7 @@ export const ToggleMenuItem = memo(function ToggleMenuItem({
 }: ToggleMenuItemProps) {
   return (
     <li
-      className={cx("ToggleMenuItem", { "is-hover": isHover })}
+      className={clsx("ToggleMenuItem", { "is-hover": isHover })}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       role="menuitemcheckbox"

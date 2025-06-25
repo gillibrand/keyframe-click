@@ -5,7 +5,7 @@ import { Select } from "@components/Select";
 import "@style/inspector.css";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { DotType, moveDot, UserDot } from "@timeline/point";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 import { IsTouch, round3dp } from "@util/index";
 import { memo, useId } from "react";
 import { Unit } from "./Layers";
@@ -66,7 +66,11 @@ const GlobalSettings = memo(function GlobalSettings({
           <span className="sr-only">Property name</span>
           <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
             {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
-              <option key={otherCssProp} value={otherCssProp} disabled={isCssPropDisabled(otherCssProp as CssProp)}>
+              <option
+                key={otherCssProp}
+                value={otherCssProp}
+                disabled={isCssPropDisabled(otherCssProp as CssProp)}
+              >
                 {namedFn.label}
               </option>
             ))}
@@ -159,18 +163,22 @@ export const TimelineInspector = memo(function Inspector({
     <aside className="inspector stack">
       <GlobalSettings units={units} {...props} />
 
-      {<h2 className={cx({ invisible: IsTouch && !selected })}>Point</h2>}
+      {<h2 className={clsx({ invisible: IsTouch && !selected })}>Point</h2>}
 
       <div className="stack-small">
-        <div className="flex gap-2 desktop-only">
+        <div className="desktop-only flex gap-2">
           <button
-            className={cx("button flex-auto basis-1", { "is-pressed": isAdding })}
+            className={clsx("button flex-auto basis-1", { "is-pressed": isAdding })}
             aria-pressed={isAdding}
             onClick={onClickAdd}
           >
             Add Point
           </button>
-          <button className="button flex-auto basis-1 is-danger" onClick={onClickDelete} disabled={!selected}>
+          <button
+            className="button is-danger flex-auto basis-1"
+            onClick={onClickDelete}
+            disabled={!selected}
+          >
             Delete
           </button>
         </div>
@@ -188,7 +196,7 @@ export const TimelineInspector = memo(function Inspector({
       </div>
 
       {/* Hide this so it take the same space hidden or not and doesn't shift the height around on selection */}
-      <div className={cx("stack", { invisible: !selected })}>
+      <div className={clsx("stack", { invisible: !selected })}>
         <label className="stacked-label">
           <span>Style</span>
           <Select onChange={(e) => handleTypeChange(e.target.value)} value={selected?.type ?? ""}>

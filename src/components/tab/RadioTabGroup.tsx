@@ -1,7 +1,7 @@
 import { useTooltip } from "@components/Tooltip";
 import Plus from "@images/plus.svg?react";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 import { useChildAnimator } from "@util/useChildAnimator";
 import { useCallback, useId } from "react";
 import { RadioTab } from "./RadioTab";
@@ -40,11 +40,12 @@ export function RadioTabGroup({
   const { parentRef: animationParentRef } = useChildAnimator<HTMLDivElement>("both");
 
   /**
-   * Change keyboard focus to the tab that is currently checked. This uses the ref to the checked value so that it is
-   * always up-to-date.
+   * Change keyboard focus to the tab that is currently checked. This uses the ref to the checked
+   * value so that it is always up-to-date.
    */
   const focusOnCheckedTab = useCallback(() => {
-    const checkedTabNode = animationParentRef.current?.querySelector<HTMLInputElement>("input:checked");
+    const checkedTabNode =
+      animationParentRef.current?.querySelector<HTMLInputElement>("input:checked");
     if (checkedTabNode) checkedTabNode.focus();
   }, [animationParentRef]);
 
@@ -68,12 +69,12 @@ export function RadioTabGroup({
   );
 
   return (
-    <div className={cx("RadioTabGroup gap-4", className)}>
+    <div className={clsx("RadioTabGroup gap-4", className)}>
       <span id={labelId} className="sr-only">
         {label}
       </span>
       <div
-        className="flex min-w-px RadioTabGroup__tabs"
+        className="RadioTabGroup__tabs flex min-w-px"
         ref={animationParentRef}
         role="radiogroup"
         aria-labelledby={labelId}

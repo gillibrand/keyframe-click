@@ -163,16 +163,7 @@
   overflow: hidden;
 }
 
-.sr-only {
-  clip-path: inset(50%);
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-  height: 1px;
-}
-
-.p-0 {
+/* .p-0 {
   padding: 0;
 }
 
@@ -200,7 +191,7 @@
 
 .mx-4 {
   margin-inline: 1rem;
-}
+} */
 
 .mt-stack {
   margin-block-start: 1.125rem;

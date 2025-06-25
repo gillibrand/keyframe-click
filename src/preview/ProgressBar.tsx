@@ -1,11 +1,11 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import "./ProgressBar.css";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 
 interface Props {
   /**
-   * The duration of the animation in milliseconds. This is used to set the CSS transition duration. Changing this reset
-   * the progress.
+   * The duration of the animation in milliseconds. This is used to set the CSS transition duration.
+   * Changing this reset the progress.
    */
   durationMs: number;
 
@@ -13,8 +13,8 @@ interface Props {
   style?: React.CSSProperties;
 
   /**
-   * Whether the preview is playing or not. This is used to trigger the CSS animation. When set to true, it always
-   * starts from 0 and runs for the full duration.
+   * Whether the preview is playing or not. This is used to trigger the CSS animation. When set to
+   * true, it always starts from 0 and runs for the full duration.
    */
   isPlaying: boolean;
 
@@ -22,9 +22,9 @@ interface Props {
 }
 
 /**
- * A progress bar that animates when the preview is playing. It uses CSS transitions to animate the progress bar
- * efficiently, but that means it can only play for an exact duration. It does not support pausing or resuming the
- * animation or setting a progress value.
+ * A progress bar that animates when the preview is playing. It uses CSS transitions to animate the
+ * progress bar efficiently, but that means it can only play for an exact duration. It does not
+ * support pausing or resuming the animation or setting a progress value.
  */
 export const ProgressBar = memo(function ProgressBar({ isPlaying, durationMs, style }: Props) {
   const allStyle = useMemo(() => {
@@ -44,7 +44,7 @@ export const ProgressBar = memo(function ProgressBar({ isPlaying, durationMs, st
   return (
     // Animating this with CSS, so we can't set the aria-valuenow. Just make this purely
     // presentational for the sake fo performance :(
-    <div className={cx("ProgressBar", { "is-playing": shouldPlay })} style={allStyle}>
+    <div className={clsx("ProgressBar", { "is-playing": shouldPlay })} style={allStyle}>
       {/* <div className="ProgressBar__bg"></div> */}
       <div className="ProgressBar__bar"></div>
     </div>

@@ -5,7 +5,7 @@ import { useNoteApi } from "@components/note";
 import Play from "@images/play-large.svg?react";
 import { useRouter } from "@router/useRouter";
 import { GlobalLayers } from "@timeline/Layers";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 import { PropsWithChildren, useCallback, useState } from "react";
 import { DemoName, isJsonDemo, loadJsonDemo } from "./demoLoader";
 import "./demos.css";
@@ -83,10 +83,10 @@ export function DemoTile({ name, className, children, demoName }: Props) {
   }
 
   /**
-   * Preloads the JSON for a demo file on hover to reduce the delay after the click (mostly seen in Firefox). There is
-   * still a window if the load is very slow where the user can click and not see anything for a while. It's like
-   * following a normal link on a web page though. Could add a debounced loading message if I see this more, but seems
-   * more than fast enough with preload.
+   * Preloads the JSON for a demo file on hover to reduce the delay after the click (mostly seen in
+   * Firefox). There is still a window if the load is very slow where the user can click and not see
+   * anything for a while. It's like following a normal link on a web page though. Could add a
+   * debounced loading message if I see this more, but seems more than fast enough with preload.
    */
   const preload = useCallback(
     function preload() {
@@ -99,13 +99,13 @@ export function DemoTile({ name, className, children, demoName }: Props) {
 
   return (
     <button
-      className={cx("DemoTile tile p-0 overflow-hidden", className)}
+      className={clsx("DemoTile tile overflow-hidden p-0", className)}
       onClick={loadDemo}
       aria-label={`Open demo: ${name}`}
       {...hoverProps}
     >
-      <div className="flex bg-blue color-white p-4 DemoTile__header items-center justify-between">
-        <h2 className="text-lg sm:text-xl font-bold">{name}</h2>
+      <div className="bg-blue color-white DemoTile__header flex items-center justify-between p-4">
+        <h2 className="text-lg font-bold sm:text-xl">{name}</h2>
         <Play className="ms-auto" />
       </div>
 

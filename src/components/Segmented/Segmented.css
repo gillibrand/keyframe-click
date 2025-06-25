@@ -23,14 +23,15 @@
     }
   }
 
+  /* 
   &:not(:has(:focus-visible)):not(.is-disabled) {
     box-shadow: 2px 2px 0 0 var(--shadow-color);
-  }
+  } */
 
-  &:has(:focus-visible) {
+  /* &:has(:focus-visible) {
     outline: solid var(--outline-width) var(--c-neo-blue);
     outline-offset: var(--outline-offset);
-  }
+  } */
 }
 
 .Segmented__button:not(:has(:disabled)) {
@@ -78,9 +79,9 @@
     border-color: inherit;
   }
 
-  & > input {
+  /* & > input {
     position: absolute;
     clip-path: inset(50%);
     opacity: 0.01;
-  }
+  } */
 }

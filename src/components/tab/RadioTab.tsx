@@ -1,6 +1,6 @@
 import { CloseButton } from "@components/CloseButton";
 import { ColorName, Colors } from "@util/Colors";
-import { cx } from "@util/cx";
+import clsx from "clsx";
 import { CSSProperties, memo, useId, useMemo, useRef } from "react";
 
 interface Props {
@@ -64,7 +64,9 @@ export const RadioTab = memo(function RadioTab({
 
   return (
     <div
-      className={cx("RadioTab flex flex-nowrap gap-3 items-center", { "can-delete": !!canDelete })}
+      className={clsx("RadioTab flex flex-nowrap items-center gap-3", {
+        "can-delete": !!canDelete,
+      })}
       style={style}
       onKeyDown={handleDelKey}
       onClick={moveFocusToInputOnClick}
@@ -88,7 +90,11 @@ export const RadioTab = memo(function RadioTab({
         }}
       />
 
-      <CloseButton onClick={promptToDelete} tabIndex={-1} onFocus={() => inputRef.current?.focus()} />
+      <CloseButton
+        onClick={promptToDelete}
+        tabIndex={-1}
+        onFocus={() => inputRef.current?.focus()}
+      />
     </div>
   );
 });
