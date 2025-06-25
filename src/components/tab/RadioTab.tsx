@@ -70,7 +70,6 @@ export const RadioTab = memo(function RadioTab({
 
   return (
     <div
-      // className={clsx("RadioTab flex flex-nowrap items-center gap-3", {
       className={clsx(
         "flex h-full flex-nowrap items-center gap-3 py-2 ps-3 pe-2 leading-none select-none",
         "border-black bg-white text-xs text-white sm:text-[length:inherit]",

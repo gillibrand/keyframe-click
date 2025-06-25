@@ -69,7 +69,7 @@ export function RadioTabGroup({
   );
 
   return (
-    <div className={clsx("RadioTabGroup gap-4", className)}>
+    <div className={clsx("RadioTabGroup items-stretch gap-4", className)}>
       <span id={labelId} className="sr-only">
         {label}
       </span>
@@ -100,7 +100,7 @@ export function RadioTabGroup({
 
       {addTooltip}
       <button
-        className="button is-secondary"
+        className="button is-secondary grid size-9 min-w-0 place-items-center p-0"
         onClick={onAddNew}
         disabled={!canAddNew}
         title={!canAddNew ? "All properties are already being used" : undefined}
