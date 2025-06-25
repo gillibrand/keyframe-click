@@ -33,7 +33,8 @@ export function Confirm({ children, label, okLabel, onOk, open, onClose }: Props
         <button className="button is-secondary" onClick={handleCancel}>
           Cancel
         </button>
-        <button className="button is-danger" onClick={handleOk}>
+        {/* Extra leading since this long label can wrap on mobile */}
+        <button className="button is-danger py-1 leading-6" onClick={handleOk}>
           {okLabel}
         </button>
       </DialogFooter>

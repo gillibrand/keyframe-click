@@ -1,20 +1,41 @@
 @import "tailwindcss";
 
 @theme {
+  /* TODO: this matches @media queries. Maybe change to rem */
+  --breakpoint-sm: 750px;
   --shadow-hard: 2px 2px 0 0 black;
+  --shadow-hard-1: 1px 1px 0 0 black;
 
   --color-disabled: var(--color-gray-500);
   --color-neo-blue: #006dea;
+  --color-danger: #ff2683;
 }
 
 @layer utilities {
   .focus-outline {
-    @apply outline-3 outline-offset-2 outline-neo-blue;
+    @apply outline-neo-blue outline-3 outline-offset-2;
   }
   .focus-within\:focus-outline {
     &:focus-within:has(:focus-visible) {
-      @apply outline-3 outline-offset-2 outline-neo-blue;
+      @apply outline-neo-blue outline-3 outline-offset-2;
     }
+  }
+}
+
+/* Buttons */
+@layer components {
+  .button {
+    @apply text-disabled border-disabled min-w-[12ch] rounded-full border-2 px-6 py-2 leading-none text-balance select-none;
+    @apply enabled:bg-neo-blue enabled:shadow-hard hover:brightness-110 enabled:border-black enabled:text-white;
+    @apply active:shadow-hard-1 enabled:cursor-pointer enabled:active:brightness-90;
+  }
+
+  .button.is-danger {
+    @apply enabled:bg-danger;
+  }
+
+  .button.is-secondary {
+    @apply hover:brightness-95 active:brightness-90 enabled:bg-white enabled:text-black;
   }
 }
 

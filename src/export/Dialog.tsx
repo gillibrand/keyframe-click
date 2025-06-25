@@ -190,7 +190,9 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
 
       <form action="dialog" className="[ ] stack flex flex-col" onSubmit={handleSubmit}>
         <header className={clsx("px-4 pt-4", { "sr-only": hideLabel })}>
-          <h2 id={dialogLabelId}>{label}</h2>
+          <h2 className="text-lg font-bold" id={dialogLabelId}>
+            {label}
+          </h2>
         </header>
 
         {children}

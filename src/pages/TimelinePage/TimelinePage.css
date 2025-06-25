@@ -48,7 +48,7 @@
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
 
-    /* Hide scrollbars since this purely a touch focused slide interaction. Use the dots to show pages. */
+    /* Hide scroll bars since this purely a touch focused slide interaction. Use the dots to show pages. */
     scrollbar-width: none;
     &::-webkit-scrollbar {
       display: none;
@@ -82,7 +82,7 @@
   filter: grayscale(0.75);
 }
 
-.mobile-play-button {
+.mobile-play-buttonX {
   min-width: 0;
   height: 3rem;
   width: 3rem;

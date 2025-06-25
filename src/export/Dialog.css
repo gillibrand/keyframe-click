@@ -34,10 +34,6 @@
     }
   }
 
-  h2 {
-    font-size: var(--sz-large);
-  }
-
   hr {
     appearance: none;
     border-block-start: solid 2px black;

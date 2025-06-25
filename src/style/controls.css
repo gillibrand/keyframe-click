@@ -10,96 +10,6 @@
   --shadow-color: var(--border-color);
 }
 
-.button {
-  appearance: none;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border: solid var(--border-width) var(--border-color);
-  border-radius: 0.5rem;
-  border-radius: 999px;
-  padding: 0.5rem 1.5rem;
-  background-color: white;
-  color: black;
-  min-width: 12ch;
-  text-wrap: balance;
-  text-wrap: pretty;
-
-  &.is-small {
-    min-width: 5rem;
-  }
-
-  &:not(:disabled) {
-    box-shadow: 2px 2px 0 0 var(--shadow-color);
-  }
-
-  &:not(:disabled):is(:active, [aria-pressed="true"]) {
-    box-shadow: 1px 1px 0 0 var(--shadow-color);
-  }
-
-  &:disabled {
-    border-color: var(--c-neo-black);
-    color: var(--c-neo-black);
-    opacity: 0.5;
-    background-color: transparent;
-  }
-
-  &.is-round {
-    min-width: 0;
-    padding: 0;
-    width: 2.4rem;
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-    align-self: stretch;
-  }
-
-  &:not(:disabled) {
-    cursor: pointer;
-    color: white;
-    background-color: var(--c-neo-blue);
-
-    &.is-demo {
-      background-color: var(--c-neo-purple);
-    }
-
-    &.is-secondary {
-      color: var(--c-neo-black);
-      background-color: white;
-
-      &:focus-visible {
-        border-color: var(--c-neo-black);
-      }
-
-      &:hover {
-        filter: brightness(0.97);
-      }
-    }
-
-    &.is-danger {
-      background-color: var(--c-neo-danger);
-    }
-
-    &:hover {
-      filter: brightness(1.1);
-    }
-
-    &:focus-visible {
-      outline: solid var(--outline-width) var(--outline-color);
-      outline-offset: var(--outline-offset);
-      box-shadow: 0 0 0 2px var(--c-neo-white);
-      border-color: transparent;
-    }
-
-    &:active:not(:disabled),
-    &[aria-pressed="true"] {
-      filter: brightness(0.9);
-    }
-  }
-}
-
 .textbox {
   appearance: none;
   border: solid var(--border-width) var(--border-color);
@@ -158,7 +68,11 @@ input[type="range"] {
 
   &::-webkit-slider-runnable-track {
     height: 10px;
-    background-image: linear-gradient(to right, var(--c-neo-blue) var(--progress), white var(--progress));
+    background-image: linear-gradient(
+      to right,
+      var(--c-neo-blue) var(--progress),
+      white var(--progress)
+    );
     border-radius: 999px;
     border: solid 2px var(--c-neo-black);
   }

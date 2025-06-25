@@ -638,15 +638,16 @@ export function TimelinePage() {
           <section className="inspector-sidebar" ref={previewParentRef}>
             <div className="relative flex flex-col" ref={previewPage1Ref}>
               <div className="canvas-bar-bl">
-                {isPlaying ? (
-                  <button className="button mobile-play-button mobile-only" onClick={stopPreview}>
-                    <Stop />
-                  </button>
-                ) : (
-                  <button className="button mobile-play-button mobile-only" onClick={playPreview}>
-                    <Play />
-                  </button>
-                )}
+                <button
+                  className="button mobile-only grid size-12 min-w-0 place-items-center p-0 sm:hidden"
+                  onClick={isPlaying ? stopPreview : playPreview}
+                >
+                  {isPlaying ? (
+                    <Stop className="relative left-0.5 scale-[1.5]" />
+                  ) : (
+                    <Play className="relative left-0.5 scale-[1.5]" />
+                  )}
+                </button>
               </div>
 
               {preview}
