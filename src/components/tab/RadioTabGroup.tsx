@@ -79,7 +79,7 @@ export function RadioTabGroup({
         role="radiogroup"
         aria-labelledby={labelId}
       >
-        {tabs.map((t) => (
+        {tabs.map((t, i) => (
           // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
           // so can shrink to 0 width
           <div key={t.id} className="RadioTabGroup__tabWrapper min-w-px">
@@ -92,6 +92,7 @@ export function RadioTabGroup({
               onCheck={onChange}
               canDelete={canDelete}
               onDelete={handleDelete}
+              isStart={i === 0}
             />
           </div>
         ))}

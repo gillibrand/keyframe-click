@@ -12,6 +12,7 @@ interface Props {
   onCheck: (id: string) => void;
   canDelete?: (id: string) => Promise<boolean>;
   onDelete: (id: string) => void;
+  isStart: boolean;
 }
 
 export const RadioTab = memo(function RadioTab({
@@ -23,13 +24,18 @@ export const RadioTab = memo(function RadioTab({
   onCheck,
   canDelete,
   onDelete,
+  isStart,
 }: Props) {
   const style = useMemo(
     () =>
-      ({
-        "--tab-bg-color": Colors[color],
-      }) as CSSProperties,
-    [color]
+      (checked
+        ? {
+            backgroundColor: Colors[color],
+          }
+        : {
+            color: Colors[color],
+          }) as CSSProperties,
+    [color, checked]
   );
 
   async function promptToDelete(e: React.UIEvent) {
@@ -64,15 +70,21 @@ export const RadioTab = memo(function RadioTab({
 
   return (
     <div
-      className={clsx("RadioTab flex flex-nowrap items-center gap-3", {
-        "can-delete": !!canDelete,
-      })}
+      // className={clsx("RadioTab flex flex-nowrap items-center gap-3", {
+      className={clsx(
+        "flex h-full flex-nowrap items-center gap-3 py-2 ps-3 pe-2 leading-none select-none",
+        "border-black bg-white text-xs text-white sm:text-[length:inherit]",
+        !checked && "cursor-pointer hover:brightness-95 active:brightness-90",
+        // In x-small tabs this ensure the checked one is a little more visible
+        checked && "relative z-10",
+        !isStart && "border-s-2"
+      )}
       style={style}
       onKeyDown={handleDelKey}
       onClick={moveFocusToInputOnClick}
       data-id={id}
     >
-      <label className="truncate" htmlFor={inputId}>
+      <label className="cursor-[inherit] truncate" htmlFor={inputId}>
         {label}
       </label>
 
@@ -90,11 +102,13 @@ export const RadioTab = memo(function RadioTab({
         }}
       />
 
-      <CloseButton
-        onClick={promptToDelete}
-        tabIndex={-1}
-        onFocus={() => inputRef.current?.focus()}
-      />
+      <div className={clsx(!checked && "invisible hidden sm:block")}>
+        <CloseButton
+          onClick={promptToDelete}
+          tabIndex={-1}
+          onFocus={() => inputRef.current?.focus()}
+        />
+      </div>
     </div>
   );
 });
