@@ -10,7 +10,6 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import "./TimelinePage.css";
 
 import { useNoteApi } from "@components/note";
-import { SplitButtons } from "@components/SplitButtons";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
 import { useTooltip } from "@components/Tooltip";
 import { ExportDialog } from "@export/ExportDialog";
@@ -481,17 +480,17 @@ export function TimelinePage() {
     }
   }, [playDemo, playPreview, previewParentRef]);
 
-  function renderCopyButtons(isDesktop: boolean, className?: string) {
+  function renderCopyButtons(isDesktop: boolean) {
     // Ignore the tooltip unless on desktop layout
     const tooltipProps = isDesktop ? copyTooltipProps : {};
 
     return (
-      <SplitButtons className={className}>
+      <div className={clsx("flex", isDesktop && "hidden sm:flex")}>
         <button
           key="copy"
           title="Set options and copy keyframes"
           onClick={startExport}
-          className={clsx("flex-center is-icon grow gap-2", { "is-pressed": isExporting })}
+          className="split-button flex grow-1 gap-2"
           ref={isDesktop ? copyButtonRef : undefined}
           aria-haspopup="dialog"
           aria-controls={activeExportId}
@@ -505,19 +504,19 @@ export function TimelinePage() {
           aria-expanded={isExporting}
           aria-controls={activeExportId}
           onClick={copyNow}
-          className="center"
+          className="split-button"
           {...tooltipProps}
         >
           <Copy />
           <span className="sr-only">Copy with current options</span>
           {copyTooltip}
         </button>
-      </SplitButtons>
+      </div>
     );
   }
 
   return (
-    <main className={clsx("[ ] flex grow flex-col text-sm", { "is-dialog-open": isExporting })}>
+    <main className={clsx("[ ] flex grow flex-col sm:text-sm", { "is-dialog-open": isExporting })}>
       {isExporting && (
         <ExportDialog
           open={true}
@@ -544,7 +543,7 @@ export function TimelinePage() {
               onChange={changeTab}
             />
 
-            {renderCopyButtons(true, "desktop-only")}
+            {renderCopyButtons(true)}
           </section>
         </div>
 
@@ -589,8 +588,7 @@ export function TimelinePage() {
               {/* ZOOM */}
               <div className="canvas-bar-br">
                 <button
-                  className="split-button px-3 py-1.5"
-                  // className="is-secondary is-small:lg text-large font-bold"
+                  className="split-button bg-white px-3 py-1.5 text-black"
                   title="Zoom out values"
                   onClick={zoomOut}
                 >
@@ -598,8 +596,7 @@ export function TimelinePage() {
                   <span className="sr-only">zoom out values</span>
                 </button>
                 <button
-                  // className="is-secondary is-small:lg text-large font-bold"
-                  className="split-button px-3 py-1.5"
+                  className="split-button bg-white px-3 py-1.5 text-black"
                   title="Zoom in values"
                   onClick={zoomIn}
                 >
@@ -670,7 +667,7 @@ export function TimelinePage() {
 
           <div className="PageIndicator--row mobile-only mb-4">{previewPageIndicator}</div>
 
-          <div className="mobile-only">{renderCopyButtons(false, "mt-8 mb-4 text-x-large")}</div>
+          <div className="mt-8 mb-4 text-lg sm:hidden">{renderCopyButtons(false)}</div>
         </div>
       </div>
     </main>

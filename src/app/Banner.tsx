@@ -43,7 +43,7 @@ export function Banner() {
   }
 
   return (
-    <header className="py-4x Banner text-sm">
+    <header className="py-4x Banner sm:text-sm">
       <div className="wrapper flex items-end gap-8">
         <h1
           className="Banner__title hidden cursor-default text-2xl font-bold text-nowrap sm:block"

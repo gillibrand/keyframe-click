@@ -43,9 +43,9 @@
 
 @layer components {
   .split-button {
-    @apply bg-white px-6 py-2 leading-none text-black select-none first:rounded-s-full last:rounded-e-full;
+    @apply bg-neo-blue inline-flex items-center justify-center px-6 py-2 leading-none text-white select-none first:rounded-s-full last:rounded-e-full;
     @apply enabled:cursor-pointer enabled:active:brightness-90;
-    @apply shadow-hard-1 active:shadow-none;
+    @apply shadow-hard active:shadow-hard-1;
 
     /* border in on start of first, but no others so that it appears between the buttons (no double border) */
     @apply border-2 border-s-0 border-black first:border-s-2;

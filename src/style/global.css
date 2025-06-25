@@ -127,19 +127,14 @@ body {
   color: var(--c-body);
 }
 
-input,
-select,
-button {
-  font-size: var(--sz-small);
-}
-
 body,
 input,
 select,
 button,
 kbd.is-plain {
   font-family:
-    "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana,
+    sans-serif;
 }
 
 body {
