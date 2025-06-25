@@ -20,6 +20,7 @@
   .focus-within\:focus-outline {
     &:focus-within:has(:focus-visible) {
       @apply outline-neo-blue outline-3 outline-offset-2;
+      @apply ring-2 ring-white;
     }
   }
 }

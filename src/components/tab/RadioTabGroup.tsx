@@ -5,7 +5,6 @@ import clsx from "clsx";
 import { useChildAnimator } from "@util/useChildAnimator";
 import { useCallback, useId } from "react";
 import { RadioTab } from "./RadioTab";
-import "./tab.css";
 
 export interface TabData {
   cssProp: CssProp;
@@ -69,12 +68,15 @@ export function RadioTabGroup({
   );
 
   return (
-    <div className={clsx("RadioTabGroup items-stretch gap-4", className)}>
+    <div className={clsx("flex gap-4", className)}>
       <span id={labelId} className="sr-only">
         {label}
       </span>
       <div
-        className="RadioTabGroup__tabs flex min-w-px"
+        className={clsx(
+          "shadow-hard focus-within:focus-outline flex min-w-1 overflow-hidden rounded-lg border-2 border-black bg-white",
+          "focus-within:focus-outline focus-within:focus-visible:shadow-none"
+        )}
         ref={animationParentRef}
         role="radiogroup"
         aria-labelledby={labelId}
@@ -82,7 +84,7 @@ export function RadioTabGroup({
         {tabs.map((t, i) => (
           // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
           // so can shrink to 0 width
-          <div key={t.id} className="RadioTabGroup__tabWrapper min-w-px">
+          <div key={t.id}>
             <RadioTab
               id={t.id}
               label={CssInfos[t.cssProp].label}
