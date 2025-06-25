@@ -10,13 +10,18 @@
 
   --color-disabled: var(--color-gray-500);
   --color-neo-blue: #006dea;
+  --color-neo-white: #f5f5f5;
   --color-danger: #ff2683;
 }
 
+/* Focus rings */
 @layer utilities {
+  /* unconditional focus ring */
   .focus-outline {
     @apply outline-neo-blue outline-3 outline-offset-2;
   }
+
+  /* conditionally applied focus ring when nested control has focus (eg, input.sr-only)*/
   .focus-within\:focus-outline {
     &:focus-within:has(:focus-visible) {
       @apply outline-neo-blue outline-3 outline-offset-2;
@@ -31,6 +36,7 @@
     @apply text-disabled border-disabled min-w-[12ch] rounded-full border-2 px-6 py-2 leading-none text-balance select-none;
     @apply enabled:bg-neo-blue enabled:shadow-hard hover:brightness-110 enabled:border-black enabled:text-white;
     @apply active:shadow-hard-1 enabled:cursor-pointer enabled:active:brightness-90;
+    @apply outline-neo-blue ring-white outline-offset-2 focus:shadow-none focus:ring-2 focus:outline-3;
   }
 
   .button.is-danger {
@@ -42,6 +48,7 @@
   }
 }
 
+/* Split buttons. Use two or more next to each other in same parent w/ no other sibling for a unified look */
 @layer components {
   .split-button {
     @apply bg-neo-blue inline-flex items-center justify-center px-6 py-2 leading-none text-white select-none first:rounded-s-full last:rounded-e-full;

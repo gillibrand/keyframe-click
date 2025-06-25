@@ -52,7 +52,6 @@
   --c-neo-light-yellow: #fcfd96;
   --c-neo-black: #111;
   --c-neo-gray: #4c4c4c;
-  --c-neo-white: #f7f7f7;
   --c-neo-white: #f5f5f5;
   --c-neo-blue: #006dea;
   --c-neo-teal: #4ccdc0;
@@ -93,29 +92,6 @@
   font-size: 114.29%;
 }
 
-/* .text-light {
-  color: var(--c-gray-500);
-}
-
-.text-small {
-  font-size: var(--sz-small);
-}
-.text-x-small {
-  font-size: var(--sz-x-small);
-}
-
-.text-large {
-  font-size: var(--sz-large);
-}
-
-.text-x-large {
-  font-size: var(--sz-x-large);
-} */
-
-/* .font-bold {
-  font-weight: bold;
-} */
-
 body {
   color: var(--c-body);
   background-color: white;
@@ -123,7 +99,6 @@ body {
 }
 
 body {
-  /* font-size: var(--sz-base); */
   color: var(--c-body);
 }
 
@@ -192,19 +167,6 @@ input[type="checkbox"] {
 textarea {
   resize: vertical;
 }
-
-/* ul {
-  list-style-type: square;
-} */
-
-/* p,
-ul,
-li,
-ds {
-  line-height: 1.5;
-  text-wrap: pretty;
-  margin: 0;
-} */
 
 code,
 kbd {
