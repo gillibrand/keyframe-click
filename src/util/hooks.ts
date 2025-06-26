@@ -5,6 +5,7 @@ import {
   ReactNode,
   SetStateAction,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -12,8 +13,8 @@ import {
 } from "react";
 
 /**
- * A custom hook that returns a memoized value that never changes. This is useful for preventing unnecessary re-renders
- * when the value is static.
+ * A custom hook that returns a memoized value that never changes. This is useful for preventing
+ * unnecessary re-renders when the value is static.
  *
  * @example
  *   const memoizedValue = useStable(value);
@@ -43,13 +44,14 @@ export function useInitedRef<T>(init: () => T) {
 }
 
 /**
- * Tracks the latest value (usually state) given to this hook and returns a function to get that value later. This is to
- * work around closures that might have old state values. By wrapping the latest value, even stale closures can call the
- * getter this returns to get the latest value the component was rendered with.
+ * Tracks the latest value (usually state) given to this hook and returns a function to get that
+ * value later. This is to work around closures that might have old state values. By wrapping the
+ * latest value, even stale closures can call the getter this returns to get the latest value the
+ * component was rendered with.
  *
- * Normally, you should keep closures fresh with correct dependency lists, but with some async code you might see state
- * be updated during an `await`. In that case, using the getter method will ensure you can access the current state even
- * after wait.
+ * Normally, you should keep closures fresh with correct dependency lists, but with some async code
+ * you might see state be updated during an `await`. In that case, using the getter method will
+ * ensure you can access the current state even after wait.
  *
  * @param value The latest value to save and return from the getter.
  * @returns A getter function that returns the most recent value.
@@ -64,11 +66,12 @@ export function useGetter<T>(value: T) {
 }
 
 /**
- * Used to force a render by using some dummy state. This is needed if some non-reactive state is changed but we still
- * want to perform a render against that state. This is just an opaque piece of reactive state.
+ * Used to force a render by using some dummy state. This is needed if some non-reactive state is
+ * changed but we still want to perform a render against that state. This is just an opaque piece of
+ * reactive state.
  *
- * @returns A tuple of some state that can be used as a dependency, and a function that can be used to change that state
- *   and force a render of the current component.
+ * @returns A tuple of some state that can be used as a dependency, and a function that can be used
+ *   to change that state and force a render of the current component.
  */
 export function useForceRender() {
   return useReducer((old: number) => {
@@ -77,8 +80,8 @@ export function useForceRender() {
 }
 
 /**
- * A hook that returns a globally identifier. This can be useful for IDs or radio group names that need to be unique,
- * but aren't shown to the user.
+ * A hook that returns a globally identifier. This can be useful for IDs or radio group names that
+ * need to be unique, but aren't shown to the user.
  *
  * @returns A unique identifier as a string.
  */
@@ -98,9 +101,9 @@ function isSetStateFunction<T>(fn: React.SetStateAction<T>): fn is (prevState: T
  * Creates state that you can inspect at any time without needing to add the getter as a dependency.
  *
  * @param initial Initial value.
- * @returns A getter and a setter. When the setter is called it will force a render like normal state. The getter can be
- *   called inside `useEffect` and similar without needing to be a dependency (or add it, but it won't change later--it
- *   is a stable function).
+ * @returns A getter and a setter. When the setter is called it will force a render like normal
+ *   state. The getter can be called inside `useEffect` and similar without needing to be a
+ *   dependency (or add it, but it won't change later--it is a stable function).
  */
 export function useLiveState<T>(initialState: T | (() => T)) {
   const [value, setValue] = useState(initialState);
@@ -128,9 +131,9 @@ export function useLiveState<T>(initialState: T | (() => T)) {
 }
 
 /**
- * Merges multiple refs into a single on. This is needed since a component can only accept a single ref, but different
- * hooks might all need their own. This lets you gather all the refs you need and just pass the merged ref into a
- * component and get them all updated.
+ * Merges multiple refs into a single on. This is needed since a component can only accept a single
+ * ref, but different hooks might all need their own. This lets you gather all the refs you need and
+ * just pass the merged ref into a component and get them all updated.
  *
  * @param refs Refs to merge.
  * @returns A single ref that wil update all the given refs.
@@ -150,8 +153,9 @@ export function useMergeRefs<T>(...refs: React.Ref<T>[]): React.RefCallback<T> {
 }
 
 /**
- * Used to install a callback that will fire once if an element is hovered over long enough. This is used to preload
- * data when hovering over demo buttons Returns the React event handlers to spread into you element.
+ * Used to install a callback that will fire once if an element is hovered over long enough. This is
+ * used to preload data when hovering over demo buttons Returns the React event handlers to spread
+ * into you element.
  *
  * @param callback Callback to fire once after the hover delay.
  * @param delayMillis How long to wait before firing.
@@ -182,4 +186,25 @@ export function useHoverSoon(callback: Callback, delayMillis: number = 500) {
       onMouseLeave,
     } as const;
   }, [callback, delayMillis]);
+}
+
+/**
+ * Checks if the component is mounted or not. This fires a state change on mount, so will always
+ * result to a double-render. This is useful for some CSS animation since you need to mount in the
+ * pre-animated state then re-render to animate it. Don't use for checks that should not trigger a
+ * render on mount.
+ *
+ * @returns True if mounted.
+ */
+export function useIsMountedState() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  return isMounted;
 }

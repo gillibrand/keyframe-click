@@ -51,7 +51,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen stack">
+    <div className="stack flex min-h-screen flex-col">
       <Banner />
       <NoteList />
       <Suspense fallback={"..."}>
@@ -60,7 +60,13 @@ export function App() {
         </PreviewProvider>
       </Suspense>
       {!isDevMode && <Analytics />}
-      {isHelpRendered && <HelpPanel open={isHelpOpen} willClose={handleWillCloseHelp} didClose={handleDidCloseHelp} />}
+      {isHelpRendered && (
+        <HelpPanel
+          open={isHelpOpen}
+          willClose={handleWillCloseHelp}
+          didClose={handleDidCloseHelp}
+        />
+      )}
     </div>
   );
 }

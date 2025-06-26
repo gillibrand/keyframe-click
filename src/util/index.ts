@@ -99,26 +99,34 @@ export function getOrInit<K, V>(map: Map<K, V>, key: K, dflt: V) {
 export const isDevMode = import.meta.env.MODE === "development"; // This is specific to Vite.
 
 /**
- * Checks if the element natively handles space bar events. This is used to ignore space bar events on elements that
- * natively handle them, like input, textarea, and select elements instead of handling them with global handlers. This
- * is more elements than just a `isKeyboardHandler`.
+ * Checks if the element natively handles space bar events. This is used to ignore space bar events
+ * on elements that natively handle them, like input, textarea, and select elements instead of
+ * handling them with global handlers. This is more elements than just a `isKeyboardHandler`.
  *
  * @param el Element to check.
- * @returns True if the element is a space bar handler. This is true for input, textarea, and select elements. This is
- *   used to check if the element is a space bar handler, so that we can prevent the default behavior of
+ * @returns True if the element is a space bar handler. This is true for input, textarea, and select
+ *   elements. This is used to check if the element is a space bar handler, so that we can prevent
+ *   the default behavior of
  */
 export function isSpaceBarHandler(el: HTMLElement | EventTarget | null): boolean {
   if (!isEl(el)) return false;
-  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.tagName === "BUTTON";
+  return (
+    el.tagName === "INPUT" ||
+    el.tagName === "TEXTAREA" ||
+    el.tagName === "SELECT" ||
+    el.tagName === "BUTTON"
+  );
 }
 
 /**
- * Checks if the element natively handles keyboard events. This is used to ignore keyboard events on elements that
- * natively handle them, like input, textarea, and select elements instead of handling them with global handlers.
+ * Checks if the element natively handles keyboard events. This is used to ignore keyboard events on
+ * elements that natively handle them, like input, textarea, and select elements instead of handling
+ * them with global handlers.
  *
  * @param el Element to check.
- * @returns True if the element is a keyboard handler. This is true for input, textarea, and select elements. This is
- *   used to check if the element is a keyboard handler, so that we can prevent the default behavior of
+ * @returns True if the element is a keyboard handler. This is true for input, textarea, and select
+ *   elements. This is used to check if the element is a keyboard handler, so that we can prevent
+ *   the default behavior of
  */
 export function isKeyboardHandler(el: HTMLElement | EventTarget | null): boolean {
   if (!isEl(el)) return false;

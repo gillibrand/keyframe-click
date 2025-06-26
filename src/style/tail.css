@@ -74,6 +74,18 @@
 }
 
 @layer base {
+  /* XXX: this feels too general */
+  .j-prose code,
+  kbd {
+    @apply border-1 border-black/10;
+    @apply rounded-sm bg-black/5 px-1 py-0.5;
+    @apply font-mono;
+
+    .dark-area & {
+      @apply border-white/50 bg-white/30;
+    }
+  }
+
   /* for use in .mdx content. Like Tailwind Typography plugin */
   .j-prose {
     h1,
