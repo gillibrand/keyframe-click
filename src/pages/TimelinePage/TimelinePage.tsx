@@ -460,14 +460,14 @@ export function TimelinePage() {
     scrollParentRef: timelineParentRef,
     page1Ref: timelinePage1Ref,
     page2Ref: timelinePage2Ref,
-  } = usePageIndicator();
+  } = usePageIndicator("timeline options");
 
   const {
     pageIndicator: previewPageIndicator,
     scrollParentRef: previewParentRef,
     page1Ref: previewPage1Ref,
     page2Ref: previewPage2Ref,
-  } = usePageIndicator();
+  } = usePageIndicator("preview options");
 
   const {
     args: { playDemo },
@@ -627,7 +627,7 @@ export function TimelinePage() {
             </div>
           </section>
 
-          <div className="PageIndicator--row sm:hidden">{timelinePageIndicator}</div>
+          <div className="text-center sm:hidden">{timelinePageIndicator}</div>
         </div>
 
         {/* PREVIEW ROW */}
@@ -665,7 +665,7 @@ export function TimelinePage() {
             </div>
           </section>
 
-          <div className="PageIndicator--row mb-4 sm:hidden">{previewPageIndicator}</div>
+          <div className="mb-4 text-center sm:hidden">{previewPageIndicator}</div>
 
           <div className="mt-8 mb-4 text-lg sm:hidden">{renderCopyButtons(false)}</div>
         </div>

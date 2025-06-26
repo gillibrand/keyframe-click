@@ -1,26 +1,43 @@
 import { memo } from "react";
-import "./PageIndicator.css";
+import clsx from "clsx";
 
-import DotXSmall from "@images/dot-x-small.svg?react";
+function Dot({ checked }: { checked: boolean }) {
+  return (
+    <span
+      className={clsx(
+        "size-[10px] rounded-full bg-black",
+        "transition-opacity duration-200",
+        checked ? "opacity-100" : "opacity-25"
+      )}
+      aria-hidden
+    />
+  );
+}
 
 interface Props {
   checked: boolean;
   onChange: (checked: boolean) => unknown;
+  label: string;
 }
 
-/** The "dots" under slidable mobile pages. In this case, we only support two pages, so this is a checkbox underneath. */
-export const PageIndicator = memo(function PageIndicator({ checked, onChange }: Props) {
-  // TODO: accessible label
-
+/**
+ * The "dots" under slidable mobile pages. In this case, we only support two pages, so this is a
+ * checkbox underneath.
+ */
+export const PageIndicator = memo(function PageIndicator({ checked, onChange, label }: Props) {
   return (
-    <label className="PageIndicator flex">
-      <span className="PageIndicator__dot">
-        <DotXSmall />
-      </span>
-      <input type="checkbox" checked={checked} className="sr-only" onChange={(e) => onChange(e.target.checked)}></input>
-      <span className="PageIndicator__dot">
-        <DotXSmall />
-      </span>
+    <label className="focus-within:focus-outline inline-flex justify-center gap-1.5 rounded-full">
+      <span className="sr-only">{label}</span>
+      <input
+        type="checkbox"
+        checked={checked}
+        className="sr-only"
+        onChange={(e) => onChange(e.target.checked)}
+        aria-label={label}
+      />
+
+      <Dot checked={!checked} />
+      <Dot checked={checked} />
     </label>
   );
 });

@@ -1,7 +1,7 @@
 import { PageIndicator } from "@components/PageIndicator";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-export function usePageIndicator() {
+export function usePageIndicator(label: string) {
   const scrollParentRef = useRef<HTMLDivElement>(null);
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
@@ -27,6 +27,7 @@ export function usePageIndicator() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            entry.target.removeAttribute("inert");
             if (entry.target === page1) {
               setChecked(false);
               return;
@@ -36,6 +37,9 @@ export function usePageIndicator() {
               setChecked(true);
               return;
             }
+          } else {
+            // no tabbing into scrolled off tiles
+            entry.target.setAttribute("inert", "");
           }
         });
       },
@@ -52,7 +56,9 @@ export function usePageIndicator() {
   }, []);
 
   return useMemo(() => {
-    const pageIndicator = <PageIndicator checked={checked} onChange={handleTogglePage} />;
+    const pageIndicator = (
+      <PageIndicator label={label} checked={checked} onChange={handleTogglePage} />
+    );
 
     return {
       pageIndicator,
@@ -60,5 +66,5 @@ export function usePageIndicator() {
       page1Ref,
       page2Ref,
     } as const;
-  }, [handleTogglePage, checked]);
+  }, [handleTogglePage, checked, label]);
 }
