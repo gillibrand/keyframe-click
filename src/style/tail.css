@@ -86,6 +86,11 @@
     }
   }
 
+  /* Recenter dialogs that Tailwind un-sets */
+  .dialog-centered {
+    @apply fixed inset-0 m-auto;
+  }
+
   /* for use in .mdx content. Like Tailwind Typography plugin */
   .j-prose {
     h1,
