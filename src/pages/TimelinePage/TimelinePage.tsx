@@ -516,7 +516,7 @@ export function TimelinePage() {
   }
 
   return (
-    <main className={clsx("[ ] flex grow flex-col sm:text-sm", { "is-dialog-open": isExporting })}>
+    <main className={clsx("flex grow flex-col sm:text-sm", { "is-dialog-open": isExporting })}>
       {isExporting && (
         <ExportDialog
           open={true}
