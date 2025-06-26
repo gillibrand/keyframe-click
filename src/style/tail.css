@@ -9,6 +9,7 @@
   /* --shadow-hard: 2px 2px 0 0 black; */
 
   --color-disabled: var(--color-gray-500);
+  --color-neo-orange: #ffb800;
   --color-neo-blue: #006dea;
   --color-neo-white: #f5f5f5;
   --color-danger: #ff2683;
@@ -64,6 +65,7 @@
 }
 
 @layer base {
+  /* for use in .mdx content. Like Tailwind Typography plugin */
   .j-prose {
     h1,
     h2,
