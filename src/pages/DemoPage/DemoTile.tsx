@@ -8,7 +8,6 @@ import { GlobalLayers } from "@timeline/Layers";
 import clsx from "clsx";
 import { PropsWithChildren, useCallback, useState } from "react";
 import { DemoName, isJsonDemo, loadJsonDemo } from "./demoLoader";
-import "./demos.css";
 import { SavedDemo } from "./demoTypes";
 import { useHoverSoon } from "@util/hooks";
 
@@ -99,17 +98,20 @@ export function DemoTile({ name, className, children, demoName }: Props) {
 
   return (
     <button
-      className={clsx("DemoTile tile overflow-hidden p-0", className)}
+      className={clsx(
+        "bg-neo-white shadow-hard group block w-full cursor-pointer overflow-hidden rounded-2xl border-2 border-black p-0 text-start",
+        className
+      )}
       onClick={loadDemo}
       aria-label={`Open demo: ${name}`}
       {...hoverProps}
     >
-      <div className="bg-blue color-white DemoTile__header flex items-center justify-between p-4">
+      <div className="bg-neo-blue flex items-center justify-between px-3 py-2 text-white group-hover:brightness-110">
         <h2 className="text-lg font-bold sm:text-xl">{name}</h2>
-        <Play className="ms-auto" />
+        <Play className="transition-transform group-hover:translate-x-1" />
       </div>
 
-      <div className="p-4">{children}</div>
+      <div className="bg-neo-white px-3 py-2">{children}</div>
 
       {isConfirm && (
         <Confirm

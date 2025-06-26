@@ -61,13 +61,18 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
   }
 
   return createPortal(
-    <dialog className="HelpPanel stack" ref={dialogRef} onClose={didClose} onTransitionEnd={handleTransitionEnd}>
-      <header className="flex items-center gap-4 justify-between">
-        <h1>Keyboard shortcuts</h1>
+    <dialog
+      className="HelpPanel stack p-4"
+      ref={dialogRef}
+      onClose={didClose}
+      onTransitionEnd={handleTransitionEnd}
+    >
+      <header className="flex items-center justify-between gap-4">
+        <h1 className="text-lg font-bold">Keyboard shortcuts</h1>
         <CloseButton onClick={handleCloseButton} />
       </header>
 
-      <dl className="row-gap-4 col-gap-8">
+      <dl className="gap-x-8 gap-y-2 text-sm">
         <dt>Add point</dt>
         <dd>
           <kbd>N</kbd> <span className="p-4">or</span> <kbd>Shift</kbd>-click

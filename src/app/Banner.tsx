@@ -6,7 +6,7 @@ export function Banner() {
   return (
     <header className="border-b-2 border-black bg-white sm:text-sm">
       <div className="wrapper flex items-end gap-8">
-        <h1 className="Banner__title my-1 hidden cursor-default text-2xl font-bold text-nowrap sm:block">
+        <h1 className="hidden-at-small cursor-default text-2xl font-bold text-nowrap">
           Keyframe Click
         </h1>
 
@@ -18,7 +18,7 @@ export function Banner() {
           {isDevMode && <BannerLink href="#/debug">dev</BannerLink>}
         </nav>
 
-        <div className="text-light desktop-only ml-auto flex items-center gap-4 py-2">
+        <div className="text-light hidden-at-small ml-auto flex items-center gap-4 py-2">
           <span>
             by{" "}
             <a href="https://gillibrand.github.io/projects/" className="underline decoration-2">

@@ -84,13 +84,13 @@ export const PreviewInspector = memo(function PreviewInspector({
     <aside className="inspector stack" ref={parentRef}>
       <h2>Preview</h2>
 
-      <div className="stack-small desktop-only">
+      <div className="stack-small hidden-at-small">
         {isPlaying ? (
-          <button className="button w-full flex-center gap-2" onClick={onClickStop}>
+          <button className="button flex-center w-full gap-2" onClick={onClickStop}>
             Stop <Stop />
           </button>
         ) : (
-          <button className="button w-full flex-center gap-2 " onClick={onClickPlay}>
+          <button className="button flex-center w-full gap-2" onClick={onClickPlay}>
             Play <Play />
           </button>
         )}

@@ -166,7 +166,7 @@ export const TimelineInspector = memo(function Inspector({
       {<h2 className={clsx({ invisible: IsTouch && !selected })}>Point</h2>}
 
       <div className="stack-small">
-        <div className="desktop-only flex gap-2">
+        <div className="hidden-at-small flex gap-2">
           <button
             className={clsx("button flex-auto basis-1", { "is-pressed": isAdding })}
             aria-pressed={isAdding}
@@ -182,7 +182,7 @@ export const TimelineInspector = memo(function Inspector({
             Delete
           </button>
         </div>
-        <Hint className="desktop-only">
+        <Hint className="hidden-at-small">
           <div className="text-center">
             {isAdding ? (
               <>Click timeline to place the point</>

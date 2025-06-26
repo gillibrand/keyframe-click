@@ -561,7 +561,7 @@ export function TimelinePage() {
               />
 
               {/* Mobile only toolbar */}
-              <div className="mobile-only canvas-bar-bl flex gap-2">
+              <div className="canvas-bar-bl flex gap-2 sm:hidden">
                 <div className="flex gap-2">
                   {/* ADD */}
                   <button
@@ -627,7 +627,7 @@ export function TimelinePage() {
             </div>
           </section>
 
-          <div className="PageIndicator--row mobile-only">{timelinePageIndicator}</div>
+          <div className="PageIndicator--row sm:hidden">{timelinePageIndicator}</div>
         </div>
 
         {/* PREVIEW ROW */}
@@ -636,7 +636,7 @@ export function TimelinePage() {
             <div className="relative flex flex-col" ref={previewPage1Ref}>
               <div className="canvas-bar-bl">
                 <button
-                  className="button mobile-only grid size-12 min-w-0 place-items-center p-0 sm:hidden"
+                  className="button grid size-12 min-w-0 place-items-center p-0 sm:hidden"
                   onClick={isPlaying ? stopPreview : playPreview}
                 >
                   {isPlaying ? (
@@ -665,7 +665,7 @@ export function TimelinePage() {
             </div>
           </section>
 
-          <div className="PageIndicator--row mobile-only mb-4">{previewPageIndicator}</div>
+          <div className="PageIndicator--row mb-4 sm:hidden">{previewPageIndicator}</div>
 
           <div className="mt-8 mb-4 text-lg sm:hidden">{renderCopyButtons(false)}</div>
         </div>

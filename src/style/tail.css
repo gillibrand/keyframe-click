@@ -6,13 +6,20 @@
   --shadow-hard: 2px 2px 0 0 black;
   --shadow-hard-1: 1px 1px 0 0 black;
 
-  /* --shadow-hard: 2px 2px 0 0 black; */
-
   --color-disabled: var(--color-gray-500);
   --color-neo-orange: #ffb800;
   --color-neo-blue: #006dea;
   --color-neo-white: #f5f5f5;
   --color-danger: #ff2683;
+}
+
+@layer utilities {
+  /* hides element exactly at breakpoint */
+  .hidden-at-small {
+    @media (width < theme("breakpoint.sm")) {
+      @apply hidden;
+    }
+  }
 }
 
 /* Focus rings */

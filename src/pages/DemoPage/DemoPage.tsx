@@ -1,13 +1,9 @@
-import "./demos.css";
 import { DemoTile } from "./DemoTile";
 
 export function DemoPage() {
   return (
     <main>
-      <div className="wrapper-small stack-large mb-stack">
-        {/* <h2>Demos</h2> */}
-        {/* <p className="color-black">Get inspired or started quickly.</p> */}
-
+      <div className="wrapper-small mb-4 space-y-6">
         <DemoTile name="Black hole" demoName={"BlackHole"}>
           <p> Spin and shrink a deleted element into oblivion.</p>
         </DemoTile>

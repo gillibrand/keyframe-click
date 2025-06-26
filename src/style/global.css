@@ -180,19 +180,3 @@ kbd {
     padding-block: 0;
   }
 }
-
-.desktop-only {
-  @media (width < 750px) {
-    display: none !important;
-  }
-}
-
-.mobile-only {
-  @media (width >= 750px) {
-    display: none !important;
-  }
-}
-
-svg {
-  display: block;
-}
