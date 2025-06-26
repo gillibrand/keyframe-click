@@ -18,8 +18,10 @@
 /* Focus rings */
 @layer utilities {
   /* unconditional focus ring */
-  .focus-outline {
-    @apply outline-neo-blue outline-3 outline-offset-2;
+  .focus-visible\:focus-outline {
+    &:focus-visible {
+      @apply outline-neo-blue outline-3 outline-offset-2;
+    }
   }
 
   /* conditionally applied focus ring when nested control has focus (eg, input.sr-only)*/
