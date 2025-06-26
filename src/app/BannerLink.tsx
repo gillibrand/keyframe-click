@@ -62,7 +62,7 @@ export const BannerLink = memo(function BannerLink({ href, preload, children }: 
         "relative mt-2 rounded-t-lg border-2 border-b-0 px-4 py-2 leading-none font-bold",
         isCurrentRoute
           ? "bg-neo-orange shadow-hard border-black"
-          : "border-black bg-[#fbd677] hover:bg-[#ffcd4f]",
+          : "border-transparent bg-[#fbd677] hover:bg-[#ffcd4f]",
         isCurrentRoute && activeBottomMask
       )}
       {...makeHref()}
