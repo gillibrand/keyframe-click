@@ -1,5 +1,4 @@
 import Check from "@images/check-small.svg?react";
-import "./Checked.css";
 import clsx from "clsx";
 
 interface BaseProps {
