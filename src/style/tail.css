@@ -25,6 +25,10 @@
   @apply outline-neo-blue outline-3 outline-offset-2;
 }
 
+@utility border-neo {
+  @apply border-2 border-black;
+}
+
 /* hides element exactly at breakpoint */
 @layer utilities {
   .hidden-at-small {

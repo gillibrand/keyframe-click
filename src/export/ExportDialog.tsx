@@ -7,7 +7,13 @@ import { useChildAnimator, wipeInHeight, wipeOutHeight } from "@util/useChildAni
 import { useCallback, useId, useMemo, useRef } from "react";
 import { Dialog, DialogApi, DialogBody, DialogFooter } from "./Dialog";
 import "./ExportDialog.css";
-import { copyToClipboard, genKeyframeText, generateCssAtRule, normalizeAtRuleName, normalizeFormat } from "./output";
+import {
+  copyToClipboard,
+  genKeyframeText,
+  generateCssAtRule,
+  normalizeAtRuleName,
+  normalizeFormat,
+} from "./output";
 
 interface Props {
   open: boolean;
@@ -85,8 +91,10 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
         </div>
 
         {format === "css" && (
-          <div className="mt-0">
-            <label className="stacked-label mt-stack">
+          // Wrapper to animate, so remove all m from the parent space-y-4
+          <div className="m-0">
+            {/* add back the m inside the animated m-0 element for spacing when it's present. */}
+            <label className="stacked-label mb-4">
               <span>Rule name</span>
               <input
                 className="textbox"
@@ -101,7 +109,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
           </div>
         )}
 
-        <div className="stacked-label flex-col min-h-px  ">
+        <div className="stacked-label min-h-px flex-col">
           <span id={previewLabelId}>Preview</span>
           <code className="code ExportDialog__output" aria-labelledby={previewLabelId}>
             <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>

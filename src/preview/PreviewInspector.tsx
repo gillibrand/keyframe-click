@@ -81,7 +81,7 @@ export const PreviewInspector = memo(function PreviewInspector({
   }
 
   return (
-    <aside className="inspector stack" ref={parentRef}>
+    <aside className="inspector space-y-4" ref={parentRef}>
       <h2>Preview</h2>
 
       <div className="stack-small hidden-at-small">
@@ -119,13 +119,13 @@ export const PreviewInspector = memo(function PreviewInspector({
 
       {graphic === "text" && (
         <form
-          className="mt-0"
+          className="mb-0"
           onSubmit={(e) => {
             stopEvent(e);
             onClickPlay();
           }}
         >
-          <label className="stacked-label mt-stack">
+          <label className="stacked-label mb-4">
             <span className="sr-only">Your text</span>
             <input
               type="text"

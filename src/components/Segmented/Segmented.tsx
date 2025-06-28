@@ -78,7 +78,7 @@ export const Segmented = genericMemo(function Segmented<T = string>({
       className={clsx(
         "flex items-center justify-stretch overflow-hidden rounded-lg border-2",
         disabled ? "border-disabled" : "border-black",
-        "focus-within:focus-outline has-[&:focus-visible]:shadow-none",
+        "has-focus-visible:focus-outline : has-focus-visible:shadow-none",
         {
           "shadow-hard": !disabled,
         },

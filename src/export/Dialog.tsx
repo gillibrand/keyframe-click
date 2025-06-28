@@ -12,7 +12,6 @@ import {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
-import "./Dialog.css";
 
 interface DialogProps extends PropsWithChildren {
   label: string;
@@ -120,7 +119,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
         const anim = dialog.animate(
           {
             scale: [0.9, 1],
-            opacity: [0.4, 1],
+            opacity: [0, 1],
           },
           AnimOptions
         );
@@ -176,10 +175,6 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className={clsx("Dialog text-sm", {
-        "origin-top-right": near,
-        "origin-top-center": !near,
-      })}
       onCancel={handleCancel}
       onClick={handleLightDismiss}
       onMouseDown={handleMouseDown}
@@ -188,10 +183,21 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
       style={{
         margin: !isSmall && near ? 0 : undefined,
       }}
+      className={clsx(
+        // Layout and appearance
+        "z-dialog bg-neo-white border-neo fixed overflow-visible rounded-2xl p-0 text-sm",
+        // Shadow when open with white outline
+        "shadow-[4px_4px_0_0_var(--c-neo-black),0_0_0_1px_white,4px_4px_0_1px_white]",
+        // Popover origin
+        near ? "origin-top-right" : "origin-top-center",
+        "backdrop:bg-black/20 backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-150 [&.is-open::backdrop]:opacity-100"
+      )}
     >
-      {!isSmallScreen() && near && <Tail className="Dialog__tail" />}
+      {!isSmallScreen() && near && (
+        <Tail className="text-neo-white absolute -top-4 right-8 drop-shadow-[0_-2px_black]" />
+      )}
 
-      <form action="dialog" className="[ ] stack flex flex-col" onSubmit={handleSubmit}>
+      <form action="dialog" className="flex flex-col space-y-4" onSubmit={handleSubmit}>
         <header className={clsx("px-4 pt-4", { "sr-only": hideLabel })}>
           <h2 className="text-lg font-bold" id={dialogLabelId}>
             {label}
@@ -215,7 +221,7 @@ export const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(function D
   ref
 ) {
   return (
-    <div ref={ref} className={clsx("stack mx-4 min-h-px flex-col", className)}>
+    <div ref={ref} className={clsx("mx-4 min-h-px flex-col space-y-4", className)}>
       {children}
     </div>
   );
@@ -223,5 +229,5 @@ export const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(function D
 
 /** A footer component to use in a dialog. */
 export function DialogFooter({ children }: PropsWithChildren) {
-  return <footer className="Dialog__footer flex justify-end gap-4 p-4">{children}</footer>;
+  return <footer className="flex justify-end gap-4 p-4">{children}</footer>;
 }

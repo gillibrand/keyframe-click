@@ -39,7 +39,7 @@ export function CheckedInput({ label, onChange, checked, name, value }: Checkbox
       <i
         aria-hidden={true}
         className={clsx(
-          "shadow-hard size-[18px] border-2 border-black",
+          "shadow-hard border-neo size-[18px]",
           "group-hover:brightness-95 group-active:brightness-90",
           checked ? "bg-neo-blue text-white" : "bg-white text-black",
           "peer-focus-visible:focus-outline peer-focus-visible:shadow-none"
