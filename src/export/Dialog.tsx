@@ -176,7 +176,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className={clsx("Dialog dialog-centered text-sm", {
+      className={clsx("Dialog text-sm", {
         "origin-top-right": near,
         "origin-top-center": !near,
       })}

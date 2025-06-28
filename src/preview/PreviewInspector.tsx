@@ -136,6 +136,7 @@ export const PreviewInspector = memo(function PreviewInspector({
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
+              data-1p-ignore
             />
           </label>
         </form>

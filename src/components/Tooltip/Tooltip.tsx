@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { PropsWithChildren, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import "./Tooltip.css";
 
 interface Props extends PropsWithChildren {
   target: HTMLElement | null;

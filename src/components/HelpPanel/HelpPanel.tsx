@@ -39,7 +39,7 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
     // This is just to center the dialog
     <dialog
       className={clsx(
-        "dialog-centered dark-area z-dialog pointer-events-auto max-h-dvh space-y-4 overflow-auto",
+        "dark-area z-dialog pointer-events-auto max-h-dvh space-y-4 overflow-auto",
         "rounded-xl bg-black p-3 text-white",
         // Will animate in/out on open/close. Must start with closed classes until mounted to animate on first show
         isMounted && open ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0",

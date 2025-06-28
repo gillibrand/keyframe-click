@@ -1,5 +1,6 @@
 import Check from "@images/check-small.svg?react";
 import "./Checked.css";
+import clsx from "clsx";
 
 interface BaseProps {
   label: string;
@@ -14,21 +15,38 @@ interface CheckboxProps extends BaseProps {
   value?: string;
 }
 
-interface RadioProps extends BaseProps {
-  type: "radio";
-  name: string;
-  value: string;
-}
+// No longer using radios anywhere. Maybe restore this in the future
+//
+// interface RadioProps extends BaseProps {
+//   type: "radio";
+//   name: string;
+//   value: string;
+// }
 
-export function CheckedInput({ label, onChange, checked, type = "checkbox", name, value }: CheckboxProps | RadioProps) {
+export function CheckedInput({ label, onChange, checked, name, value }: CheckboxProps) {
   // Checkbox shows a check SVG when checked. Radio button only uses CSS instead of an image.
-  const icon = type === "checkbox" && checked ? <Check /> : undefined;
+  // const icon = type === "checkbox" && checked ? <Check /> : undefined;
 
   return (
-    <label className="Checked block-label gap-2">
-      <input type={type} onChange={onChange} className="sr-only" checked={checked} name={name} value={value} />
-      <i aria-hidden={true} className={type === "checkbox" ? "Checked__box" : "Checked__dot"}>
-        {icon}
+    <label className="block-label group cursor-pointer gap-2">
+      <input
+        type="checkbox"
+        onChange={onChange}
+        className="peer sr-only"
+        checked={checked}
+        name={name}
+        value={value}
+      />
+      <i
+        aria-hidden={true}
+        className={clsx(
+          "shadow-hard size-[18px] border-2 border-black",
+          "group-hover:brightness-95 group-active:brightness-90",
+          checked ? "bg-neo-blue text-white" : "bg-white text-black",
+          "peer-focus-visible:focus-outline peer-focus-visible:shadow-none"
+        )}
+      >
+        {checked && <Check />}
       </i>
       <span>{label}</span>
     </label>

@@ -20,29 +20,16 @@
   --z-index-tooltip: 60;
 }
 
+/* Custom focus outline style. Normally used with focus:visible */
+@utility focus-outline {
+  @apply outline-neo-blue outline-3 outline-offset-2;
+}
+
+/* hides element exactly at breakpoint */
 @layer utilities {
-  /* hides element exactly at breakpoint */
   .hidden-at-small {
     @media (width < theme("breakpoint.sm")) {
       @apply hidden;
-    }
-  }
-}
-
-/* Focus rings */
-@layer utilities {
-  /* unconditional focus ring */
-  .focus-visible\:focus-outline {
-    &:focus-visible {
-      @apply outline-neo-blue outline-3 outline-offset-2;
-    }
-  }
-
-  /* conditionally applied focus ring when nested control has focus (eg, input.sr-only)*/
-  .focus-within\:focus-outline {
-    &:focus-within:has(:focus-visible) {
-      @apply outline-neo-blue outline-3 outline-offset-2;
-      @apply ring-2 ring-white;
     }
   }
 }
@@ -95,7 +82,7 @@
   }
 
   /* Recenter dialogs that Tailwind un-sets */
-  .dialog-centered {
+  dialog {
     @apply fixed inset-0 m-auto;
   }
 
