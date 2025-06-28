@@ -17,6 +17,7 @@
   --z-index-menu: 30;
   --z-index-dialog: 40;
   --z-index-toast: 50;
+  --z-index-tooltip: 60;
 }
 
 @layer utilities {

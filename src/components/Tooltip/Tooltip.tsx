@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { CSSProperties, PropsWithChildren, useLayoutEffect, useRef, useState } from "react";
+import { PropsWithChildren, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./Tooltip.css";
 
@@ -11,7 +11,7 @@ interface Props extends PropsWithChildren {
 const HeightMargin = 2;
 const FromEdge = 18;
 
-export function Tooltip({ children, target, delayMs }: Props) {
+export function Tooltip({ children, target }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   void target;
 
@@ -49,20 +49,17 @@ export function Tooltip({ children, target, delayMs }: Props) {
     };
   }, [target, children]);
 
-  const style =
-    delayMs !== undefined
-      ? ({
-          "--tooltip-delay": delayMs,
-        } as CSSProperties)
-      : undefined;
   return createPortal(
-    // XXX: Tooltip are tricky with a11y. Just hide them from now so they aren't announced. We're
+    // XXX: Tooltips are tricky with a11y. Just hide them for now so they aren't announced. We're
     // using other aria-labelling for now. Should probably reconsider this later.
     <div
-      className={clsx("Tooltip text-xs", { "is-visible": isVisible })}
+      className={clsx(
+        "text-neo-white z-tooltip pointer-events-none absolute top-0 left-0 rounded-sm bg-black p-1.5 text-xs leading-none whitespace-nowrap select-none",
+        "transition-[opacity,translate] delay-500",
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-0.5 opacity-0"
+      )}
       ref={tooltipRef}
       aria-hidden="true"
-      style={style}
     >
       {children}
     </div>,
