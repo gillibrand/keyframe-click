@@ -1,5 +1,4 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import "./ProgressBar.css";
 import clsx from "clsx";
 
 interface Props {
@@ -17,8 +16,6 @@ interface Props {
    * true, it always starts from 0 and runs for the full duration.
    */
   isPlaying: boolean;
-
-  iterationCount?: number;
 }
 
 /**
@@ -45,8 +42,12 @@ export const ProgressBar = memo(function ProgressBar({ isPlaying, durationMs, st
     // Animating this with CSS, so we can't set the aria-valuenow. Just make this purely
     // presentational for the sake fo performance :(
     <div className={clsx("ProgressBar", { "is-playing": shouldPlay })} style={allStyle}>
-      {/* <div className="ProgressBar__bg"></div> */}
-      <div className="ProgressBar__bar"></div>
+      <div
+        className={clsx(
+          "bg-neo-blue h-1 origin-left transition-[scale] duration-[var(--duration-ms)] ease-linear",
+          !shouldPlay ? "invisible scale-x-0 scale-y-100" : "scale-100"
+        )}
+      ></div>
     </div>
   );
 });
