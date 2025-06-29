@@ -9,23 +9,3 @@
 
   --shadow-color: var(--border-color);
 }
-
-.textbox {
-  appearance: none;
-  border: solid var(--border-width) var(--border-color);
-  padding: calc(0.25rem);
-  border-top-width: 3px;
-  border-left-width: 3px;
-
-  &:not(:disabled) {
-    &:focus-visible {
-      outline: solid var(--outline-width) var(--outline-color);
-      outline-offset: var(--outline-offset);
-      box-shadow: 0 0 0 2px var(--c-neo-white);
-    }
-  }
-
-  &:not(:is(:valid, :focus)) {
-    border-color: var(--c-neo-danger);
-  }
-}

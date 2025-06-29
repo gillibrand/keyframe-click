@@ -5,6 +5,7 @@
   /* TODO: this matches @media queries. Maybe change to rem */
   --breakpoint-sm: 750px;
   --shadow-hard: 2px 2px 0 0 black;
+  --shadow-inset-hard: inset 1px 1px 0 0 black;
   --shadow-hard-1: 1px 1px 0 0 black;
 
   --color-disabled: var(--color-gray-500);
@@ -69,6 +70,15 @@
     /* but when focus is visible we show all borders. That means the button before this hides its end border. This is so the focus ring circles the entire apparent border */
     @apply focus-visible:z-10 focus-visible:border-s-2 focus-visible:ring-2 focus-visible:outline-3 [&:has(+:focus-visible)]:border-e-0;
     @apply outline-neo-blue relative ring-white outline-offset-2;
+  }
+}
+
+@layer components {
+  .textbox {
+    @apply border-neo shadow-inset-hard bg-white p-1 leading-none;
+    @apply focus-visible:focus-outline;
+    @apply disabled:border-disabled disabled:text-disabled disabled:bg-white/50 disabled:shadow-none;
+    @apply not-[:is(:focus,:valid)]:border-danger;
   }
 }
 
