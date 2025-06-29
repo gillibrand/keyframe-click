@@ -74,8 +74,8 @@ export function RadioTabGroup({
       </span>
       <div
         className={clsx(
-          "shadow-hard focus-within:focus-outline flex min-w-1 overflow-hidden rounded-lg border-2 border-black bg-white",
-          "focus-within:focus-outline focus-within:focus-visible:shadow-none"
+          "shadow-hard flex min-w-1 overflow-hidden rounded-lg border-2 border-black bg-white",
+          "has-focus-visible:focus-outline ring-white has-focus-visible:shadow-none has-focus-visible:ring-2"
         )}
         ref={animationParentRef}
         role="radiogroup"
