@@ -16,7 +16,7 @@ export function DemoPage() {
           <p>Slowly bob up and down in place.</p>
         </DemoTile>
 
-        <DemoTile name="Heartbeat " demoName={"Heartbeat"}>
+        <DemoTile name="Heartbeat" demoName={"Heartbeat"}>
           <p>Lub-dub. Lub-dub.</p>
         </DemoTile>
 

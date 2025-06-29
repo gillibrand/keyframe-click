@@ -8,8 +8,8 @@ import { ColorName, Colors } from "@util/Colors";
 export type Format = "js" | "css";
 
 /**
- * Details about a CSS property that can be used on its own, but usually needs to be combined with a pair prop in a
- * shorthand form.
+ * Details about a CSS property that can be used on its own, but usually needs to be combined with a
+ * pair prop in a shorthand form.
  */
 interface PairPropInfo {
   /** The shorthand property name that combines the two properties, like `translate` or `scale`. */
@@ -24,8 +24,8 @@ interface PairPropInfo {
   color: ColorName;
 
   /**
-   * The default value for the property. This is used when interpolating the value and the pair value cannot be
-   * determined.
+   * The default value for the property. This is used when interpolating the value and the pair
+   * value cannot be determined.
    */
   defaultValue: number;
 }
@@ -47,9 +47,9 @@ const ScalePair: PairPropInfo = {
 } as const;
 
 /**
- * A map of CSS properties that are paired together. This is used to check if a property is a pair and needs special
- * handling to combing it into a shorthand property. The "other" value will be interpolated if it is not sampled at the
- * same x value.
+ * A map of CSS properties that are paired together. This is used to check if a property is a pair
+ * and needs special handling to combing it into a shorthand property. The "other" value will be
+ * interpolated if it is not sampled at the same x value.
  */
 const PairProps = {
   translateX: TranslatePair,
@@ -61,8 +61,8 @@ const PairProps = {
 type PairProp = keyof typeof PairProps;
 
 /**
- * An x, y sample point with extra info about the layer it came from. This is just a little more convenient than
- * tracking the layer directly even though it duplicates some data.
+ * An x, y sample point with extra info about the layer it came from. This is just a little more
+ * convenient than tracking the layer directly even though it duplicates some data.
  */
 interface SamplePlus extends Point {
   cssProp: CssProp;
@@ -71,14 +71,15 @@ interface SamplePlus extends Point {
 }
 
 /**
- * A time slice is a single point in time (x) and all the samples (from all CSS props/layer) at that time. This allows
- * us to merge multiple layers into a single keyframe entry.
+ * A time slice is a single point in time (x) and all the samples (from all CSS props/layer) at that
+ * time. This allows us to merge multiple layers into a single keyframe entry.
  *
- * In cases where the samples on the layers are the the same x value, things are easy and we can just output them
- * directly, but not all CSS props will be sample at the same x values. For paired props like translate-x and
- * translate-y, this means we need to interpolate the missing values. This is done by looking at the previous and next
- * samples for each prop. When first constructed the next and prev pointers are null. After all the samples are
- * collected, we sort the time slices and link them together to later to the interpolation.
+ * In cases where the samples on the layers are the the same x value, things are easy and we can
+ * just output them directly, but not all CSS props will be sample at the same x values. For paired
+ * props like translate-x and translate-y, this means we need to interpolate the missing values.
+ * This is done by looking at the previous and next samples for each prop. When first constructed
+ * the next and prev pointers are null. After all the samples are collected, we sort the time slices
+ * and link them together to later to the interpolation.
  */
 interface TimeSlice {
   x: number;
@@ -88,8 +89,9 @@ interface TimeSlice {
 }
 
 /**
- * A format agnostic intermediate format for keyframe output. It's the offset and all the name-value rule pairs for that
- * time. The values might be paired values, like for translate-x and y as a single translate value.
+ * A format agnostic intermediate format for keyframe output. It's the offset and all the name-value
+ * rule pairs for that time. The values might be paired values, like for translate-x and y as a
+ * single translate value.
  */
 interface KeyframeEntry {
   offset: number;
@@ -102,17 +104,17 @@ interface EntryRule {
   color: string;
 
   /**
-   * The name of the property. This can be a combined pair property like "translate" if both translate-x and y were
-   * used.
+   * The name of the property. This can be a combined pair property like "translate" if both
+   * translate-x and y were used.
    */
   name: string;
 
   /**
-   * This CSS value of the property at this offset. This was supposed to be format agnostic, but JavaScript requires
-   * non-numeric values to be wrapped in quotes to be a string. That would have been better to already handle here, but
-   * that's not how it is currently so the JavaScript outout need to check if this value needs quotes or not.
-   * (Technically all JavaScript values can be strings, but it's cleaner in the preview is we can avoid them
-   * sometimes.)
+   * This CSS value of the property at this offset. This was supposed to be format agnostic, but
+   * JavaScript requires non-numeric values to be wrapped in quotes to be a string. That would have
+   * been better to already handle here, but that's not how it is currently so the JavaScript outout
+   * need to check if this value needs quotes or not. (Technically all JavaScript values can be
+   * strings, but it's cleaner in the preview is we can avoid them sometimes.)
    */
   value: string;
 }
@@ -128,21 +130,23 @@ function indent(css: string) {
 }
 
 /**
- * Copies the generated keyframes to the clipboard. Changes what is copied based on the presence of a rule name.
+ * Copies the generated keyframes to the clipboard. Changes what is copied based on the presence of
+ * a rule name.
  *
  * @param layers Layers to generate CSS from.
  * @param ruleName Optional at-rule name. If missing, a bare keyframe list is returned.
- * @returns A message about the success that should be shown in a notification. This function doesn't do that for you
- *   since sometime we want to animate a dialog closed first.
+ * @returns A message about the success that should be shown in a notification. This function
+ *   doesn't do that for you since sometime we want to animate a dialog closed first.
  */
 export async function copyToClipboard(layers: Layers, format: Format, ruleName: string) {
   const keyframeText = genKeyframeText(layers, format);
   await navigator.clipboard.writeText(generateCssAtRule(keyframeText, format, ruleName));
 
-  const message = format === "js" ? "Copied JavaScript" : ruleName ? `Copied "${ruleName}" CSS` : "Copied CSS";
+  const message =
+    format === "js" ? "Copied JavaScript" : ruleName ? `Copied "${ruleName}" CSS` : "Copied CSS";
   return (
     <span className="flex items-center gap-2">
-      <Check /> {message}
+      <Check className="flex-none" /> <span className="truncate">{message}</span>
     </span>
   );
 }
@@ -154,7 +158,11 @@ export async function copyToClipboard(layers: Layers, format: Format, ruleName: 
  * @param ruleName Optional name of the keyframes at-rule. The user might leave this blank.
  * @returns Keyframe at-rule or the same keyframe list if no name was given.
  */
-export function generateCssAtRule(keyframes: string | Layers, format: Format, ruleName?: string): string {
+export function generateCssAtRule(
+  keyframes: string | Layers,
+  format: Format,
+  ruleName?: string
+): string {
   if (typeof keyframes !== "string") {
     keyframes = genKeyframeText(keyframes, format);
   }
@@ -167,9 +175,10 @@ export function generateCssAtRule(keyframes: string | Layers, format: Format, ru
 }
 
 /**
- * Generates CSS keyframe body text (the actual keyframe entries). Looks at all given layers and produces entries for
- * all samples. If multiple layers have samples at the same time, they are merged into a single entry. Entries that are
- * missing a CSS prop are interpolated by the browser automatically.
+ * Generates CSS keyframe body text (the actual keyframe entries). Looks at all given layers and
+ * produces entries for all samples. If multiple layers have samples at the same time, they are
+ * merged into a single entry. Entries that are missing a CSS prop are interpolated by the browser
+ * automatically.
  */
 export function genKeyframeText(layers: Layers, format: Format, asHtml?: boolean): string {
   const entries = genKeyframeEntries(layers);
@@ -222,15 +231,16 @@ function asJsOffset(num: number) {
 }
 
 /**
- * Takes value string for the property and essentially adds quote marks around it if needed. If the value represents a
- * number then it can be used as-is as a JavaScript object literal values. If not, we need to quote it and treat it like
- * a string.
+ * Takes value string for the property and essentially adds quote marks around it if needed. If the
+ * value represents a number then it can be used as-is as a JavaScript object literal values. If
+ * not, we need to quote it and treat it like a string.
  *
- * Technically we could wrap all values in quotes, but I assume it's slightly faster to have the output already be
- * numbers when possible at the expense of doing it now. An mainly, it looks cleaner to human eyes.
+ * Technically we could wrap all values in quotes, but I assume it's slightly faster to have the
+ * output already be numbers when possible at the expense of doing it now. An mainly, it looks
+ * cleaner to human eyes.
  *
- * @param value A value for the CSS property. It might be a number (as a string) or something with units or whitespace
- *   in it.
+ * @param value A value for the CSS property. It might be a number (as a string) or something with
+ *   units or whitespace in it.
  * @returns A string that can be used as a JavaScript object literal value.
  */
 export function asJsValue(value: string) {
@@ -332,16 +342,18 @@ function getXyForPair(slice: TimeSlice, xProp: CssProp, yProp: CssProp) {
 }
 
 /**
- * Merges all layers into time slices. A slice will exist for every sampled x point across all layers, and those slices
- * will have the CSS prop samples from all layers at that x point. Each slice will produce a keyframe and that time.
+ * Merges all layers into time slices. A slice will exist for every sampled x point across all
+ * layers, and those slices will have the CSS prop samples from all layers at that x point. Each
+ * slice will produce a keyframe and that time.
  *
- * Not every CSS prop is in every slice since not every one is sampled at the same x value. For standalone props like
- * opacity, this is fine. For paired props like translateX and translateY, we need to interpolate the missing values
- * when outputting them. The slices are linked linked with prev and next pointers to make that easier.
+ * Not every CSS prop is in every slice since not every one is sampled at the same x value. For
+ * standalone props like opacity, this is fine. For paired props like translateX and translateY, we
+ * need to interpolate the missing values when outputting them. The slices are linked linked with
+ * prev and next pointers to make that easier.
  *
  * @param layers The layers to create time slices from.
- * @returns A map of time slices keyed by their x value. The key are sorted in ascending order. The slices are linked
- *   with prev and next pointers.
+ * @returns A map of time slices keyed by their x value. The key are sorted in ascending order. The
+ *   slices are linked with prev and next pointers.
  */
 function createTimeSlices(layers: Layers) {
   const sampleLayers = layers.getAllUserSamples();
@@ -387,7 +399,8 @@ function createTimeSlices(layers: Layers) {
  * Sorts the time slices by their x value and links them together with prev and next pointers.
  *
  * @param timeSlices The time slices to sort and link.
- * @returns A new map of time slices sorted by their x value. The slices are linked with prev and next pointers.
+ * @returns A new map of time slices sorted by their x value. The slices are linked with prev and
+ *   next pointers.
  */
 function sortAndLinkTimeSlices(timeSlices: Map<number, TimeSlice>): Map<number, TimeSlice> {
   const sortedXs = Array.from(timeSlices.keys()).sort((a, b) => a - b);
@@ -413,7 +426,8 @@ function sortAndLinkTimeSlices(timeSlices: Map<number, TimeSlice>): Map<number, 
 }
 
 /**
- * Finds the previous sample for a given CSS property the closest previous time slice that sampled that prop.
+ * Finds the previous sample for a given CSS property the closest previous time slice that sampled
+ * that prop.
  *
  * @param slice Slice to start searching from.
  * @param cssProp CSS property to find the previous sample for.
@@ -431,7 +445,8 @@ function prevSample(slice: TimeSlice, cssProp: CssProp): SamplePlus | null {
 }
 
 /**
- * Finds the next sample for a given CSS property the closest next time slice that sampled that prop.
+ * Finds the next sample for a given CSS property the closest next time slice that sampled that
+ * prop.
  *
  * @param slice Slice to start searching from.
  * @param cssProp CSS property to find the next sample for.
@@ -449,14 +464,14 @@ function nextSample(slice: TimeSlice, cssProp: CssProp): SamplePlus | null {
 }
 
 /**
- * Interpolates the value of a CSS property at a given time slice. This is used for CSS properties that are not sampled
- * at the same x value, such as translateX and translateY. It finds the previous and next samples for the given CSS
- * property and calculates the interpolated value based on the current time slices x relative the prev and next
- * samples.
+ * Interpolates the value of a CSS property at a given time slice. This is used for CSS properties
+ * that are not sampled at the same x value, such as translateX and translateY. It finds the
+ * previous and next samples for the given CSS property and calculates the interpolated value based
+ * on the current time slices x relative the prev and next samples.
  *
- * If there is not a previous or next sample, it assumes the previous sample is 0 and the next sample is 100. If both
- * are missing they are assumed to be 0, but this is probably an error, since why are we interpolating something with no
- * samples?
+ * If there is not a previous or next sample, it assumes the previous sample is 0 and the next
+ * sample is 100. If both are missing they are assumed to be 0, but this is probably an error, since
+ * why are we interpolating something with no samples?
  *
  * @param slice The time slice to interpolate the value for.
  * @param cssProp The CSS property to interpolate the value for.
