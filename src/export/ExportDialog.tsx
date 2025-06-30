@@ -78,7 +78,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
     >
       <DialogBody ref={parentRef}>
         <div className="stacked-label">
-          <span>Format</span>
+          <span className="">Format</span>
 
           <Segmented checkedValue={format} onChange={handleFormatChange}>
             <SegmentedButton value="css" className="basis-1">

@@ -4,7 +4,6 @@ import { Segmented, SegmentedButton } from "@components/Segmented";
 import { Select } from "@components/Select";
 import Play from "@images/play.svg?react";
 import Stop from "@images/stop.svg?react";
-import "@style/inspector.css";
 import { memo, useId } from "react";
 import { Graphic } from "./previewTypes";
 import { Speed } from "./usePreview";
@@ -148,7 +147,7 @@ export const PreviewInspector = memo(function PreviewInspector({
           <input
             required
             type="number"
-            className="textbox"
+            className="textbox w-full"
             min={1}
             onChange={(e) => handleDurationTimeChange(e.target.value)}
             value={duration.time === null ? "" : duration.time}

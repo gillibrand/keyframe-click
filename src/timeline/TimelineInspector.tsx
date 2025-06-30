@@ -2,7 +2,6 @@ import { CheckedInput } from "@components/Checked/Checked";
 import { Hint } from "@components/Hint";
 import { Segmented, SegmentedButton } from "@components/Segmented";
 import { Select } from "@components/Select";
-import "@style/inspector.css";
 import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { DotType, moveDot, UserDot } from "@timeline/point";
 import clsx from "clsx";
@@ -160,7 +159,7 @@ export const TimelineInspector = memo(function Inspector({
   }
 
   return (
-    <aside className="inspector stack">
+    <aside className="inspector">
       <GlobalSettings units={units} {...props} />
 
       {<h2 className={clsx({ invisible: IsTouch && !selected })}>Point</h2>}
@@ -211,7 +210,7 @@ export const TimelineInspector = memo(function Inspector({
               Time<span className="text-light"> %</span>
             </span>
             <input
-              className="textbox"
+              className="textbox w-full"
               type="number"
               id={xId}
               value={normalX(selected?.x ?? 0)}
@@ -224,7 +223,7 @@ export const TimelineInspector = memo(function Inspector({
               Value<span className="text-light"> {units}</span>
             </span>
             <input
-              className="textbox"
+              className="textbox w-full"
               id={yId}
               value={normalY(selected?.y || 0)}
               type="number"

@@ -131,7 +131,7 @@ export const SegmentedButton = memo(function SegmentedButton<T>({
   return (
     <label
       className={clsx(
-        "h-full flex-1 border-s-2 border-black px-3 py-1 text-center leading-none select-none first:border-0",
+        "relative h-full flex-1 border-s-2 border-black px-3 py-1 text-center leading-none select-none first:border-0",
         !disabled && "cursor-pointer active:brightness-90",
         {
           "border-disabled": disabled,

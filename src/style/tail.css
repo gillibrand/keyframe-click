@@ -83,6 +83,26 @@
   }
 }
 
+@layer components {
+  /* Inspector sidebar follow visual conventions for their headers */
+  .inspector {
+    @apply space-y-4;
+
+    h2 {
+      @apply text-base font-bold not-first:pt-2;
+    }
+
+    h2:not(:first-child),
+    hr {
+      @apply border-t-1 border-gray-300;
+    }
+
+    h2:not(:first-child) {
+      @apply mt-4;
+    }
+  }
+}
+
 @layer base {
   /* XXX: this feels too general */
   .j-prose code,

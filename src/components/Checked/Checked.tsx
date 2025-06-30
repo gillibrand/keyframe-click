@@ -27,7 +27,7 @@ export function CheckedInput({ label, onChange, checked, name, value }: Checkbox
   // const icon = type === "checkbox" && checked ? <Check /> : undefined;
 
   return (
-    <label className="block-label group cursor-pointer gap-2">
+    <label className="block-label group relative cursor-pointer gap-2">
       <input
         type="checkbox"
         onChange={onChange}
