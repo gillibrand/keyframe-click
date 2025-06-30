@@ -8,12 +8,6 @@
   }
 }
 
-.Preview__progressBar {
-  position: absolute;
-  bottom: 0;
-  inset: 0;
-}
-
 .Preview__astro {
   width: calc(27px * 3);
   height: calc(47px * 3);

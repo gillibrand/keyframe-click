@@ -561,7 +561,7 @@ export function TimelinePage() {
               />
 
               {/* Mobile only toolbar */}
-              <div className="canvas-bar-bl flex gap-2 sm:hidden">
+              <div className="z-sticky absolute bottom-4 left-4 flex gap-2 sm:hidden">
                 <div className="flex gap-2">
                   {/* ADD */}
                   <button
@@ -586,7 +586,7 @@ export function TimelinePage() {
               </div>
 
               {/* ZOOM */}
-              <div className="canvas-bar-br">
+              <div className="z-sticky absolute right-4 bottom-4">
                 <button
                   className="split-button bg-white px-3 py-1.5 text-black"
                   title="Zoom out values"
@@ -634,18 +634,21 @@ export function TimelinePage() {
         <div className="wrapper mt-neg-4:lg tinted-wrapper:sm">
           <section className="inspector-sidebar" ref={previewParentRef}>
             <div className="relative flex flex-col" ref={previewPage1Ref}>
-              <div className="canvas-bar-bl">
-                <button
-                  className="button grid size-12 min-w-0 place-items-center p-0 sm:hidden"
-                  onClick={isPlaying ? stopPreview : playPreview}
-                >
-                  {isPlaying ? (
-                    <Stop className="relative left-0.5 scale-[1.5]" />
-                  ) : (
-                    <Play className="relative left-0.5 scale-[1.5]" />
-                  )}
-                </button>
-              </div>
+              <button
+                className={clsx(
+                  // position on tile
+                  "z-sticky absolute bottom-4 left-4",
+                  // button
+                  "button grid size-12 min-w-0 place-items-center p-0 sm:hidden"
+                )}
+                onClick={isPlaying ? stopPreview : playPreview}
+              >
+                {isPlaying ? (
+                  <Stop className="relative left-0.5 scale-[1.5]" />
+                ) : (
+                  <Play className="relative left-0.5 scale-[1.5]" />
+                )}
+              </button>
 
               {preview}
             </div>
