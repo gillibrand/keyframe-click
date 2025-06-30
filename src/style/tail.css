@@ -46,8 +46,8 @@
   .button {
     @apply text-disabled border-disabled min-w-[12ch] rounded-full border-2 px-6 py-2 leading-none text-balance select-none;
     @apply enabled:bg-neo-blue enabled:shadow-hard hover:brightness-110 enabled:border-black enabled:text-white;
-    @apply active:shadow-hard-1 enabled:cursor-pointer enabled:active:brightness-90;
-    @apply outline-neo-blue ring-white outline-offset-2 focus:shadow-none focus:ring-2 focus:outline-3;
+    @apply active:shadow-hard-1 enabled:cursor-pointer enabled:active:brightness-95;
+    @apply focus-visible:focus-outline focus-visible:shadow-none;
   }
 
   .button.is-danger {
@@ -63,6 +63,7 @@
 @layer components {
   .split-button {
     @apply bg-neo-blue inline-flex items-center justify-center px-6 py-2 leading-none text-white select-none first:rounded-s-full last:rounded-e-full;
+    @apply hover:brightness-110 active:brightness-95;
     @apply enabled:cursor-pointer enabled:active:brightness-90;
     @apply shadow-hard active:shadow-hard-1;
 

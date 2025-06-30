@@ -264,7 +264,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
       onAnimationIteration={didIteration}
       onClick={togglePreview}
     >
-      <div className="Preview__frame">
+      <div className="relative border-1 border-dashed border-gray-300">
         <style>{namedKeyframes}</style>
         <div className="Preview__graphic" ref={graphicRef}>
           {renderGraphic()}

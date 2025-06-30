@@ -16,8 +16,9 @@ export function Select({ value, children, onChange, disabled }: Props) {
         onChange={onChange}
         disabled={disabled}
         className={clsx(
-          "border-neo shadow-hard peer block w-full appearance-none bg-white p-1 leading-none",
+          "border-neo shadow-hard peer block w-full cursor-pointer appearance-none bg-white p-1 leading-none",
           "focus-visible:focus-outline focus-visible:shadow-none",
+          "hover:brightness-95 active:brightness-90",
           "disabled:border-disabled disabled:text-disabled disabled:shadow-none"
         )}
       >

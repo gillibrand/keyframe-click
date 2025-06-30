@@ -1,8 +1,3 @@
-.Preview__frame {
-  position: relative;
-  border: dashed 1px #ddd;
-}
-
 .Preview__graphic {
   img {
     display: block;
