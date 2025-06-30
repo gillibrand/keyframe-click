@@ -84,6 +84,10 @@
 }
 
 @layer components {
+  .tile {
+    @apply border-neo bg-neo-white shadow-hard p-4;
+  }
+
   /* Inspector sidebar follow visual conventions for their headers */
   .inspector {
     @apply space-y-4;

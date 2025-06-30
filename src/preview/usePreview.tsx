@@ -257,7 +257,7 @@ export function usePreview({ keyframeText }: Props): UsePreview {
 
   const preview = (
     <div
-      className="Preview tile"
+      className="tile grid flex-1 cursor-pointer place-items-center bg-white"
       style={cssVariables}
       onAnimationStart={didStart}
       onAnimationEnd={didEnd}

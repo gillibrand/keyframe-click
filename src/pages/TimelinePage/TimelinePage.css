@@ -60,14 +60,6 @@
   }
 }
 
-.tile {
-  border: solid 2px var(--c-neo-black);
-  padding: 1rem;
-  background-color: white;
-  background-color: var(--c-neo-white);
-  box-shadow: 4px 4px 0 0 var(--c-neo-black);
-}
-
 .timeline-wrapper {
   position: relative;
 

@@ -565,7 +565,7 @@ export function TimelinePage() {
                 <div className="flex gap-2">
                   {/* ADD */}
                   <button
-                    className={clsx("button is-small", { "is-pressed": isAdding })}
+                    className={clsx("button min-w-16 px-0", { "is-pressed": isAdding })}
                     aria-pressed={isAdding}
                     onClick={handleClickAdd}
                   >
@@ -575,7 +575,7 @@ export function TimelinePage() {
                   {/* DELETE */}
                   {selectedDot && (
                     <button
-                      className="button is-small is-danger"
+                      className="button is-danger flex min-w-16 justify-center px-0"
                       onClick={handleClickDelete}
                       disabled={!selectedDot || isAdding}
                     >
