@@ -21,7 +21,10 @@ export function Banner() {
         <div className="text-light hidden-at-small ml-auto flex items-center gap-4 py-2">
           <span>
             by{" "}
-            <a href="https://gillibrand.github.io/projects/" className="underline decoration-2">
+            <a
+              href="https://gillibrand.github.io/projects/"
+              className="focus:focus-outline underline decoration-2"
+            >
               Jay Gillibrand
             </a>
           </span>

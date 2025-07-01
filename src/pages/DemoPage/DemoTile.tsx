@@ -100,6 +100,7 @@ export function DemoTile({ name, className, children, demoName }: Props) {
     <button
       className={clsx(
         "bg-neo-white shadow-hard group block w-full cursor-pointer overflow-hidden rounded-2xl border-2 border-black p-0 text-start",
+        "focus-visible:focus-outline ring-white focus-visible:ring-2",
         className
       )}
       onClick={loadDemo}

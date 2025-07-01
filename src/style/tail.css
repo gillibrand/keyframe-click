@@ -40,7 +40,7 @@
     @apply text-disabled border-disabled min-w-[12ch] rounded-full border-2 px-6 py-2 leading-none text-balance select-none;
     @apply enabled:bg-neo-blue enabled:shadow-hard hover:brightness-110 enabled:border-black enabled:text-white;
     @apply active:shadow-hard-1 enabled:cursor-pointer enabled:active:brightness-95;
-    @apply focus-visible:focus-outline focus-visible:shadow-none;
+    @apply focus-visible:focus-outline ring-white focus-visible:ring-2;
   }
 
   .button.is-danger {
@@ -71,7 +71,7 @@
 @layer components {
   .textbox {
     @apply border-neo shadow-inset-hard bg-white p-1 leading-none;
-    @apply focus-visible:focus-outline;
+    @apply focus-visible:focus-outline ring-white focus-visible:ring-2;
     @apply disabled:border-disabled disabled:text-disabled disabled:bg-white/50 disabled:shadow-none;
     @apply not-[:is(:focus,:valid)]:border-danger;
   }
