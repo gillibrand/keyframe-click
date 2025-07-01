@@ -1,35 +1,6 @@
 :root {
-  --z-base: 0;
-  --z-bump: 1;
-  --z-sticky: 10;
-  --z-menu: 30; /* Dropdowns, menus — above sticky headers */
-  --z-tooltip: 40;
-  --z-modal: 50;
-  --z-popover: 60;
-  --z-overlay: 70;
-  --z-toast: 100;
-
-  /* --sz-base: 1rem;
-  --sz-h1: 1.5rem;
-  --sz-h2: 1.75rem;
-  --sz-h3: 1.5rem;
-  --sz-body: 1rem;
-  --sz-large: 1.25rem;
-  --sz-small: 0.875rem;
-  --sz-x-small: 0.75rem; */
-
-  @media (width < 750px) {
-    /* no average fonts less then 16px on mobile for readability and to prevent auto zoom */
-    --sz-h2: 1rem;
-    --sz-small: 1rem;
-  }
-
-  @media (width >= 750px) {
-    /* font-size: 87.5%; */
-  }
-
   --c-gray-50: oklch(0.985 0.002 247.839);
-  --c-gray-100: oklch(0.967 0.003 264.542);
+  /* --c-gray-100: oklch(0.967 0.003 264.542);
   --c-gray-200: oklch(0.928 0.006 264.531);
   --c-gray-300: oklch(0.872 0.01 258.338);
   --c-gray-400: oklch(0.707 0.022 261.325);
@@ -37,7 +8,7 @@
   --c-gray-600: oklch(0.446 0.03 256.802);
   --c-gray-700: oklch(0.373 0.034 259.733);
   --c-gray-800: oklch(0.278 0.033 256.848);
-  --c-gray-900: oklch(0.21 0.034 264.665);
+  --c-gray-900: oklch(0.21 0.034 264.665); */
   --c-gray-950: oklch(0.13 0.028 261.692);
 
   --c-neo-yellow: #fbdf09;
@@ -81,11 +52,6 @@
   --c-emerald-800: oklch(0.432 0.095 166.913);
 }
 
-.large-page {
-  /* bump the font size back to 100 for normal text*/
-  font-size: 114.29%;
-}
-
 body {
   color: var(--c-body);
   background-color: white;
@@ -103,15 +69,6 @@ button {
   font-family:
     "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana,
     sans-serif;
-}
-
-body {
-  margin: 0;
-  padding: 0rem;
-}
-
-input[type="checkbox"] {
-  margin: 0;
 }
 
 .block-label {
@@ -141,12 +98,6 @@ input[type="checkbox"] {
   }
 }
 
-.form-grid {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: auto 1fr;
-}
-
 .code {
   border: solid 2px var(--c-neo-black);
   padding: 0.5rem 0.75rem;
@@ -155,8 +106,4 @@ input[type="checkbox"] {
   pre {
     margin: 0;
   }
-}
-
-textarea {
-  resize: vertical;
 }

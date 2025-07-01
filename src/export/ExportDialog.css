@@ -1,7 +1,6 @@
 .ExportDialog__output {
   background-color: var(--c-gray-50);
   color: var(--c-gray-900);
-  font-size: var(--sz-small);
 
   width: 45ch;
   max-width: 100%;

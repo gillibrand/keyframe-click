@@ -44,6 +44,6 @@
   font-weight: bold;
   text-align: center;
 
-  color: var(--c-neo-black);
+  color: black;
   text-shadow: 4px 4px 0 var(--c-neo-teal);
 }
