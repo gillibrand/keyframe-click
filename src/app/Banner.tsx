@@ -5,7 +5,7 @@ import { BannerLink } from "./BannerLink";
 export function Banner() {
   return (
     <header className="border-b-2 border-black bg-white sm:text-sm">
-      <div className="wrapper flex items-end gap-8">
+      <div className="wrapper-wide flex items-end gap-8">
         <h1 className="hidden-at-small cursor-default text-2xl font-bold text-nowrap">
           Keyframe Click
         </h1>

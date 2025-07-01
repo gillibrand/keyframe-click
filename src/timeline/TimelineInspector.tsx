@@ -164,7 +164,7 @@ export const TimelineInspector = memo(function Inspector({
 
       {<h2 className={clsx({ invisible: IsTouch && !selected })}>Point</h2>}
 
-      <div className="stack-small">
+      <div className="space-y-2">
         <div className="hidden-at-small flex gap-2">
           <button
             className={clsx("button flex-auto basis-1", { "is-pressed": isAdding })}

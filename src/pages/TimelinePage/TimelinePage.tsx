@@ -528,7 +528,7 @@ export function TimelinePage() {
 
       <div className="flex grow flex-col">
         {/* TABS and SETTINGS at top */}
-        <div className="wrapper">
+        <div className="wrapper-wide">
           <section className="flex items-center justify-between gap-4">
             <RadioTabGroup
               tabs={tabs}
@@ -547,7 +547,7 @@ export function TimelinePage() {
         </div>
 
         {/* TIMELINE ROW */}
-        <div className="wrapper flex grow flex-col">
+        <div className="wrapper-wide flex grow flex-col">
           <section className="inspector-sidebar relative grow" ref={timelineParentRef}>
             {/* Timeline wrapper */}
             <div className="shadow-hard border-neo relative" ref={timelinePage1Ref}>
@@ -634,7 +634,7 @@ export function TimelinePage() {
         </div>
 
         {/* PREVIEW ROW */}
-        <div className="wrapper bg-gr mt-2 bg-linear-to-b from-black/10 to-transparent to-20% sm:-mt-4 sm:bg-none">
+        <div className="wrapper-wide bg-gr mt-2 bg-linear-to-b from-black/10 to-transparent to-20% sm:-mt-4 sm:bg-none">
           <section className="inspector-sidebar" ref={previewParentRef}>
             <div className="relative flex flex-col" ref={previewPage1Ref}>
               <button

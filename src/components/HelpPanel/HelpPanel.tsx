@@ -109,8 +109,6 @@ export function HelpPanel({ open, didClose, willClose }: Props) {
         </dd>
       </dl>
     </dialog>,
-    // <div className="pointer-events-none fixed inset-0 z-20 grid place-items-center">
-    // </div>,
     document.body
   );
 }

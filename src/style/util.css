@@ -12,10 +12,6 @@
   }
 }
 
-.stack-small > * + * {
-  margin-block-start: 0.5rem;
-}
-
 /**
  * Usually a stack just has space between the children. If you add this, the last item gets padding
  * below too. That's needed full height pages there the padding on the page will not be scrolled

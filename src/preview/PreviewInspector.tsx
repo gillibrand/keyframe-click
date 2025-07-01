@@ -83,9 +83,9 @@ export const PreviewInspector = memo(function PreviewInspector({
     <aside className="inspector space-y-4" ref={parentRef}>
       <h2>Preview</h2>
 
-      <div className="stack-small hidden-at-small">
+      <div className="hidden-at-small">
         {isPlaying ? (
-          <button className="button flex-center w-full gap-2" onClick={onClickStop}>
+          <button className="button w-full gap-2" onClick={onClickStop}>
             Stop <Stop />
           </button>
         ) : (
@@ -95,7 +95,7 @@ export const PreviewInspector = memo(function PreviewInspector({
         )}
       </div>
 
-      <div className="stack-small">
+      <div>
         <CheckedInput
           type="checkbox"
           label="Repeat"
