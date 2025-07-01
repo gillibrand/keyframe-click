@@ -635,7 +635,7 @@ export function TimelinePage() {
 
         {/* PREVIEW ROW */}
         <div className="wrapper-wide bg-gr mt-2 bg-linear-to-b from-black/10 to-transparent to-20% sm:-mt-4 sm:bg-none">
-          <section className="inspector-sidebar" ref={previewParentRef}>
+          <section className="inspector-sidebar sm:pb-0" ref={previewParentRef}>
             <div className="relative flex flex-col" ref={previewPage1Ref}>
               <button
                 className={clsx(

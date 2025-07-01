@@ -85,11 +85,11 @@ export const PreviewInspector = memo(function PreviewInspector({
 
       <div className="hidden-at-small">
         {isPlaying ? (
-          <button className="button w-full gap-2" onClick={onClickStop}>
+          <button className="button flex w-full justify-center gap-2" onClick={onClickStop}>
             Stop <Stop />
           </button>
         ) : (
-          <button className="button flex-center w-full gap-2" onClick={onClickPlay}>
+          <button className="button flex w-full justify-center gap-2" onClick={onClickPlay}>
             Play <Play />
           </button>
         )}
@@ -143,7 +143,7 @@ export const PreviewInspector = memo(function PreviewInspector({
 
       <label className="stacked-label">
         <span>Duration</span>
-        <div className="col-2 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <input
             required
             type="number"

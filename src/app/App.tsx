@@ -51,7 +51,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="stack flex min-h-screen flex-col">
+    <div className="mb-4 flex min-h-screen flex-col space-y-4">
       <Banner />
       <NoteList />
       <Suspense fallback={"..."}>

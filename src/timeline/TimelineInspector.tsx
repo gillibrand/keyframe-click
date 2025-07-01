@@ -60,8 +60,8 @@ const GlobalSettings = memo(function GlobalSettings({
         Property <span className="sr-only">Inspector</span>
       </h2>
 
-      <div className="col-2-auto gap-2">
-        <label className="stacked-label">
+      <div className="flex gap-2">
+        <label className="stacked-label flex-auto">
           <span className="sr-only">Property name</span>
           <Select value={cssProp} onChange={(e) => onChangeCssProp(e.target.value as CssProp)}>
             {Object.entries(CssInfos).map(([otherCssProp, namedFn]) => (
@@ -204,7 +204,7 @@ export const TimelineInspector = memo(function Inspector({
           </Select>
         </label>
 
-        <div className="col-2 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <label className="stacked-label">
             <span>
               Time<span className="text-light"> %</span>

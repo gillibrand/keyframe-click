@@ -3,7 +3,7 @@ import { DemoTile } from "./DemoTile";
 export function DemoPage() {
   return (
     <main>
-      <div className="wrapper mb-4 space-y-6">
+      <div className="wrapper space-y-6">
         <DemoTile name="Black hole" demoName={"BlackHole"}>
           <p> Spin and shrink a deleted element into oblivion.</p>
         </DemoTile>

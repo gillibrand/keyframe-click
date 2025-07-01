@@ -5,7 +5,7 @@ export function AboutPage() {
   return (
     <main className="flex grow flex-col text-base">
       <div className="wrapper j-prose flex grow flex-col">
-        <div className="tile stack mb-stack flex grow flex-col">
+        <div className="tile stack flex grow flex-col">
           <div className="grow space-y-4">
             <AboutDoc />
           </div>
