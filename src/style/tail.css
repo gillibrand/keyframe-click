@@ -84,6 +84,13 @@
   }
 }
 
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer components {
   .tile {
     @apply border-neo bg-neo-white shadow-hard p-4;
@@ -108,7 +115,31 @@
   }
 }
 
+@layer components {
+  /* normally a 2 col grid row on desktop. But on mobile we expand each col to full width and scroll
+  snap between them as two different panes. */
+  .inspector-sidebar {
+    @apply grid grid-cols-[1fr_18rem] gap-4 py-4;
+
+    & > * {
+      @apply snap-start;
+    }
+
+    @media (width < 750px) {
+      @apply -mx-4 grid-cols-[100%_100%] gap-6 px-4;
+
+      @apply my-0 ps-4 pb-[8px];
+      @apply scrollbar-none snap-x snap-mandatory scroll-p-4 overflow-x-scroll overflow-y-hidden scroll-smooth;
+    }
+  }
+}
+
 @layer base {
+  /* Gray several controls when a dialog is open */
+  .is-dialog-open #root :where(button, label, [data-component="RadioTab"], .DemoTile) {
+    filter: grayscale(0.75);
+  }
+
   /* XXX: this feels too general */
   .j-prose code,
   kbd {

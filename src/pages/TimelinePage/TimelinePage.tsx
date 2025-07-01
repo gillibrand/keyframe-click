@@ -7,7 +7,6 @@ import { createTimeline, Timeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
 import { debounce, isMac, isSpaceBarHandler, IsTouch, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import "./TimelinePage.css";
 
 import { useNoteApi } from "@components/note";
 import { RadioTabGroup, TabData } from "@components/tab/RadioTabGroup";
@@ -550,9 +549,13 @@ export function TimelinePage() {
         {/* TIMELINE ROW */}
         <div className="wrapper flex grow flex-col">
           <section className="inspector-sidebar relative grow" ref={timelineParentRef}>
-            <div className="timeline-wrapper" ref={timelinePage1Ref}>
+            {/* Timeline wrapper */}
+            <div className="shadow-hard border-neo relative" ref={timelinePage1Ref}>
               <canvas
-                className={"timeline " + (isAdding ? "is-adding" : "")}
+                className={clsx(
+                  "absolute top-[-10px] left-[-10px] h-[calc(100%+19px)] w-[calc(100%+19px)] outline-0",
+                  isAdding && "is-adding"
+                )}
                 width={1}
                 height={1}
                 id="canvas"
@@ -631,7 +634,7 @@ export function TimelinePage() {
         </div>
 
         {/* PREVIEW ROW */}
-        <div className="wrapper mt-neg-4:lg tinted-wrapper:sm">
+        <div className="wrapper bg-gr mt-2 bg-linear-to-b from-black/10 to-transparent to-20% sm:-mt-4 sm:bg-none">
           <section className="inspector-sidebar" ref={previewParentRef}>
             <div className="relative flex flex-col" ref={previewPage1Ref}>
               <button
