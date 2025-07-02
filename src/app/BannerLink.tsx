@@ -54,12 +54,12 @@ export const BannerLink = memo(function BannerLink({ href, preload, children }: 
 
   // This is a little slice of orange to cover the bottom border/shadow of the tab and make it look like part of the page.
   const activeBottomMask =
-    "after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:bg-neo-orange after:content-['']";
+    "after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:bg-neo-orange after:content-[''] focus-visible:after:hidden";
 
   return (
     <a
       className={clsx(
-        "focus-visible:focus-outline relative mt-2 rounded-t-lg border-2 border-b-0 px-4 py-2 leading-none font-bold",
+        "focus-visible:focus-outline relative mt-2 rounded-t-lg border-2 border-b-0 px-4 py-2 leading-none font-bold ring-white focus-visible:ring-2",
         isCurrentRoute
           ? "bg-neo-orange shadow-hard border-black focus-visible:shadow-none"
           : "border-transparent bg-[#fbd677] hover:bg-[#ffcd4f]",
