@@ -6,7 +6,6 @@ import { Layers } from "@timeline/Layers";
 import { useChildAnimator, wipeInHeight, wipeOutHeight } from "@util/useChildAnimator";
 import { useCallback, useId, useMemo, useRef } from "react";
 import { Dialog, DialogApi, DialogBody, DialogFooter } from "./Dialog";
-import "./ExportDialog.css";
 import {
   copyToClipboard,
   genKeyframeText,
@@ -14,6 +13,7 @@ import {
   normalizeAtRuleName,
   normalizeFormat,
 } from "./output";
+import clsx from "clsx";
 
 interface Props {
   open: boolean;
@@ -111,7 +111,14 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
 
         <div className="stacked-label min-h-px flex-col">
           <span id={previewLabelId}>Preview</span>
-          <code className="code ExportDialog__output" aria-labelledby={previewLabelId}>
+
+          <code
+            className={clsx(
+              "overflow-auto border-2 border-black bg-neutral-50 p-2",
+              "h-96 max-h-[min(40vh,calc(100vh-30rem))] min-h-12 min-w-sm"
+            )}
+            aria-labelledby={previewLabelId}
+          >
             <pre dangerouslySetInnerHTML={{ __html: keyframesAtRuleHtml }}></pre>
           </code>
         </div>

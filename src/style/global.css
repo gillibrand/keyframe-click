@@ -97,13 +97,3 @@ button {
     user-select: none;
   }
 }
-
-.code {
-  border: solid 2px var(--c-neo-black);
-  padding: 0.5rem 0.75rem;
-  background-color: white;
-
-  pre {
-    margin: 0;
-  }
-}
