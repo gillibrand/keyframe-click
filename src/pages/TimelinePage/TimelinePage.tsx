@@ -41,7 +41,13 @@ export function TimelinePage() {
       forceLayerChange();
       timelineRef.current?.draw();
     });
-    GlobalLayers.setActiveLayer(savedActiveLayerId);
+    const currentId = GlobalLayers.activeLayerId;
+    if (!currentId) {
+      // GlobalLayer is preserved between unmount, so we only need this on first page load if
+      // nothing is set. If we set it every time, it might switch back to the last saved if save is
+      // pending.
+      GlobalLayers.setActiveLayer(savedActiveLayerId);
+    }
     return GlobalLayers;
   });
 
@@ -77,17 +83,6 @@ export function TimelinePage() {
 
   const { sendNote, dismissNote } = useNoteApi();
 
-  useEffect(
-    /**
-     * This just mirrors the active layer to the saved one. This is used to restore the active layer
-     * when the app is reloaded.
-     */
-    function saveActiveLayerSetting() {
-      setSavedActiveLayerId(layers.activeLayerId);
-    },
-    [layers.activeLayerId, setSavedActiveLayerId]
-  );
-
   // Used to force a reactive update after the timeline redraws itself. Since the timeline is not
   // React, we instead listen to its callback and manually call this to force a render if needed.
   const [keyframeTextNeedsRender, fireKeyframeTextChange] = useForceRender();
@@ -95,8 +90,9 @@ export function TimelinePage() {
   /** Save dot and settings data to localStorage. */
   const saveLayers = useCallback(() => {
     layers.save();
+    setSavedActiveLayerId(layers.activeLayerId);
     setIsDataDirty(false);
-  }, [layers]);
+  }, [setSavedActiveLayerId, layers]);
 
   /** Callback when canvas element is created. Wraps it with a timeline. */
   useEffect(
@@ -165,19 +161,9 @@ export function TimelinePage() {
      */
     function addSaveBeforePageHide() {
       if (!isDataDirty) return;
-
       window.addEventListener("pagehide", saveLayers);
       return () => {
         window.removeEventListener("pagehide", saveLayers);
-      };
-    },
-    [saveLayers, isDataDirty]
-  );
-
-  useEffect(
-    function saveLayersOnUnMount() {
-      return () => {
-        if (isDataDirty) saveLayers();
       };
     },
     [saveLayers, isDataDirty]

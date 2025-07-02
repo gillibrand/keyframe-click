@@ -6,8 +6,8 @@ import { randomId } from "@util";
 export type Unit = "px" | "%";
 
 /**
- * A single animatable property and it's complete state. A timeline is built of multiple property layers to produce the
- * final animation.
+ * A single animatable property and it's complete state. A timeline is built of multiple property
+ * layers to produce the final animation.
  */
 export interface RealLayer {
   id: string;
@@ -24,7 +24,9 @@ export interface RealLayer {
 }
 
 export type BackgroundLayer = Pick<RealLayer, "cssProp" | "dots">;
-export type SampleLayer = Pick<RealLayer, "cssProp" | "isFlipped" | "units"> & { userSamples: Point[] };
+export type SampleLayer = Pick<RealLayer, "cssProp" | "isFlipped" | "units"> & {
+  userSamples: Point[];
+};
 
 const SaveStorageKey = "kc.layers";
 
@@ -57,9 +59,9 @@ function loadSavedRealLayers(): RealLayer[] {
 }
 
 /**
- * @returns A new ID for a layer. This is a UUID. We need a unique ID to use as their React keys when rendered as tabs
- *   since the CSS prop can change over time. The ID is what is used to track the active layer/tab so that it's stable
- *   during a delete (unlike the index).
+ * @returns A new ID for a layer. This is a UUID. We need a unique ID to use as their React keys
+ *   when rendered as tabs since the CSS prop can change over time. The ID is what is used to track
+ *   the active layer/tab so that it's stable during a delete (unlike the index).
  */
 function newId() {
   return randomId();
@@ -88,17 +90,18 @@ function createDefaultDots(): UserDot[] {
 
 /**
  * @param name CSS prop to check.
- * @param units The units we want to use with it--possibly saved with an old layer--but we need to check if it's
- *   allowed.
- * @returns Percent if the prop only support percentage values (or unitless, which are basically percentages anyway).
- *   Otherwise, just the same as teh given unit.
+ * @param units The units we want to use with it--possibly saved with an old layer--but we need to
+ *   check if it's allowed.
+ * @returns Percent if the prop only support percentage values (or unitless, which are basically
+ *   percentages anyway). Otherwise, just the same as teh given unit.
  */
 function normalizeUnits(name: CssProp, units: Unit) {
   return units && CssInfos[name].supportsPx ? units : "%";
 }
 /**
- * Holds all data for the different layers of the timeline. Each layer is a separate CSS property with its own dots.
- * There is one active layer at a time which is what the user can drag around. All layers are used for output.
+ * Holds all data for the different layers of the timeline. Each layer is a separate CSS property
+ * with its own dots. There is one active layer at a time which is what the user can drag around.
+ * All layers are used for output.
  */
 export class Layers {
   private activeId = "";
@@ -109,11 +112,11 @@ export class Layers {
   }
 
   /**
-   * Replaces the current layers with the given ones. This is used when loading a new animation for a demo. It is
-   * destructive.
+   * Replaces the current layers with the given ones. This is used when loading a new animation for
+   * a demo. It is destructive.
    *
-   * @param layers The new layers to replace the current ones with. This is used when loading a new set of layers from
-   *   the
+   * @param layers The new layers to replace the current ones with. This is used when loading a new
+   *   set of layers from the
    */
   replaceLayers(layers: RealLayer[]) {
     this.layers = layers;
@@ -166,12 +169,12 @@ export class Layers {
   }
 
   /**
-   * Return samples for all layers mapped into user space, which is needed for outputting to keyframes. In user space, x
-   * goes from 0 to 100 like a percentage.
+   * Return samples for all layers mapped into user space, which is needed for outputting to
+   * keyframes. In user space, x goes from 0 to 100 like a percentage.
    *
-   * While this can used cached samples, to does need to convert to user space coordinates on each call so has some
-   * performance cost. (TODO: it might be worth caching the user space samples too since they never change in background
-   * layers.)
+   * While this can used cached samples, to does need to convert to user space coordinates on each
+   * call so has some performance cost. (TODO: it might be worth caching the user space samples too
+   * since they never change in background layers.)
    *
    * @returns The samples for all layers in user space.
    */
@@ -205,7 +208,8 @@ export class Layers {
   }
 
   /**
-   * Updates the currently active layer. This affects what is currently being modified in the timeline.
+   * Updates the currently active layer. This affects what is currently being modified in the
+   * timeline.
    *
    * @param n Index of layer to activate.
    * @returns The new active layer (whether is changed or not).
@@ -225,7 +229,12 @@ export class Layers {
     this.activeId = id;
     this.purgeActiveSamples();
     if (wasSet) this.onChange();
-    return this.getActiveLayer();
+    const newLayer = this.getActiveLayer();
+    if (newLayer.id !== this.activeId) {
+      console.warn(`Changed to missing layer ${this.activeId}. Defaulting to first.`);
+      this.activeId = newLayer.id;
+    }
+    return newLayer;
   }
 
   /** Sets the active layer to the next one in the list. This is used for keyboard navigation. */
@@ -248,7 +257,8 @@ export class Layers {
   /**
    * Adds a new layer to the timeline.
    *
-   * @param cssProp The CSS property to use for the new layer. There should be at most one layer per CSS property.
+   * @param cssProp The CSS property to use for the new layer. There should be at most one layer per
+   *   CSS property.
    */
   addNewLayer(cssProp: CssProp) {
     const id = newId();
@@ -432,7 +442,7 @@ function cacheSamples(layer: RealLayer) {
 }
 
 /**
- * The singleton Layers objects. This is what the timeline will draw and what the demos page can change. Always init
- * from last last save. For now we can only save one.
+ * The singleton Layers objects. This is what the timeline will draw and what the demos page can
+ * change. Always init from last last save. For now we can only save one.
  */
 export const GlobalLayers = new Layers(loadSavedRealLayers());
