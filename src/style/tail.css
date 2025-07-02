@@ -124,6 +124,27 @@
   }
 }
 
+/*
+Pairs labels with controls in a consistent label. Generally wrap the entire section in a <label> and
+the text portion in a <span> like: <label><span>My Label</span> <input></label>
+*/
+@layer components {
+  .stacked-label {
+    @apply grid items-center gap-2 text-sm;
+  }
+
+  .block-label {
+    @apply flex items-center;
+  }
+
+  .stacked-label,
+  .stacked-label {
+    > span {
+      @apply text-gray-700 select-none;
+    }
+  }
+}
+
 @layer components {
   /* normally a 2 col grid row on desktop. But on mobile we expand each col to full width and scroll
   snap between them as two different panes. */
@@ -144,6 +165,10 @@
 }
 
 @layer base {
+  body {
+    @apply bg-neo-orange text-gray-700;
+  }
+
   /* Gray several controls when a dialog is open */
   .is-dialog-open #root :where(button, label, [data-component="RadioTab"], .DemoTile) {
     filter: grayscale(0.75);

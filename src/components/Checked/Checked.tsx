@@ -47,7 +47,7 @@ export function CheckedInput({ label, onChange, checked, name, value }: Checkbox
       >
         {checked && <Check />}
       </i>
-      <span>{label}</span>
+      <span className="text-gray-700">{label}</span>
     </label>
   );
 }
