@@ -1,39 +1,3 @@
-@import "./range.css";
-@import "tailwindcss";
-
-@theme {
-  /* TODO: this matches @media queries. Maybe change to rem */
-  --breakpoint-sm: 750px;
-  --shadow-hard: 2px 2px 0 0 black;
-  --shadow-inset-hard: inset 1px 1px 0 0 black;
-  --shadow-hard-1: 1px 1px 0 0 black;
-
-  --color-disabled: var(--color-gray-500);
-  --color-neo-orange: #ffb800;
-  --color-neo-blue: #006dea;
-  --color-neo-white: #f5f5f5;
-  --color-danger: #ff2683;
-  --color-neo-teal: #4ccdc0;
-}
-
-/* Custom focus outline style. Normally used with focus:visible */
-@utility focus-outline {
-  @apply outline-neo-blue outline-3 outline-offset-2;
-}
-
-@utility border-neo {
-  @apply border-2 border-black;
-}
-
-/* hides element exactly at breakpoint */
-@layer utilities {
-  .hidden-at-small {
-    @media (width < theme("breakpoint.sm")) {
-      @apply hidden;
-    }
-  }
-}
-
 /* Buttons */
 @layer components {
   .button {
@@ -74,13 +38,6 @@
     @apply focus-visible:focus-outline ring-white focus-visible:ring-2;
     @apply disabled:border-disabled disabled:text-disabled disabled:bg-white/50 disabled:shadow-none;
     @apply not-[:is(:focus,:valid)]:border-danger;
-  }
-}
-
-@utility scrollbar-none {
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
   }
 }
 
@@ -125,9 +82,9 @@
 }
 
 /*
-Pairs labels with controls in a consistent label. Generally wrap the entire section in a <label> and
-the text portion in a <span> like: <label><span>My Label</span> <input></label>
-*/
+  Pairs labels with controls in a consistent label. Generally wrap the entire section in a <label> and
+  the text portion in a <span> like: <label><span>My Label</span> <input></label>
+  */
 @layer components {
   .stacked-label {
     @apply grid items-center gap-2 text-sm;
@@ -147,7 +104,7 @@ the text portion in a <span> like: <label><span>My Label</span> <input></label>
 
 @layer components {
   /* normally a 2 col grid row on desktop. But on mobile we expand each col to full width and scroll
-  snap between them as two different panes. */
+	snap between them as two different panes. */
   .inspector-sidebar {
     @apply grid grid-cols-[1fr_18rem] gap-4 py-4;
 
@@ -160,78 +117,6 @@ the text portion in a <span> like: <label><span>My Label</span> <input></label>
 
       @apply my-0 ps-4 pb-[8px];
       @apply scrollbar-none snap-x snap-mandatory scroll-p-4 overflow-x-scroll overflow-y-hidden scroll-smooth;
-    }
-  }
-}
-
-@layer base {
-  body {
-    @apply bg-neo-orange text-gray-700;
-  }
-
-  /* Gray several controls when a dialog is open */
-  .is-dialog-open #root :where(button, label, [data-component="RadioTab"], .DemoTile) {
-    filter: grayscale(0.75);
-  }
-
-  /* XXX: this feels too general */
-  .j-prose code,
-  kbd {
-    @apply border-1 border-black/10;
-    @apply rounded-sm bg-black/5 px-1 py-0.5;
-    @apply font-mono;
-
-    /* invert colors of help in a "dark area" like the popup help dialog */
-    .dark-area & {
-      @apply border-white/50 bg-white/30;
-    }
-  }
-
-  /* Recenter dialogs that Tailwind un-sets */
-  dialog {
-    @apply fixed inset-0 m-auto;
-  }
-
-  /* for use in .mdx content. Like Tailwind Typography plugin */
-  .j-prose {
-    h1,
-    h2,
-    h3 {
-      @apply font-bold;
-    }
-
-    h1 {
-      @apply text-3xl;
-    }
-
-    h2 {
-      @apply text-2xl;
-    }
-
-    h3 {
-      @apply text-lg;
-    }
-
-    a {
-      @apply underline decoration-2;
-    }
-
-    ol {
-      @apply list-decimal;
-    }
-
-    ul {
-      @apply list-[square];
-    }
-
-    ul,
-    ol {
-      @apply ps-10;
-    }
-
-    p,
-    li {
-      @apply text-pretty;
     }
   }
 }

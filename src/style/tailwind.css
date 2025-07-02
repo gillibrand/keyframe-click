@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@import "./utilities.css";
+@import "./components.css";
+@import "./range.css";
+@import "./prose.css";
+
+@theme {
+  /* TODO: this matches @media queries. Maybe change to rem */
+  --breakpoint-sm: 750px;
+  --shadow-hard: 2px 2px 0 0 black;
+  --shadow-inset-hard: inset 1px 1px 0 0 black;
+  --shadow-hard-1: 1px 1px 0 0 black;
+
+  --color-disabled: var(--color-gray-500);
+  --color-neo-orange: #ffb800;
+  --color-neo-blue: #006dea;
+  --color-neo-white: #f5f5f5;
+  --color-danger: #ff2683;
+  --color-neo-teal: #4ccdc0;
+
+  --z-index-sticky: 10;
+  --z-index-floating: 20;
+  --z-index-menu: 30;
+  --z-index-dialog: 40;
+  --z-index-toast: 50;
+
+  --font-sans:
+    "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana,
+    sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-neo-orange text-gray-700;
+  }
+
+  /* Gray several controls when a dialog is open */
+  .is-dialog-open #root :where(button, label, [data-component="RadioTab"], .DemoTile) {
+    filter: grayscale(0.75);
+  }
+}

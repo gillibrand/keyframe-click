@@ -1,5 +1,4 @@
-import "@style/global.css";
-import "@style/tail.css";
+import "@style/tailwind.css";
 
 import { App } from "@app/App";
 import { NoteProvider } from "@components/note";

@@ -1,0 +1,62 @@
+@layer base {
+  /* XXX: this feels too general */
+  .j-prose code,
+  kbd {
+    @apply border-1 border-black/10;
+    @apply rounded-sm bg-black/5 px-1 py-0.25;
+    @apply font-mono;
+
+    /* invert colors of help in a "dark area" like the popup help dialog */
+    .dark-area & {
+      @apply border-white/50 bg-white/30;
+    }
+  }
+
+  /* Recenter dialogs that Tailwind un-sets */
+  dialog {
+    @apply fixed inset-0 m-auto;
+  }
+
+  /* for use in .mdx content. Like Tailwind Typography plugin */
+  .j-prose {
+    h1,
+    h2,
+    h3 {
+      @apply font-bold;
+    }
+
+    h1 {
+      @apply text-3xl;
+    }
+
+    h2 {
+      @apply text-2xl;
+    }
+
+    h3 {
+      @apply text-lg;
+    }
+
+    a {
+      @apply underline decoration-2;
+    }
+
+    ol {
+      @apply list-decimal;
+    }
+
+    ul {
+      @apply list-[square];
+    }
+
+    ul,
+    ol {
+      @apply ps-10;
+    }
+
+    p,
+    li {
+      @apply text-pretty;
+    }
+  }
+}

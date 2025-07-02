@@ -1,0 +1,24 @@
+/* Custom focus outline style. Normally used with focus:visible */
+@utility focus-outline {
+  @apply outline-neo-blue outline-3 outline-offset-2;
+}
+
+@utility border-neo {
+  @apply border-2 border-black;
+}
+
+/* hides element exactly at breakpoint */
+@layer utilities {
+  .hidden-at-small {
+    @media (width < theme("breakpoint.sm")) {
+      @apply hidden;
+    }
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

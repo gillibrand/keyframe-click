@@ -187,7 +187,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
         // Layout and appearance
         "z-dialog bg-neo-white border-neo fixed overflow-visible rounded-2xl p-0 text-sm",
         // Shadow when open with white outline
-        "shadow-[4px_4px_0_0_var(--c-neo-black),0_0_0_1px_white,4px_4px_0_1px_white]",
+        "shadow-[4px_4px_0_0_black,0_0_0_1px_white,4px_4px_0_1px_white]",
         // Popover origin
         near ? "origin-top-right" : "origin-top-center",
         "backdrop:bg-black/20 backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-150 [&.is-open::backdrop]:opacity-100"

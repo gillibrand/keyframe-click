@@ -1,7 +1,7 @@
 .LabelMenuItem {
   font-size: var(--sz-x-small);
   color: gray;
-  color: var(--c-gray-400);
+  color: var(--color-gray-400);
   margin: 0.325em 0.5em;
   padding-block: 0.325em;
 
@@ -34,7 +34,7 @@
   cursor: pointer;
 
   &.is-hover {
-    background-color: var(--c-neo-blue);
+    background-color: var(--color-neo-blue);
     color: white;
   }
 }
@@ -87,7 +87,7 @@
   border: solid var(--border-width) var(--border-color);
 
   box-shadow:
-    2px 2px 0 0 var(--c-neo-black),
+    2px 2px 0 0 var(--color-neo-black),
     0 0 0 1px white,
     2px 2px 0 1px white,
     0 0 50px rgba(0 0 0 / 0.2);
@@ -98,6 +98,6 @@
 
   padding: 0;
   margin: 0;
-  background-color: var(--c-neutral-50);
+  background-color: var(--color-neutral-50);
   z-index: var(--z-menu);
 }
