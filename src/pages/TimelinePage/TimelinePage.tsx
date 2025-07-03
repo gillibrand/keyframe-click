@@ -508,7 +508,7 @@ export function TimelinePage() {
           onClose={stopExporting}
           layers={layers}
           id={exportDialogId}
-          near={copyButtonRef.current ?? undefined}
+          near={!IsTouch && copyButtonRef.current ? copyButtonRef.current : undefined}
         />
       )}
 

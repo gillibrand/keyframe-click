@@ -1,5 +1,5 @@
 import Github from "@images/github-mark.svg?react";
-import { isDevMode } from "@util";
+import { isDevMode, IsTouch } from "@util";
 import { BannerLink } from "./BannerLink";
 
 export function Banner() {
@@ -15,7 +15,7 @@ export function Banner() {
           <BannerLink href="#/demos">Demos</BannerLink>
           <BannerLink href="#/about">About</BannerLink>
 
-          {isDevMode && <BannerLink href="#/debug">dev</BannerLink>}
+          {!IsTouch && isDevMode && <BannerLink href="#/debug">dev</BannerLink>}
         </nav>
 
         <div className="text-light hidden-at-small ml-auto flex items-center gap-4 py-2">

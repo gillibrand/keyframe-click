@@ -30,6 +30,8 @@ interface DialogProps extends PropsWithChildren {
    * end side of the page for now.
    */
   near?: HTMLElement;
+
+  className?: string;
 }
 
 const AnimOptions = {
@@ -57,7 +59,7 @@ function isSmallScreen() {
  * consistent styling. Open like a popover with a tail near the opening button.
  */
 export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
-  { open, onClose, label, hideLabel, children, onSubmit, id, near },
+  { open, onClose, label, hideLabel, children, onSubmit, id, near, className },
   apiRef
 ) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -171,6 +173,7 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
 
   const isSmall = isSmallScreen();
 
+  console.info(">>> near", near);
   return createPortal(
     <dialog
       ref={dialogRef}
@@ -185,12 +188,13 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
       }}
       className={clsx(
         // Layout and appearance
-        "z-dialog bg-neo-white border-neo fixed overflow-visible rounded-2xl p-0 text-sm",
+        "z-dialog bg-neo-white border-neo fixed overflow-visible rounded-2xl p-0 text-lg sm:text-sm",
         // Shadow when open with white outline
         "shadow-[4px_4px_0_0_black,0_0_0_1px_white,4px_4px_0_1px_white]",
         // Popover origin
         near ? "origin-top-right" : "origin-top-center",
-        "backdrop:bg-black/20 backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-150 [&.is-open::backdrop]:opacity-100"
+        "backdrop:bg-black/20 backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-150 [&.is-open::backdrop]:opacity-100",
+        className
       )}
     >
       {!isSmallScreen() && near && (

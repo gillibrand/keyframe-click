@@ -75,6 +75,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
       onSubmit={handleSubmit}
       id={id}
       near={near}
+      className="w-[calc(100%-1rem)] max-w-full text-base sm:w-sm"
     >
       <DialogBody ref={parentRef}>
         <div className="stacked-label">
@@ -115,7 +116,7 @@ export function ExportDialog({ open, onClose, layers, id, near }: Props) {
           <code
             className={clsx(
               "overflow-auto border-2 border-black bg-neutral-50 p-2",
-              "h-96 max-h-[min(40vh,calc(100vh-30rem))] min-h-12 min-w-sm"
+              "h-96 max-h-[min(40vh,calc(100vh-30rem))] min-h-12"
             )}
             aria-labelledby={previewLabelId}
           >
