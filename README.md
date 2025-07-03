@@ -13,11 +13,10 @@ Perfect for developers and designers who want experiment visually with CSS anima
 
 ## 🧰 Tech Stack
 
-- React; no other runtime dependencies
-- Vanilla CSS native nesting
+- React
+- Tailwind
 - Vite for development and bundling
-- HTML5 `<canvas>` for timeline rendering
-- GitHub Actions and Pages for deployment and hosting
+- Custom HTML5 `<canvas>` timeline
 - Bold, custom UI components
 
 ## 🧪 Live Demo
@@ -26,7 +25,9 @@ Try it at [https://keyframe-click.vercel.app](https://keyframe-click.vercel.app/
 
 ## 📋 Future enhancements
 
-- Mobile version
-- More preview images
-- Additional properties
+- [x] Mobile version
+  - Works on small touch screens now. Still more improvements needed for switching labels.
+- [x] More preview images
+  - Added text preview. More choices still needed.
+- [ ] Additional properties
   - This handles the most common GPU accelerated properties, but there are uses for other ones.
