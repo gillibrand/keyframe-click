@@ -68,13 +68,13 @@ export function RadioTabGroup({
   );
 
   return (
-    <div className={clsx("flex gap-4", className)}>
+    <div className={clsx("flex max-w-full gap-4", className)}>
       <span id={labelId} className="sr-only">
         {label}
       </span>
       <div
         className={clsx(
-          "shadow-hard flex min-w-1 overflow-hidden rounded-lg border-2 border-black bg-white",
+          "shadow-hard flex overflow-hidden rounded-lg border-2 border-black bg-white",
           "has-focus-visible:focus-outline ring-white has-focus-visible:shadow-none has-focus-visible:ring-2"
         )}
         ref={animationParentRef}
@@ -84,7 +84,7 @@ export function RadioTabGroup({
         {tabs.map((t, i) => (
           // Wrap each tab in a div. That's what we animate in/out since it has no padding or margin
           // so can shrink to 0 width
-          <div key={t.id}>
+          <div key={t.id} className="min-w-0">
             <RadioTab
               id={t.id}
               label={CssInfos[t.cssProp].label}

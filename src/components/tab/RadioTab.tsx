@@ -84,7 +84,7 @@ export const RadioTab = memo(function RadioTab({
       onClick={moveFocusToInputOnClick}
       data-id={id}
     >
-      <label className="cursor-[inherit] truncate" htmlFor={inputId}>
+      <label className="min-w-[4ch] cursor-[inherit] truncate" htmlFor={inputId}>
         {label}
       </label>
 
