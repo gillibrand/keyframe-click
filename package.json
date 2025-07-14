@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@eslint/css": "^0.6.0",
-    "@eslint/js": "^9.13.0",
+    "@eslint/js": "^9.31.0",
     "@mdx-js/react": "^3.1.0",
     "@mdx-js/rollup": "^3.1.0",
     "@tailwindcss/vite": "^4.1.10",
