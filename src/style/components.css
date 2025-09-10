@@ -87,7 +87,7 @@
   */
 @layer components {
   .stacked-label {
-    @apply grid items-center gap-2 text-sm;
+    @apply grid items-center gap-2 sm:text-sm;
   }
 
   .block-label {
