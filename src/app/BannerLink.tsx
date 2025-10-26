@@ -59,7 +59,7 @@ export const BannerLink = memo(function BannerLink({ href, preload, children }: 
   return (
     <a
       className={clsx(
-        "focus-visible:focus-outline relative mt-2 rounded-t-lg border-2 border-b-0 px-4 py-2 leading-none font-bold ring-white focus-visible:ring-2",
+        "focus-visible:focus-outline relative mt-2 rounded-t-lg border-2 border-b-0 px-4 py-2 leading-none font-bold ring-white select-none focus-visible:ring-2",
         isCurrentRoute
           ? "bg-neo-orange shadow-hard border-black focus-visible:shadow-none"
           : "border-transparent bg-[#fbd677] hover:bg-[#ffcd4f]",
