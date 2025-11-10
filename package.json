@@ -31,7 +31,7 @@
     "@tailwindcss/vite": "^4.1.13",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.3",
     "@vitejs/plugin-basic-ssl": "^2.1.0",
     "@vitejs/plugin-react": "^5.0.2",
     "browserslist-to-esbuild": "^2.1.1",
