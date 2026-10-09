@@ -5,7 +5,7 @@ import { CssInfos, CssProp } from "@timeline/CssInfo";
 import { Point, UserDot } from "@timeline/point";
 import { createTimeline, Timeline } from "@timeline/Timeline";
 import { TimelineInspector } from "@timeline/TimelineInspector";
-import { debounce, isMac, isSpaceBarHandler, IsTouch, throttle } from "@util";
+import { debounce, isKeyboardHandler, isMac, isSpaceBarHandler, IsTouch, throttle } from "@util";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { useNoteApi } from "@components/note";
@@ -248,6 +248,9 @@ export function TimelinePage() {
       function handleKeyDown(e: KeyboardEvent) {
         switch (e.key) {
           case "Shift": {
+            // Ignore auto-repeat and typing capitals in form fields
+            if (e.repeat || isKeyboardHandler(e.target)) break;
+            
             if (timelineRef.current && canvasRef.current && !getIsExportOpen()) {
               const rect = canvasRef.current.getBoundingClientRect();
               const at = {
@@ -478,20 +481,13 @@ export function TimelinePage() {
           className="split-button flex grow-1 gap-2"
           ref={isDesktop ? copyButtonRef : undefined}
           aria-haspopup="dialog"
+          aria-expanded={isExporting}
           aria-controls={activeExportId}
         >
           Copy
           <Down />
         </button>
-        <button
-          key="copy-options"
-          aria-haspopup="dialog"
-          aria-expanded={isExporting}
-          aria-controls={activeExportId}
-          onClick={copyNow}
-          className="split-button"
-          {...tooltipProps}
-        >
+        <button key="copy-options" onClick={copyNow} className="split-button" {...tooltipProps}>
           <Copy />
           <span className="sr-only">Copy with current options</span>
           {copyTooltip}

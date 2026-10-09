@@ -15,6 +15,11 @@ export function useGlobalShortcuts({ layers, zoomIn, zoomOut, copyNow }: Props):
     function handleKeydown(e: KeyboardEvent): void {
       if (isKeyboardHandler(e.target)) return;
 
+      const hasModifier = e.metaKey || e.ctrlKey || e.altKey;
+
+      // Leave browser/OS shortcuts like Cmd+S, Cmd+W, alone
+      if (hasModifier && e.key !== "c") return;
+
       switch (e.key) {
         case "[":
           layers.prevLayer();

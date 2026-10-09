@@ -130,7 +130,7 @@ export function isSpaceBarHandler(el: HTMLElement | EventTarget | null): boolean
  */
 export function isKeyboardHandler(el: HTMLElement | EventTarget | null): boolean {
   if (!isEl(el)) return false;
-  return el.tagName === "INPUT" || el.tagName === "TEXTAREA";
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT";
 }
 
 /** @returns True if the current platform is a Mac. This is based on the navigator.platform value. */
