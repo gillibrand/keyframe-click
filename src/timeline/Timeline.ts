@@ -54,9 +54,9 @@ type Dragging = DraggingPoint | DraggingHandle;
 function createThreshold(realOrigin: Point, threshold: number) {
   let passed = false;
 
-  return (e: MouseEvent) => {
+  return (realX: number, realY: number) => {
     if (!passed) {
-      if (!nearPt(realOrigin, e.offsetX, e.offsetY, threshold)) {
+      if (!nearPt(realOrigin, realX, realY, threshold)) {
         passed = true;
       }
     }
@@ -390,7 +390,7 @@ export function createTimeline({
           const p = dots[i];
           if (nearPt(asRealPoint(p), realX, realY)) {
             newSelected = i;
-            const maxX = dots[i + 1] ? dots[i + 1].x : width();
+            const maxX = dots[i + 1] ? dots[i + 1].x : 100;
             const minX = i > 0 ? dots[i - 1].x : 0;
             _dragging = { point: p, maxX, minX };
             break;
@@ -416,7 +416,7 @@ export function createTimeline({
     if (_dragging) startDrag(x, y);
   }
 
-  let isPastThreshold: (e: MouseEvent) => boolean = () => false;
+  let isPastThreshold: (realX: number, realY: number) => boolean = () => false;
 
   /**
    * Drag handle when dragging dots and handles
@@ -426,8 +426,11 @@ export function createTimeline({
    */
   function onMouseMoveDrag(e: MouseEvent | TouchEvent) {
     const { x: pageX, y: pageY } = getEventCoords(e);
+    const rect = _canvas.getBoundingClientRect();
+    const realX = pageX - window.scrollX - rect.x;
+    const realY = pageY - window.scrollY - rect.y;
 
-    if (e instanceof MouseEvent && !isPastThreshold(e)) return;
+    if (e instanceof MouseEvent && !isPastThreshold(realX, realY)) return;
     e.preventDefault();
 
     if (!_dragging || ("buttons" in e && e.buttons === 0)) {
@@ -435,12 +438,8 @@ export function createTimeline({
       return;
     }
 
-    const rect = _canvas.getBoundingClientRect();
-
-    let x = asUserX(Math.max(InsetX, Math.min(pageX - window.scrollX - rect.x, width() - InsetX)));
-    const y = asUserY(
-      Math.max(InsetY, Math.min(pageY - window.scrollY - rect.y, height() - InsetY))
-    );
+    let x = asUserX(Math.max(InsetX, Math.min(realX, width() - InsetX)));
+    const y = asUserY(Math.max(InsetY, Math.min(realY, height() - InsetY)));
 
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
@@ -674,8 +673,8 @@ export function createTimeline({
 
     _cx.beginPath();
     const realX = asRealX(_addingAtUserPoint.x);
-    _cx.moveTo(realX, InsetX);
-    _cx.lineTo(realX, height() - InsetX);
+    _cx.moveTo(realX, InsetY);
+    _cx.lineTo(realX, height() - InsetY);
     _cx.stroke();
 
     bullsEye({ x: realX, y: asRealY(y) }, true, _cx);
@@ -844,7 +843,7 @@ export function createTimeline({
 
     if (dots.length > 0) {
       // We'll create a new dot after the selected. If none selected, then after the first
-      if (_selectedIndex === null) {
+      if (_selectedIndex === null || _selectedIndex >= dots.length) {
         _selectedIndex = 0;
       }
 
@@ -868,6 +867,9 @@ export function createTimeline({
   }
 
   function onKeyDown(e: KeyboardEvent) {
+    // Leave Cmd/Ctrl shortcuts (copy, select all, etc.) to the browser and global handlers
+    if (e.metaKey || e.ctrlKey) return;
+
     const dots = _layers.getDots();
     const dot = _selectedIndex === null ? null : dots[_selectedIndex];
     const i = _selectedIndex;
@@ -894,6 +896,7 @@ export function createTimeline({
 
       case ".":
       case "d":
+        if (dots.length === 0) return;
         if (_selectedIndex === null) {
           _selectedIndex = 0;
         } else if (_selectedIndex < dots.length - 1) {
@@ -903,6 +906,7 @@ export function createTimeline({
 
       case ",":
       case "a":
+        if (dots.length === 0) return;
         if (_selectedIndex === null) {
           _selectedIndex = dots.length - 1;
         } else if (_selectedIndex > 0) {
@@ -985,10 +989,7 @@ export function createTimeline({
     _canvas.removeEventListener("focus", onFocus);
     _canvas.removeEventListener("blur", onBlur);
 
-    _canvas.removeEventListener("mousemove", onMouseMoveDrag);
-    _canvas.removeEventListener("mouseup", onMouseUpDrag);
-
-    _canvas.removeEventListener("mousemove", onMouseMoveAdding);
+    if (_dragging) endDrag();
 
     if (drawTimer !== null) {
       cancelAnimationFrame(drawTimer);
@@ -1001,9 +1002,10 @@ export function createTimeline({
   }
 
   function updateSelectedDot(d: UserDot) {
-    if (_selectedIndex === null) return;
+    const dots = _layers.getDots();
+    if (_selectedIndex === null || _selectedIndex >= dots.length) return;
     d.x = Math.max(0, Math.min(d.x, 100));
-    _layers.getDots()[_selectedIndex] = d;
+    dots[_selectedIndex] = d;
     draw();
   }
 
@@ -1128,9 +1130,9 @@ export function createTimeline({
   }
 
   function deleteSelectedDot() {
-    if (_selectedIndex === null) return;
-
     const dots = _layers.getDots();
+    if (_selectedIndex === null || _selectedIndex >= dots.length) return;
+
     dots.splice(_selectedIndex, 1);
 
     if (dots.length === 0) {
