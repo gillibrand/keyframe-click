@@ -283,7 +283,7 @@ export function TimelinePage() {
       return () => {
         window.removeEventListener("keyup", handleKeyUp);
         window.removeEventListener("keydown", handleKeyDown);
-        window.addEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("mousemove", handleMouseMove);
       };
     },
     [togglePreview, getIsExportOpen]

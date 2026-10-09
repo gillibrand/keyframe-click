@@ -1,5 +1,6 @@
 input[type="range"] {
   @apply cursor-pointer appearance-none bg-transparent;
+  touch-action: none;
   @apply focus-visible:focus-outline;
 
   @-moz-document url-prefix() {
@@ -10,6 +11,7 @@ input[type="range"] {
         0 0 0 5px var(--color-neo-blue);
     }
   }
+
   /* Chrome, Safari, Edge (WebKit-based) */
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -26,11 +28,9 @@ input[type="range"] {
 
   &::-webkit-slider-runnable-track {
     height: 10px;
-    background-image: linear-gradient(
-      to right,
-      var(--color-neo-blue) var(--progress),
-      white var(--progress)
-    );
+    background-image: linear-gradient(to right,
+        var(--color-neo-blue) var(--progress),
+        white var(--progress));
     border-radius: 999px;
     border: solid 2px black;
   }
