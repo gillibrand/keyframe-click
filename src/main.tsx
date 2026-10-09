@@ -1,6 +1,7 @@
 import "@style/tailwind.css";
 
 import { App } from "@app/App";
+import { applyUrlSettings } from "@app/useSettings";
 import { NoteProvider } from "@components/note";
 import { AboutPage } from "@pages/AboutPage";
 import { DemoPage } from "@pages/DemoPage";
@@ -21,6 +22,8 @@ const routes: Routes = {
 if (isDevMode) {
   routes["/debug"] = lazyWithPreload(() => import("@pages/DebugPage/DebugPage"));
 }
+
+applyUrlSettings();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

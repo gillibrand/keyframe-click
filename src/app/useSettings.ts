@@ -1,5 +1,5 @@
 import { Format } from "@export/output";
-import { AllGraphics, Graphic } from "@preview/previewTypes";
+import { AllGraphics, Graphic, MaxPreviewTextLength } from "@preview/previewTypes";
 import { Callback, getOrInit, unreachable } from "@util";
 import { useCallback, useSyncExternalStore } from "react";
 
@@ -234,4 +234,17 @@ function useSetting<K extends SettingName>(name: K, defaultValue: Settings[K]) {
   return [value, setValue] as const;
 }
 
-export { useSetting };
+/**
+ * Applies settings passed as URL query params, e.g. `?text=Hello`. Call once on startup before rendering. The params
+ * are removed from the URL afterward so a reload won't clobber later edits.
+ */
+function applyUrlSettings() {
+  const url = new URL(window.location.href);
+  const text = url.searchParams.get("text");
+  if (text === null) return;
+
+  setSetting("previewText", text.slice(0, MaxPreviewTextLength));
+  setSetting("previewGraphic", "text");
+}
+
+export { applyUrlSettings, useSetting };

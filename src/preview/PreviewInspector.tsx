@@ -5,7 +5,7 @@ import { Select } from "@components/Select";
 import Play from "@images/play.svg?react";
 import Stop from "@images/stop.svg?react";
 import { memo, useId } from "react";
-import { Graphic } from "./previewTypes";
+import { Graphic, MaxPreviewTextLength } from "./previewTypes";
 import { Speed } from "./usePreview";
 import { useChildAnimator, wipeInHeight, wipeOutHeight } from "@util/useChildAnimator";
 import { stopEvent } from "@util";
@@ -75,8 +75,7 @@ export const PreviewInspector = memo(function PreviewInspector({
   const [previewText, setPreviewTextSetting] = useSetting("previewText", "Hello, World!");
 
   function setPreviewText(text: string) {
-    const max = 42;
-    setPreviewTextSetting(text.length > max ? text.slice(0, max) : text);
+    setPreviewTextSetting(text.slice(0, MaxPreviewTextLength));
   }
 
   return (
