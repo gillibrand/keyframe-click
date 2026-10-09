@@ -1,4 +1,4 @@
-import { IsTouch, throttle } from "@util";
+import { IsTouch } from "@util";
 import { ColorName, Colors } from "@util/Colors";
 import {
   asRealDot,
@@ -44,8 +44,8 @@ type DraggingHandle = {
 type Dragging = DraggingPoint | DraggingHandle;
 
 /**
- * Creates a stateful function that detects if the mouse has moved past a threshold. Used to ignore "drags" or very
- * short distances that are probably just sloppy clicks.
+ * Creates a stateful function that detects if the mouse has moved past a threshold. Used to ignore
+ * "drags" or very short distances that are probably just sloppy clicks.
  *
  * @returns A function that returns true if the mouse has moved past the threshold.
  * @realOrigin The starting point of the drag in real coordinates.
@@ -71,8 +71,8 @@ export interface Timeline {
   destroy: () => void;
 
   /**
-   * Draws the timeline soon. This is called automatically when changing the timeline with this API, but external
-   * changes to layers are not automatically drawn. Call this to force a redraw.
+   * Draws the timeline soon. This is called automatically when changing the timeline with this API,
+   * but external changes to layers are not automatically drawn. Call this to force a redraw.
    */
   draw: () => void;
 
@@ -94,30 +94,32 @@ export interface Timeline {
   setLabelYAxis: (setLabelYAxis: boolean) => void;
 
   /**
-   * Sets the callback to call when the timeline is drawn. This is called after the draw() method is called and the
-   * canvas is drawn. Since a draw normally only happens when the data changes, the listener can assume there is a data
-   * change (of the dots probably) that needs to be saved. Also called when the selected dot changes. The listener
-   * should be fast or throttled since this is called a lot on window resize now.
+   * Sets the callback to call when the timeline is drawn. This is called after the draw() method is
+   * called and the canvas is drawn. Since a draw normally only happens when the data changes, the
+   * listener can assume there is a data change (of the dots probably) that needs to be saved. Also
+   * called when the selected dot changes. The listener should be fast or throttled since this is
+   * called a lot on window resize now.
    */
   set onDraw(onChangeCallback: (() => void) | undefined);
 
   /**
-   * Sets the callback to call when the timeline is in "adding" mode or not. This is called when the user clicks the Add
-   * Point button and starts adding a point or cancels or finishes that.
+   * Sets the callback to call when the timeline is in "adding" mode or not. This is called when the
+   * user clicks the Add Point button and starts adding a point or cancels or finishes that.
    */
   set onAdding(onAddingCallback: ((isAdding: boolean) => void) | undefined);
 
   /**
-   * Sets the callback to call when the timeline is in "moving" mode or not. This is called when the user starts moving
-   * a point or handle and when they stop moving it.
+   * Sets the callback to call when the timeline is in "moving" mode or not. This is called when the
+   * user starts moving a point or handle and when they stop moving it.
    */
   set onMoving(onMovingCallback: ((isMoving: boolean) => void) | undefined);
 
   /**
-   * Move the timeline into "adding" mode. This is used for using external shortcuts to start an add.
+   * Move the timeline into "adding" mode. This is used for using external shortcuts to start an
+   * add.
    *
-   * @param at Point to start adding a dot at. If not provided, the dot will be added at a default location on the
-   *   right, which assumes the "Add point" button is near.
+   * @param at Point to start adding a dot at. If not provided, the dot will be added at a default
+   *   location on the right, which assumes the "Add point" button is near.
    */
   beginAddingDot(at?: Point): void;
 
@@ -135,8 +137,8 @@ export interface Timeline {
   deleteSelectedDot: () => void;
 
   /**
-   * Cancels any mode the timeline is in. This is used to cancel adding or moving a dot based on user clicks and
-   * keyboard events.
+   * Cancels any mode the timeline is in. This is used to cancel adding or moving a dot based on
+   * user clicks and keyboard events.
    */
   cancel: () => void;
 }
@@ -150,7 +152,8 @@ export interface InitTimelineProps {
 /**
  * Modes the timeline can be in.
  *
- * XXX: Honestly this isn't as used as I imagined it would be. Investigate if really needed sometime.
+ * XXX: Honestly this isn't as used as I imagined it would be. Investigate if really needed
+ * sometime.
  */
 type State = "adding" | "default";
 
@@ -159,8 +162,15 @@ type State = "adding" | "default";
  *
  * @returns Controller to interact with the timeline.
  */
-export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initialMaxY }: InitTimelineProps): Timeline {
+export function createTimeline({
+  canvas: _canvas,
+  layers: _layers,
+  maxY: initialMaxY,
+}: InitTimelineProps): Timeline {
   let drawTimer: number | null = null;
+
+  /** True if any draw scheduled for the next frame was due to a data change. */
+  let drawNotify = false;
 
   if (initialMaxY) setMaxY(initialMaxY);
 
@@ -195,56 +205,104 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   /** Watches the canvas ro resizes and updates and redraws it if needed. */
   let _resizeObserver: ResizeObserver | undefined;
 
+  /** Last known CSS size of the canvas content box. */
+  let _cssWidth = 0;
+  let _cssHeight = 0;
+
+  /** Stops listening for device pixel ratio changes. */
+  let _stopDprListener: (() => void) | undefined;
+
+  /** Recalculates the user space to CSS pixel ratios. Call after a zoom or resize. */
+  function updateUserScale() {
+    setUserPxWidth((_cssWidth - InsetX * 2) / 100);
+    setUserPxHeight((_cssHeight - InsetY * 2) / getYRange());
+  }
+
   /**
-   * Call after a zoom or resize. This calcs the correct logical pixel sizes and re-centers the timeline. Without this,
-   * the canvas will be distorted. Will redraw automatically.
+   * Call after a resize. This sizes the canvas backing store to match the device pixels exactly so
+   * drawing is crisp on high-DPI screens, then redraws immediately. Without this, the canvas will
+   * be distorted.
    *
-   * @param borderBoxWidthPx Width of the canvas.
-   * @param borderBoxHeightPx Height of the canvas.
+   * @param cssWidth Content box width of the canvas in CSS pixels.
+   * @param cssHeight Content box height of the canvas in CSS pixels.
+   * @param deviceWidth Exact width in device pixels, if the browser reports it. Otherwise estimated
+   *   from the DPR.
+   * @param deviceHeight Exact height in device pixels, if the browser reports it. Otherwise
+   *   estimated from the DPR.
    */
-  function rescale(borderBoxWidthPx: number, borderBoxHeightPx: number) {
-    // Set the internal sizes to the scaled size for the DPI and width
-    const scale = window.devicePixelRatio || 1;
+  function rescale(
+    cssWidth: number,
+    cssHeight: number,
+    deviceWidth?: number,
+    deviceHeight?: number
+  ) {
+    const dpr = window.devicePixelRatio || 1;
 
-    // Logical sizes so we can draw at higher DPIs
-    const newWidth = borderBoxWidthPx * scale;
-    const newHeight = borderBoxHeightPx * scale;
+    _cssWidth = cssWidth;
+    _cssHeight = cssHeight;
+    updateUserScale();
 
-    setUserPxWidth((newWidth - InsetX * 2 * scale) / (100 * scale));
-    setUserPxHeight((newHeight - InsetY * 2 * scale) / (getYRange() * scale));
+    _canvas.width = Math.max(1, deviceWidth ?? Math.round(cssWidth * dpr));
+    _canvas.height = Math.max(1, deviceHeight ?? Math.round(cssHeight * dpr));
 
-    _canvas.width = newWidth;
-    _canvas.height = newHeight;
-
-    // Need to reset DPI scale after each width change
-    _cx.scale(scale, scale);
+    // Map CSS pixels to device pixels. Setting the canvas size resets the transform, so this is absolute.
+    if (cssWidth > 0 && cssHeight > 0) {
+      _cx.setTransform(_canvas.width / cssWidth, 0, 0, _canvas.height / cssHeight, 0, 0);
+    }
     drawNow(false);
   }
 
-  /**
-   * Applies scaling to match the retina screen resolution. This will increase the actual canvas element size, but scale
-   * it down again with CSS. The result is a crisp hi-res canvas at the same size.
-   *
-   * @param canvas To scale. It supports an extra property to know if this was already done or not. That's needed during
-   *   dev since React will pass the same element it init each time and if we scale it based on the current size it will
-   *   get bigger each time.
-   */
-  function connectResizeObserver(canvas: HTMLCanvasElement) {
-    const onResize = throttle((entries: ResizeObserverEntry[]) => {
-      const entry = entries[0];
-      if (!entry) return;
+  function onResize(entries: ResizeObserverEntry[]) {
+    const entry = entries[0];
+    if (!entry) return;
 
-      rescale(entry.borderBoxSize[0].inlineSize, entry.borderBoxSize[0].blockSize);
-    }, 50);
-
-    if (_resizeObserver) _resizeObserver.disconnect();
-    _resizeObserver = new ResizeObserver(onResize);
-    _resizeObserver.observe(canvas);
+    const cssSize = entry.contentBoxSize[0];
+    const deviceSize = entry.devicePixelContentBoxSize?.[0];
+    rescale(cssSize.inlineSize, cssSize.blockSize, deviceSize?.inlineSize, deviceSize?.blockSize);
   }
 
   /**
-   * Clones the selected dot. This is used to copy the dot to the clipboard or to create a new dot based on the selected
-   * one.
+   * Rescales when the device pixel ratio changes, e.g., when the window moves to a monitor with a
+   * different DPI. This is only needed where `device-pixel-content-box` isn't supported (Safari),
+   * since otherwise the resize observer fires.
+   */
+  function listenForDprChange() {
+    _stopDprListener?.();
+
+    const query = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+    const onChange = () => {
+      const { width, height } = _canvas.getBoundingClientRect();
+      rescale(width, height);
+      listenForDprChange();
+    };
+
+    query.addEventListener("change", onChange, { once: true });
+    _stopDprListener = () => query.removeEventListener("change", onChange);
+  }
+
+  /**
+   * Watches the canvas for size changes and rescales it to match the screen resolution. This will
+   * increase the actual canvas element size, but scale it down again with CSS. The result is a
+   * crisp hi-res canvas at the same size.
+   *
+   * @param canvas To observe.
+   */
+  function connectResizeObserver(canvas: HTMLCanvasElement) {
+    if (_resizeObserver) _resizeObserver.disconnect();
+    _resizeObserver = new ResizeObserver(onResize);
+
+    try {
+      _resizeObserver.observe(canvas, { box: "device-pixel-content-box" });
+    } catch {
+      // Unsupported in Safari
+      _resizeObserver.observe(canvas, { box: "content-box" });
+      listenForDprChange();
+    }
+  }
+
+  /**
+   * Clones the selected dot. This is used to copy the dot to the clipboard or to create a new dot
+   * based on the selected one.
    *
    * @returns Copy of selected dot.
    */
@@ -380,7 +438,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     const rect = _canvas.getBoundingClientRect();
 
     let x = asUserX(Math.max(InsetX, Math.min(pageX - window.scrollX - rect.x, width() - InsetX)));
-    const y = asUserY(Math.max(InsetY, Math.min(pageY - window.scrollY - rect.y, height() - InsetY)));
+    const y = asUserY(
+      Math.max(InsetY, Math.min(pageY - window.scrollY - rect.y, height() - InsetY))
+    );
 
     if ("handle" in _dragging) {
       moveHandle(_dragging, x, y);
@@ -460,7 +520,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   /**
-   * Ends the drag and cleans up the event listeners. This is called when the mouse is released or moved outside the\
+   * Ends the drag and cleans up the event listeners. This is called when the mouse is released or
+   * moved outside the\
    * Canvas.
    */
   function endDrag() {
@@ -473,9 +534,9 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   /**
-   * Draw the border and grid behind the graph. Includes the focus ring if the canvas is focused. The border is inset a
-   * bit to have room to draw dots a little outside the border without cutting them off when they are very near the
-   * edge.
+   * Draw the border and grid behind the graph. Includes the focus ring if the canvas is focused.
+   * The border is inset a bit to have room to draw dots a little outside the border without cutting
+   * them off when they are very near the edge.
    */
   function drawGrid() {
     _cx.lineWidth = 1;
@@ -525,8 +586,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   /**
-   * Draws the Y axis labels right on the grid to save space, plus it looks neat and they are not that important. There
-   * is a setting to toggle them off.
+   * Draws the Y axis labels right on the grid to save space, plus it looks neat and they are not
+   * that important. There is a setting to toggle them off.
    */
   function drawAxisText() {
     if (!_labelYAxis) return;
@@ -621,31 +682,35 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   /**
-   * Schedules the canvas to redraw completely on the next animation frames. Can be called multiple times and will only
-   * redraw once during the next frame.
+   * Schedules the canvas to redraw completely on the next animation frames. Can be called multiple
+   * times and will only redraw once during the next frame.
    *
-   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to know data changed that
-   *   caused the draw. But in some cases, like drawing where a point might be added, the drawing doesn't affect the
-   *   data and we can skip the callback. Defaults to true.
+   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to
+   *   know data changed that caused the draw. But in some cases, like drawing where a point might
+   *   be added, the drawing doesn't affect the data and we can skip the callback. Defaults to
+   *   true.
    */
   function draw(notify: boolean = true) {
+    drawNotify ||= notify;
     if (drawTimer !== null) return;
 
     drawTimer = requestAnimationFrame(() => {
+      const notify = drawNotify;
+      drawTimer = null;
+      drawNotify = false;
+
       try {
         drawNow(notify);
       } catch (e) {
         // Just in case. Can't happen :)
         console.error(e);
-      } finally {
-        drawTimer = null;
       }
     });
   }
 
   /**
-   * Clips the canvas to the timeline area. This is used for most drawing except the dots themselves so they can be
-   * dragged more easily near the edges.
+   * Clips the canvas to the timeline area. This is used for most drawing except the dots themselves
+   * so they can be dragged more easily near the edges.
    */
   function clipTimeline() {
     _cx.beginPath();
@@ -668,7 +733,14 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
       const cp1 = pp.type === "square" ? pp : pp.h2;
       const cp2 = p.type === "square" ? p : p.h1;
-      _cx.bezierCurveTo(asRealX(cp1.x), asRealY(cp1.y), asRealX(cp2.x), asRealY(cp2.y), asRealX(p.x), asRealY(p.y));
+      _cx.bezierCurveTo(
+        asRealX(cp1.x),
+        asRealY(cp1.y),
+        asRealX(cp2.x),
+        asRealY(cp2.y),
+        asRealX(p.x),
+        asRealY(p.y)
+      );
     }
 
     _cx.setLineDash([]);
@@ -677,12 +749,13 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   /**
-   * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next animation frame for
-   * better performance.
+   * Draws the entire canvas right now. Generally should call .draw() instead to schedule on next
+   * animation frame for better performance.
    *
-   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to know data changed that
-   *   caused the draw. But in some cases, like drawing where a point might be added, the drawing doesn't affect the
-   *   data and we can skip the callback. Defaults to true.
+   * @param notify If true, fires onDrawCallback. Normally that's right, since listeners need to
+   *   know data changed that caused the draw. But in some cases, like drawing where a point might
+   *   be added, the drawing doesn't affect the data and we can skip the callback. Defaults to
+   *   true.
    */
   function drawNow(notify: boolean) {
     _cx.clearRect(0, 0, _canvas.width, _canvas.height);
@@ -693,7 +766,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
       drawGrid();
     });
 
-    _layers.purgeActiveSamples();
+    // Samples only change when the data does
+    if (notify) _layers.purgeActiveSamples();
     const dots = _layers.getDots();
 
     // draw curves
@@ -759,8 +833,8 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   /**
-   * Adds a new point after the selected one. If none selected, then after the first. If none at all, then right at the
-   * start of the timeline.
+   * Adds a new point after the selected one. If none selected, then after the first. If none at
+   * all, then right at the start of the timeline.
    */
   function newPointFromSelected() {
     const dots = _layers.getDots();
@@ -919,9 +993,11 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
     if (drawTimer !== null) {
       cancelAnimationFrame(drawTimer);
       drawTimer = null;
+      drawNotify = false;
     }
 
     if (_resizeObserver) _resizeObserver.disconnect();
+    _stopDprListener?.();
   }
 
   function updateSelectedDot(d: UserDot) {
@@ -958,7 +1034,10 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
   }
 
   function onMouseMoveAdding(e: MouseEvent) {
-    _addingAtUserPoint = { x: Math.max(0, Math.min(asUserX(e.offsetX), 100)), y: asUserY(e.offsetY) };
+    _addingAtUserPoint = {
+      x: Math.max(0, Math.min(asUserX(e.offsetX), 100)),
+      y: asUserY(e.offsetY),
+    };
     draw(false);
   }
 
@@ -1069,15 +1148,15 @@ export function createTimeline({ canvas: _canvas, layers: _layers, maxY: initial
 
   function zoomIn() {
     const maxY = zoomInY();
-    const { width, height } = _canvas.getBoundingClientRect();
-    rescale(width, height);
+    updateUserScale();
+    drawNow(false);
     return maxY;
   }
 
   function zoomOut() {
     const maxY = zoomOutY();
-    const { width, height } = _canvas.getBoundingClientRect();
-    rescale(width, height);
+    updateUserScale();
+    drawNow(false);
     return maxY;
   }
 
