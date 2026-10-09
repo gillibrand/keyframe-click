@@ -42,7 +42,7 @@ export const NoteList = memo(function NoteList() {
 
   return (
     <ul
-      className="z-toast pointer-events-none fixed top-6 flex w-full flex-col items-center"
+      className="z-toast pointer-events-none fixed top-6 flex w-full flex-col items-center px-4"
       ref={parentRef}
       aria-live="polite"
       role="status"

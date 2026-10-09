@@ -15,18 +15,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.11.0
+          node-version-file: .nvmrc
+          cache: pnpm
 
       - name: Package install
         run: |
-          npm ci
+          pnpm install --frozen-lockfile
 
       - name: Build
         run: |
-          npm run build
+          pnpm build
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

@@ -10,7 +10,7 @@ export function Banner() {
           Keyframe Click
         </h1>
 
-        <nav className="flex gap-4">
+        <nav className="flex gap-2 sm:gap-4">
           <BannerLink href="#/">Timeline</BannerLink>
           <BannerLink href="#/demos">Demos</BannerLink>
           <BannerLink href="#/about">About</BannerLink>

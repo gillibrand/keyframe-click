@@ -173,7 +173,6 @@ export const Dialog = forwardRef<DialogApi, DialogProps>(function Dialog(
 
   const isSmall = isSmallScreen();
 
-  console.info(">>> near", near);
   return createPortal(
     <dialog
       ref={dialogRef}
